@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <com.android.yzd.ui.view.TitleBarView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:setBackground="@android:color/white"
+        app:setLeftImageVisibility="gone"
+        app:setRightText="立即注册"
+        app:setRightTextColor="@color/black_30"
+        app:setRightTextVisibility="visible"
+        app:setTitle="登陆"
+        app:setTitleColor="@color/black_30" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:paddingBottom="30dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingTop="30dp">
+
+        <EditText
+            android:id="@+id/login_tel"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:background="@drawable/round_background"
+            android:drawableLeft="@mipmap/user"
+            android:drawablePadding="10dp"
+            android:hint="请输入您的手机号"
+            android:inputType="textPassword"
+            android:paddingLeft="10dp"
+            android:textColor="@color/black_30"
+            android:textColorHint="@color/black_60"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/round_background"
+            android:drawableLeft="@mipmap/password"
+            android:drawablePadding="10dp"
+            android:hint="请输入秘密"
+            android:inputType="textPassword"
+            android:paddingLeft="10dp"
+            android:textColor="@color/black_30"
+            android:textColorHint="@color/black_60"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/login_login"
+        style="@style/button"
+        android:text="登陆" />
+
+
+    <TextView
+        android:id="@+id/forget_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="30dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="10dp"
+        android:onClick="onClick"
+        android:clickable="true"
+        android:text="忘记密码"
+        android:textColor="@color/red_30" />
+
+</LinearLayout>
