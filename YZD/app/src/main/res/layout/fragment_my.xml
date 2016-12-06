@@ -48,7 +48,6 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:layout_marginTop="20dp"
-                    android:src="@drawable/head"
                     app:border_color="@color/edit_background"
                     app:border_width="3dp" />
 
@@ -60,7 +59,6 @@
                     android:layout_alignTop="@+id/my_head"
                     android:layout_marginTop="5dp"
                     android:layout_toRightOf="@+id/my_head"
-                    android:text="昵称"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
 
@@ -74,7 +72,6 @@
                     android:layout_toRightOf="@+id/my_head"
                     android:drawableLeft="@mipmap/phone"
                     android:drawablePadding="10dp"
-                    android:text="15911982121"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
 

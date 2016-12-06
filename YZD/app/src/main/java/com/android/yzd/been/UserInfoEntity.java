@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * Created by Administrator on 2016/8/29.
+ * 登陆返回数据
  */
 
 public class UserInfoEntity implements Serializable {

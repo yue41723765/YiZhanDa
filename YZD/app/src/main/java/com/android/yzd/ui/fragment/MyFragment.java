@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.yzd.R;
+import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
 import com.android.yzd.ui.activity.AddressManageActivity;
 import com.android.yzd.ui.activity.BankCardActivity;
 import com.android.yzd.ui.activity.CollectActivity;
@@ -21,6 +22,7 @@ import com.android.yzd.ui.activity.SetActivity;
 import com.android.yzd.ui.activity.WalletActivity;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.CircleImageView;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -39,6 +41,8 @@ public class MyFragment extends BaseFragment {
     TextView myNick;
     @BindView(R.id.my_tel)
     TextView myTel;
+
+    UserInfoEntity userInfo;
 
     @Override
     public int getContentViewId() {
@@ -117,5 +121,21 @@ public class MyFragment extends BaseFragment {
                 break;
         }
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        userInfo = (UserInfoEntity) SPUtils.get(context, K.USERINFO, UserInfoEntity.class);
+        showUserInfo();
+    }
+
+    //刷新个人信息
+    private void showUserInfo() {
+        Picasso.with(context).load(userInfo.getHead_pic()).into(myHead);
+        myNick.setText(userInfo.getNickname());
+        myTel.setText(userInfo.getAccount());
+    }
+
 
 }

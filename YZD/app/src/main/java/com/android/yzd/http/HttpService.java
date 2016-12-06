@@ -3,9 +3,12 @@ package com.android.yzd.http;
 
 import java.util.Map;
 
+import okhttp3.RequestBody;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PartMap;
 import rx.Observable;
 
 /**
@@ -56,9 +59,9 @@ public interface HttpService {
     @POST("index.php/Api/Member/memberBaseData")
     Observable<HttpResult> memberBaseData(@FieldMap Map<String, String> param);
 
-    @FormUrlEncoded
+    @Multipart
     @POST("index.php/Api/Member/modifyMemberBaseData")
-    Observable<HttpResult> modifyMemberBaseData(@FieldMap Map<String, String> param);
+    Observable<HttpResult> modifyMemberBaseData(@PartMap Map<String, RequestBody> param);
 
     @FormUrlEncoded
     @POST("index.php/Api/Member/couponList")

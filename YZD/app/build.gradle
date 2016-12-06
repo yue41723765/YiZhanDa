@@ -47,4 +47,6 @@ dependencies {
     compile 'com.bartoszlipinski:recyclerviewheader2:2.0.1'
     compile 'com.jcodecraeer:xrecyclerview:1.2.7'
     compile project(':easeui')
+    compile 'com.lzy.widget:imagepicker:+'
+    compile 'top.zibin:Luban:1.0.5'
 }
