@@ -36,7 +36,7 @@
             android:drawableLeft="@mipmap/user"
             android:drawablePadding="10dp"
             android:hint="请输入您的手机号"
-            android:inputType="textPassword"
+            android:inputType="number"
             android:paddingLeft="10dp"
             android:textColor="@color/black_30"
             android:textColorHint="@color/black_60"
@@ -73,9 +73,9 @@
         android:layout_gravity="right"
         android:layout_marginRight="30dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="10dp"
-        android:onClick="onClick"
         android:clickable="true"
+        android:onClick="onClick"
+        android:padding="10dp"
         android:text="忘记密码"
         android:textColor="@color/red_30" />
 

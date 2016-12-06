@@ -9,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.android.yzd.R;
+import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
 import com.android.yzd.tools.SPUtils;
 import com.android.yzd.ui.adapter.ViewPagerAdapter;
@@ -41,7 +42,7 @@ public class WelComeActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
-
+        AppManager.getAppManager().addActivity(this);
 
         LayoutInflater inflater = getLayoutInflater();
         View guide_1 = inflater.inflate(R.layout.guide_1, null);

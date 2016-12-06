@@ -7,181 +7,87 @@ import java.io.Serializable;
  */
 
 public class UserInfoEntity implements Serializable {
-
-
     /**
-     * id : 14
-     * createTime : 2016-09-07 02:08:48
-     * modifiedTime : 2016-09-07 02:08:48
-     * userName : 18375855770
-     * nickName : 我的昵称
-     * userType :
-     * userPwd :
-     * userTel : 18375855770
-     * userEmail :
-     * userImage : 头像
-     * salt :
-     * openId :
-     * lastLoginIP : 127.0.0.1
-     * longitude :
-     * latitude :
+     * m_id : 2
+     * account : 18166485393
+     * easemob_account : 201612062139446
+     * easemob_password : 1481031593
+     * head_pic : http://yzd.txunda.com/Uploads/Member/default.png
+     * nickname : 18166485393
+     * status : 1
+     * not_read : 0
      */
 
-    private int id;
-    private String createTime;
-    private String modifiedTime;
-    private String userName;
-    private String nickName;
-    private String userType;
-    private String userPwd;
-    private String userTel;
-    private String userEmail;
-    private String userImage;
-    private String salt;
-    private String openId;
-    private String lastLoginIP;
-    private String longitude;
-    private String latitude;
+    private String m_id;
+    private String account;
+    private String easemob_account;
+    private String easemob_password;
+    private String head_pic;
+    private String nickname;
+    private String status;
+    private String not_read;
 
-
-    public int getId() {
-        return id;
+    public String getM_id() {
+        return m_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setM_id(String m_id) {
+        this.m_id = m_id;
     }
 
-    public String getCreateTime() {
-        return createTime;
+    public String getAccount() {
+        return account;
     }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
-    public String getModifiedTime() {
-        return modifiedTime;
+    public String getEasemob_account() {
+        return easemob_account;
     }
 
-    public void setModifiedTime(String modifiedTime) {
-        this.modifiedTime = modifiedTime;
+    public void setEasemob_account(String easemob_account) {
+        this.easemob_account = easemob_account;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getEasemob_password() {
+        return easemob_password;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEasemob_password(String easemob_password) {
+        this.easemob_password = easemob_password;
     }
 
-    public String getNickName() {
-        return nickName;
+    public String getHead_pic() {
+        return head_pic;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setHead_pic(String head_pic) {
+        this.head_pic = head_pic;
     }
 
-    public String getUserType() {
-        return userType;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setUserType(String userType) {
-        this.userType = userType;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public String getUserPwd() {
-        return userPwd;
+    public String getStatus() {
+        return status;
     }
 
-    public void setUserPwd(String userPwd) {
-        this.userPwd = userPwd;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getUserTel() {
-        return userTel;
+    public String getNot_read() {
+        return not_read;
     }
 
-    public void setUserTel(String userTel) {
-        this.userTel = userTel;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public String getUserImage() {
-        return userImage;
-    }
-
-    public void setUserImage(String userImage) {
-        this.userImage = userImage;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
-
-    public String getOpenId() {
-        return openId;
-    }
-
-    public void setOpenId(String openId) {
-        this.openId = openId;
-    }
-
-    public String getLastLoginIP() {
-        return lastLoginIP;
-    }
-
-    public void setLastLoginIP(String lastLoginIP) {
-        this.lastLoginIP = lastLoginIP;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    @Override
-    public String toString() {
-        return "UserInfoEntity{" +
-                "id=" + id +
-                ", createTime='" + createTime + '\'' +
-                ", modifiedTime='" + modifiedTime + '\'' +
-                ", userName='" + userName + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", userType='" + userType + '\'' +
-                ", userPwd='" + userPwd + '\'' +
-                ", userTel='" + userTel + '\'' +
-                ", userEmail='" + userEmail + '\'' +
-                ", userImage='" + userImage + '\'' +
-                ", salt='" + salt + '\'' +
-                ", openId='" + openId + '\'' +
-                ", lastLoginIP='" + lastLoginIP + '\'' +
-                ", longitude='" + longitude + '\'' +
-                ", latitude='" + latitude + '\'' +
-                '}';
+    public void setNot_read(String not_read) {
+        this.not_read = not_read;
     }
 }

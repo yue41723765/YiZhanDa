@@ -4,8 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
-
-import com.android.yzd.R;
 import com.android.yzd.ui.view.BaseDialog;
 
 import java.net.ConnectException;
@@ -27,10 +25,28 @@ public class ProgressSubscriber<T> extends Subscriber<T> implements ProgressCanc
 
     private boolean isShow = true;
 
+    //点击可取消
     public ProgressSubscriber(SubscriberOnNextListener mSubscriberOnNextListener, Context context) {
         this.mSubscriberOnNextListener = mSubscriberOnNextListener;
         this.context = context;
-        mProgressDialogHandler = new ProgressDialogHandler(context, this, isShow);
+        mProgressDialogHandler = new ProgressDialogHandler(context, this, false);
+        dialog = new BaseDialog(context);
+    }
+
+    //自定义是否取消
+    public ProgressSubscriber(SubscriberOnNextListener mSubscriberOnNextListener, Context context, boolean cancelable) {
+        this.mSubscriberOnNextListener = mSubscriberOnNextListener;
+        this.context = context;
+        mProgressDialogHandler = new ProgressDialogHandler(context, this, cancelable);
+        dialog = new BaseDialog(context);
+    }
+
+    //是否显示
+    public ProgressSubscriber(SubscriberOnNextListener mSubscriberOnNextListener, Context context, boolean cancelable, boolean isShow) {
+        this.mSubscriberOnNextListener = mSubscriberOnNextListener;
+        this.context = context;
+        if (isShow)
+            mProgressDialogHandler = new ProgressDialogHandler(context, this, cancelable);
         dialog = new BaseDialog(context);
     }
 

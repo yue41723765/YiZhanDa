@@ -26,6 +26,8 @@ public class K {
 
     public static final String PARCELABLE = "Parcelable";
 
+    public static final String DATA = "data";
+
 
     public static final int REQUEST_IMAGE = 1;
 

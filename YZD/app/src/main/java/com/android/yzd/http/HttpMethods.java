@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +16,6 @@ import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -33,10 +33,8 @@ import rx.schedulers.Schedulers;
 public class HttpMethods {
 
 
-    public static final String BASE_URL = "http://192.168.0.124:8080";
-//    public static final String BASE_URL = "http://192.168.0.110:8088";
+    public static final String BASE_URL = "http://yzd.txunda.com/";
 
-    public static final String UPLOAD_FILE = "http://101.200.81.142:8080";
 
     private static final int DEFAULT_TIMEOUT = 5;
     private Retrofit retrofit;
@@ -58,32 +56,10 @@ public class HttpMethods {
         httpService = retrofit.create(HttpService.class);
     }
 
-    private HttpMethods(String url) {
-
-        File httpCacheDirectory = new File(mContext.getCacheDir(), "image");
-        Cache cache = new Cache(httpCacheDirectory, 10 * 1024 * 1024);
-
-        OkHttpClient.Builder client = new OkHttpClient.Builder();
-        client.addNetworkInterceptor(interceptor);
-        client.cache(cache);
-        client.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
-        retrofit = new Retrofit.Builder()
-                .client(client.build())
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(url)
-                .build();
-        httpService = retrofit.create(HttpService.class);
-    }
-
 
     //在访问HttpMethods时创建单例
     private static class SingletonHolder {
         private static final HttpMethods INSTANCE = new HttpMethods(mContext);
-    }
-
-    private static class UploadSingletonHolder {
-        private static final HttpMethods INSTANCE = new HttpMethods(UPLOAD_FILE);
     }
 
 
@@ -91,11 +67,6 @@ public class HttpMethods {
     public static HttpMethods getInstance(Context context) {
         mContext = context;
         return SingletonHolder.INSTANCE;
-    }
-
-    public static HttpMethods getUploadInstance(Context context) {
-        mContext = context;
-        return UploadSingletonHolder.INSTANCE;
     }
 
 
@@ -149,14 +120,155 @@ public class HttpMethods {
 
         @Override
         public T call(HttpResult<T> httpResult) {
-            if (httpResult.getStatus().equals("F")) {
-                throw new ApiException(httpResult.getMsg());
+            if (httpResult.getFlag().equals("error")) {
+                throw new ApiException(httpResult.getMessage());
             }
             return httpResult.getData();
         }
     }
 
 
+    /**
+     * 获取验证码
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void sendVerify(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.sendVerify(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
 
+    /**
+     * 验证验证码
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void checkVerify(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.checkVerify(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 土可拉注册协议
+     *
+     * @param subscriber
+     */
+    public void userRegAgr(Subscriber<HttpResult> subscriber) {
+        Observable observable = httpService.userRegAgr(new HashMap<String, String>())
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 注册
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void register(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.register(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 忘记密码
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void forgetPassword(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.forgetPassword(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 登陆
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void login(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.login(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void modifyPassword(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.modifyPassword(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 个人中心
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void memberCenter(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.memberCenter(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 绑定手机号
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void modifyAccount(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.modifyAccount(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 用户资料
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void memberBaseData(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.memberBaseData(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 修改个人资料
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void modifyMemberBaseData(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.modifyMemberBaseData(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 优惠券列表
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void couponList(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.couponList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
 
 }

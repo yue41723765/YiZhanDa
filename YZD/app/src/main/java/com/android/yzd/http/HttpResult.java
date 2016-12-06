@@ -6,24 +6,26 @@ package com.android.yzd.http;
 
 public class HttpResult<T> {
 
-    private String status;
-    private String msg;
+
+    private String flag;
+    private String message;
     private T data;
 
-    public String getStatus() {
-        return status;
+
+    public String getFlag() {
+        return flag;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public T getData() {
@@ -32,5 +34,14 @@ public class HttpResult<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "HttpResult{" +
+                "flag='" + flag + '\'' +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
     }
 }
