@@ -3,6 +3,7 @@ package com.android.yzd.http;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.android.yzd.tools.L;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -121,6 +122,9 @@ public class HttpMethods {
 
         @Override
         public T call(HttpResult<T> httpResult) {
+            L.i(httpResult.toString());
+            if (httpResult.getMessage().equals("暂无优惠券"))
+                return httpResult.getData();
             if (httpResult.getFlag().equals("error")) {
                 throw new ApiException(httpResult.getMessage());
             }
@@ -268,6 +272,242 @@ public class HttpMethods {
      */
     public void couponList(Subscriber<HttpResult> subscriber, Map<String, String> param) {
         Observable observable = httpService.couponList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //地址模块
+
+    /**
+     * 新增收货地址
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void addAddress(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.addAddress(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 收货地址列表
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void addressList(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.addressList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 收货地址详情
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void addressInfo(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.addressInfo(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 编辑收货地址
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void modifyAddress(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.modifyAddress(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 设置默认收货地址
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void setDefaultAddress(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.setDefaultAddress(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 删除收货地址
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void deleteAddress(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.deleteAddress(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 获取一条收货地址
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void getOneAddress(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.getOneAddress(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //消息模块
+
+    /**
+     * 信息首页
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void messageIndex(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.messageIndex(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 系统消息列表
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void systemMessageList(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.systemMessageList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 系统消息详情
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void systemMessageInfo(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.systemMessageInfo(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 订单提醒列表
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void orderNoticeList(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.orderNoticeList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 首页商品
+     *
+     * @param subscriber
+     * @param param
+     */
+    public void index(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.index(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 热门
+     *
+     * @param subscriber
+     */
+    public void hotSearch(Subscriber<HttpResult> subscriber) {
+        Observable observable = httpService.hotSearch(new HashMap<String, String>())
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 商品分类列表
+     *
+     * @param subscriber
+     */
+    public void goodsTypeList(Subscriber<HttpResult> subscriber) {
+        Observable observable = httpService.goodsTypeList(new HashMap<String, String>())
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 搜索
+     *
+     * @param subscriber
+     */
+    public void searchResult(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.searchResult(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 热销
+     *
+     * @param subscriber
+     */
+    public void hotSalesList(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.hotSalesList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 商品列表
+     *
+     * @param subscriber
+     */
+    public void goodsList(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.goodsList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 商品详情
+     *
+     * @param subscriber
+     */
+    public void goodsInfo(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.goodsInfo(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 新增收藏
+     *
+     * @param subscriber
+     */
+    public void addCollect(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.addCollect(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 删除收藏
+     *
+     * @param subscriber
+     */
+    public void deleteCollect(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.deleteCollect(param)
                 .map(new HttpResultFunc());
         toSubscribe(observable, subscriber);
     }

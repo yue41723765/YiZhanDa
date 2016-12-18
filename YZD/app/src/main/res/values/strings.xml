@@ -8,8 +8,8 @@
 
 
     <string name="home_hot">热销产品</string>
-    <string name="home_recommend">最新推荐</string>
-    <string name="home_favorable">价格优惠</string>
+    <string name="home_recommend">全部分类</string>
+    <string name="home_favorable">订单管理</string>
     <string name="home_integral">积分商城</string>
     <string name="home_title_1">本周推荐</string>
     <string name="home_title_2">好货优选</string>

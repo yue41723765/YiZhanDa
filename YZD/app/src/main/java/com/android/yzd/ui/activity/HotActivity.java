@@ -1,5 +1,6 @@
 package com.android.yzd.ui.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -9,7 +10,6 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
@@ -17,11 +17,16 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.android.yzd.R;
+import com.android.yzd.been.GoodsInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
-import com.android.yzd.ui.adapter.HotAdapter;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
+import com.google.gson.reflect.TypeToken;
+import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
@@ -33,6 +38,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by Administrator on 2016/10/3 0003.
@@ -41,7 +47,8 @@ public class HotActivity extends BaseActivity {
 
     @BindView(R.id.titleBar_title)
     TextView title;
-
+    @BindView(R.id.titleBar_right_image)
+    ImageView right_img;
     @BindView(R.id.hot_show_type)
     ImageView hotShowType;
     @BindView(R.id.label)
@@ -78,12 +85,18 @@ public class HotActivity extends BaseActivity {
 
     CommonAdapter popupAdapter;
     int status = 1;//显示风格1  显示风格2两种
-    int showStatus;
+    int showStatus = 1;
     int classityStatus = 1;//1---热销(默认) 2----最新 3----优惠
     int sortRankStatus = 1;//1---智能(默认) 2----人气 3----价格
 
+    int lastVisibleItem = -1;
+
 
     Map<Integer, Boolean> isCheck = new HashMap<>();
+    int p = 1;
+    List<GoodsInfoEntity> hotEntity = new ArrayList<>();
+    @BindView(R.id.empty)
+    ImageView empty;
 
     @Override
     public int getContentViewId() {
@@ -92,15 +105,15 @@ public class HotActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
-
-
+        AppManager.getAppManager().addActivity(this);
+        setAdapter(hotEntity);
         init();
-
+        getHotData();
         status = getIntent().getExtras().getInt(K.TITLE);
         switch (status) {
             case 1:
                 popup_hot.setChecked(true);
-                title.setText("热销分类");
+                title.setText("热销产品");
                 break;
             case 2:
                 popup_new.setChecked(true);
@@ -113,55 +126,99 @@ public class HotActivity extends BaseActivity {
         }
 
 
-        List<String> list = new ArrayList<>();
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
+//        popupAdapter = new CommonAdapter<String>(this, R.layout.item_hot_popup, list) {
+//
+//            @Override
+//            protected void convert(ViewHolder holder, String s, int position) {
+//                CheckBox checkBox = holder.getView(R.id.hot_classify);
+//                checkBox.setText("分类" + position);
+//                checkBox.setChecked(isCheck.get(position));
+//            }
+//        };
+//
+//        popupAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+//                for (int i = 0; i < isCheck.size(); i++) {
+//                    isCheck.put(i, false);
+//                }
+//                isCheck.put(position, true);
+//                popupAdapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+//                return false;
+//            }
+//        });
+//        classityRecycler.setAdapter(popupAdapter);
 
-        for (int i = 0; i < list.size(); i++) {
-            isCheck.put(i, false);
-        }
 
-        adapter1 = new CommonAdapter<String>(this, R.layout.item_hot_1, list) {
+    }
+
+
+    private void getHotData() {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                if (p == 1)
+                    hotEntity.clear();
+                List<GoodsInfoEntity> list = gson.fromJson(gson.toJson(o), new TypeToken<List<GoodsInfoEntity>>() {
+                }.getType());
+                hotEntity.addAll(list);
+                adapter1.notifyDataSetChanged();
+                adapter2.notifyDataSetChanged();
+
+                if (hotEntity.size() == 0) {
+                    empty.setVisibility(View.VISIBLE);
+                    hotRecycler1.setVisibility(View.GONE);
+                    hotRecycler2.setVisibility(View.GONE);
+                } else {
+                    empty.setVisibility(View.GONE);
+                    if (showStatus == 1) {
+                        hotRecycler1.setVisibility(View.VISIBLE);
+                    } else {
+                        hotRecycler2.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        httpParamet.addParameter("p", p + "");
+        HttpMethods.getInstance(this).hotSalesList(progressSubscriber, httpParamet.bulider());
+    }
+
+    private void setAdapter(final List<GoodsInfoEntity> hotEntity) {
+
+        adapter1 = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_1, hotEntity) {
 
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-
+            protected void convert(ViewHolder holder, GoodsInfoEntity s, int position) {
+                Picasso.with(HotActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_image));
+                holder.setText(R.id.hot_title, s.getGoods_name());
+                holder.setText(R.id.hot_price, "￥" + s.getGoods_price());
+                holder.setText(R.id.hot_number, s.getSales() + "人付款");
             }
         };
         hotRecycler1.setAdapter(adapter1);
-        adapter2 = new CommonAdapter<String>(this, R.layout.item_hot_2, list) {
+        adapter2 = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_2, hotEntity) {
 
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-
+            protected void convert(ViewHolder holder, GoodsInfoEntity s, int position) {
+                Picasso.with(HotActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_2_image));
+                holder.setText(R.id.hot_2_title, s.getGoods_name());
+                holder.setText(R.id.hot_2_price, "￥" + s.getGoods_price());
+                holder.setText(R.id.hot_2_number, s.getSales() + "人付款");
             }
         };
         hotRecycler2.setAdapter(adapter2);
 
-
-        popupAdapter = new CommonAdapter<String>(this, R.layout.item_hot_popup, list) {
-
-            @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                CheckBox checkBox = holder.getView(R.id.hot_classify);
-                checkBox.setText("分类" + position);
-                checkBox.setChecked(isCheck.get(position));
-            }
-        };
-
-        popupAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+        adapter1.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                for (int i = 0; i < isCheck.size(); i++) {
-                    isCheck.put(i, false);
-                }
-                isCheck.put(position, true);
-                popupAdapter.notifyDataSetChanged();
+                intent = new Intent(HotActivity.this, DetailsActivity.class);
+                intent.putExtra(K.GOODS_ID, hotEntity.get(position).getGoods_id());
+                startActivity(intent);
             }
 
             @Override
@@ -169,9 +226,19 @@ public class HotActivity extends BaseActivity {
                 return false;
             }
         });
-        classityRecycler.setAdapter(popupAdapter);
+        adapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                intent = new Intent(HotActivity.this, DetailsActivity.class);
+                intent.putExtra(K.GOODS_ID, hotEntity.get(position).getGoods_id());
+                startActivity(intent);
+            }
 
-
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
     }
 
     private void init() {
@@ -200,14 +267,53 @@ public class HotActivity extends BaseActivity {
                 hotScreenFiltrate.setChecked(false);
             }
         });
+
         //风格一
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(OrientationHelper.VERTICAL);
         hotRecycler1.setLayoutManager(layoutManager);
+
+        hotRecycler1.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        && lastVisibleItem + 1 == adapter1.getItemCount()) {
+                    p++;
+                    getHotData();
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            }
+        });
+
         //风格二
-        GridLayoutManager gridManager = new GridLayoutManager(this, 2);
+        final GridLayoutManager gridManager = new GridLayoutManager(this, 2);
         hotRecycler2.setLayoutManager(gridManager);
         hotRecycler2.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, getResources().getColor(R.color.background), 10, 0, 0));
+
+        hotRecycler2.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        && lastVisibleItem + 1 == adapter2.getItemCount()) {
+                    p++;
+                    getHotData();
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = gridManager.findLastVisibleItemPosition();
+            }
+        });
+
 
         GridLayoutManager pupupGridManager = new GridLayoutManager(this, 4);
         classityRecycler.setLayoutManager(pupupGridManager);
@@ -222,24 +328,27 @@ public class HotActivity extends BaseActivity {
         popupWindow.showAsDropDown(label, 0, 0);
     }
 
-    @Override
+    @OnClick({R.id.titleBar_right_image})
     public void onClick(View v) {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.titleBar_right_image:
-                break;
-            case R.id.hot_show_type:
+
                 if (showStatus == 1) {
                     showStatus = 2;
-                    hotShowType.setImageResource(R.mipmap.list_black);
+                    right_img.setImageResource(R.mipmap.list_black);
                     hotRecycler1.setVisibility(View.GONE);
                     hotRecycler2.setVisibility(View.VISIBLE);
                 } else {
                     showStatus = 1;
-                    hotShowType.setImageResource(R.mipmap.show_black);
+                    right_img.setImageResource(R.mipmap.show_black);
                     hotRecycler1.setVisibility(View.VISIBLE);
                     hotRecycler2.setVisibility(View.GONE);
                 }
+
+                break;
+            case R.id.hot_show_type:
+
                 break;
             case R.id.hot_type:
                 showPopup(view1);

@@ -1,24 +1,32 @@
 package com.android.yzd.ui.activity;
 
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.android.yzd.R;
+import com.android.yzd.been.CouponEntity;
+import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.AppManager;
+import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
+import com.android.yzd.tools.U;
 import com.android.yzd.ui.custom.BaseActivity;
+import com.google.gson.reflect.TypeToken;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Administrator on 2016/10/2 0002.
@@ -32,6 +40,12 @@ public class DiscountCouponActivity extends BaseActivity {
 
     CommonAdapter adapter;
 
+    int p = 1;
+    UserInfoEntity userInfo;
+
+    List<CouponEntity> couponList = new ArrayList<>();
+    int lastVisibleItem = -1;
+
     @Override
     public int getContentViewId() {
         return R.layout.activity_discount_coupon;
@@ -39,65 +53,85 @@ public class DiscountCouponActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
+        AppManager.getAppManager().addActivity(this);
+        userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
+        getData();
+
+        initList();
         discountCouponRecycler.setVisibility(View.VISIBLE);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+
+    }
+
+    private void initList() {
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
         discountCouponRecycler.setLayoutManager(linearLayoutManager);
-
-        List<String> list = new ArrayList<>();
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        adapter = new CommonAdapter<String>(this, R.layout.item_coupon, list) {
-
-            ImageView coupon_top;
-            TextView title;
-            TextView coupon_validity;
-            TextView coupon_price_title;
-            TextView coupon_price;
-            TextView coupon_full;
-            TextView coupon_user;
-            ImageView coupon_status;
-
-
-
+        discountCouponRecycler.setItemAnimator(new DefaultItemAnimator());
+        adapter = new CommonAdapter<CouponEntity>(this, R.layout.item_coupon, couponList) {
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                coupon_top = holder.getView(R.id.coupon_top);
-                title = holder.getView(R.id.coupon_name);
-                coupon_validity = holder.getView(R.id.coupon_validity);
-                coupon_price_title = holder.getView(R.id.coupon_price_title);
-                coupon_price = holder.getView(R.id.coupon_price);
-                coupon_full = holder.getView(R.id.coupon_full);
-                coupon_user = holder.getView(R.id.coupon_user);
-                coupon_status = holder.getView(R.id.coupon_status);
-                if (position == 3) {
+            protected void convert(ViewHolder holder, CouponEntity entity, int position) {
+                holder.setText(R.id.coupon_name, entity.getTitle());
+                holder.setText(R.id.coupon_validity, "有效期至：" + U.timeStampToStr_(entity.getEnd_time()));
+                holder.setText(R.id.coupon_price, entity.getValue());
+                holder.setText(R.id.coupon_full, entity.getCondition());
+                holder.setText(R.id.coupon_user, "仅限" + entity.getAccount() + "使用");
 
-                    coupon_top.setImageResource(R.mipmap.coupon_top_2);
-                    coupon_status.setVisibility(View.VISIBLE);
-                    title.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_validity.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_price_title.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_price.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_full.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_user.setTextColor(getResources().getColor(R.color.black_90));
-                }
-                if (position == 4) {
-                    coupon_top.setImageResource(R.mipmap.coupon_top_2);
-                    coupon_status.setVisibility(View.VISIBLE);
-                    coupon_status.setImageResource(R.mipmap.have_expired);
-                    title.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_validity.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_price_title.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_price.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_full.setTextColor(getResources().getColor(R.color.black_90));
-                    coupon_user.setTextColor(getResources().getColor(R.color.black_90));
+                long end_time = Long.valueOf(entity.getEnd_time());
+                Date date = new Date();
+                if (end_time < date.getTime()) {
+                    holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
+                    holder.setVisible(R.id.coupon_status, true);
+                    holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
+                    holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
+                    holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
+                    holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
+                    holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
+                    holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
                 }
             }
         };
         discountCouponRecycler.setAdapter(adapter);
+
+
+        discountCouponRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        && lastVisibleItem + 1 == adapter.getItemCount()) {
+                    p++;
+                    getData();
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+            }
+        });
+    }
+
+
+    private void getData() {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                List<CouponEntity> list = gson.fromJson(gson.toJson(o), new TypeToken<List<CouponEntity>>() {
+                }.getType());
+                couponList.addAll(list);
+                adapter.notifyDataSetChanged();
+                if (list.size() == 0) {
+                    notDiscountCoupon.setVisibility(View.VISIBLE);
+                }
+
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        params.clear();
+        params.put("m_id", userInfo.getM_id());
+        params.put("p", p + "");
+        HttpMethods.getInstance(this).couponList(progressSubscriber, params);
     }
 
 }

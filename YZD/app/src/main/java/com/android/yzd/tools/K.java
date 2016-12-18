@@ -23,6 +23,9 @@ public class K {
     public static final String USERINFO = "userinfo";
     public static final String COOKIE = "cookie";//保存cookie
     public static final String HEAD = "head_image";
+    public static final String HISTORY = "history";//历史记录
+    public static final String GOODS_ID = "goods_id";//商品id
+    public static final String SEC_TYPE_ID = "sec_type_id";//二级分类id
 
     public static final String PARCELABLE = "Parcelable";
 

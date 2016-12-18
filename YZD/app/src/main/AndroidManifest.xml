@@ -54,6 +54,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.ClassitySearchActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.DetailsActivity"
@@ -133,6 +134,12 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.Register2Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.OrderMessageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.MessageActivity"
             android:screenOrientation="portrait" />
     </application>
 

@@ -10,8 +10,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="10dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/classify_1" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/hot_title"

@@ -6,20 +6,27 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 
 import com.android.yzd.R;
+import com.android.yzd.been.GoodsInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.DensityUtils;
+import com.android.yzd.tools.K;
 import com.android.yzd.ui.custom.BaseActivity;
-import com.android.yzd.ui.view.MyItemDecoration;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
@@ -38,85 +45,161 @@ import butterknife.ButterKnife;
  */
 public class ClassitySearchActivity extends BaseActivity {
 
-    @BindView(R.id.edit)
-    EditText edit;
+    @BindView(R.id.back)
+    ImageView back;
+    @BindView(R.id.search_show)
+    ImageView searchShow;
+    @BindView(R.id.classify_search)
+    RelativeLayout classifySearch;
+    @BindView(R.id.synthesize)
+    RadioButton synthesize;
+    @BindView(R.id.sales_volume)
+    RadioButton salesVolume;
     @BindView(R.id.price)
     RadioButton price;
-    @BindView(R.id.search_recycler)
-    RecyclerView searchRecycler;
-
-    int price_status = 0;
-
-    CommonAdapter adapter;
-    List<String> list = new ArrayList<>();
+    @BindView(R.id.screen)
+    RadioButton screen;
+    @BindView(R.id.hot_recycler_1)
+    RecyclerView hotRecycler1;
+    @BindView(R.id.hot_recycler_2)
+    RecyclerView hotRecycler2;
+    @BindView(R.id.empty)
+    ImageView empty;
     @BindView(R.id.start_price)
     EditText startPrice;
     @BindView(R.id.end_price)
     EditText endPrice;
     @BindView(R.id.hot_recycler)
     RecyclerView hotRecycler;
-
-    CommonAdapter popupAdapter;
-    Map<Integer, Boolean> isCheck = new HashMap<>();
+    @BindView(R.id.popup_3_clear)
+    Button popup3Clear;
+    @BindView(R.id.popup_3_sure)
+    Button popup3Sure;
     @BindView(R.id.search_drawer)
     DrawerLayout searchDrawer;
+
+    int price_status = 0;
+    CommonAdapter adapter_1;
+    CommonAdapter adapter_2;
+    CommonAdapter popupAdapter;
+    Map<Integer, Boolean> isCheck = new HashMap<>();
+    String sec_type_id;
+    int sort = 1;//1综合排序，2销量排序;3价格升序；4价格降序；
+
+    float d_price = 0;
+    float h_price = 0;
+
+    int lastVisibleItem = -1;
+    int p = 1;
+    List<GoodsInfoEntity> goodsList = new ArrayList<>();
+    boolean isData = true;
 
     @Override
     public int getContentViewId() {
         return R.layout.activity_classity_search;
     }
 
+
+    private void getListData() {
+        if (isData) {
+            SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+                @Override
+                public void onNext(Object o) {
+                    if (p == 1)
+                        goodsList.clear();
+                    List<GoodsInfoEntity> list = gson.fromJson(gson.toJson(o), new TypeToken<List<GoodsInfoEntity>>() {
+                    }.getType());
+                    if (list.size() == 0)
+                        isData = false;
+                    goodsList.addAll(list);
+                    adapter_1.notifyDataSetChanged();
+                }
+            };
+            setProgressSubscriber(onNextListener);
+            httpParamet.addParameter("sec_type_id", sec_type_id);
+            httpParamet.addParameter("sort", sort + "");
+            httpParamet.addParameter("d_price", d_price == 0 ? "" : "" + d_price);
+            httpParamet.addParameter("h_price", h_price == 0 ? "" : "" + h_price);
+            httpParamet.addParameter("p", p + "");
+            HttpMethods.getInstance(this).goodsList(progressSubscriber, httpParamet.bulider());
+        }
+
+    }
+
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
 
-        list.add("http://pic31.nipic.com/20130710/12425116_114805479333_2.jpg");
-        list.add("http://img5.imgtn.bdimg.com/it/u=712109773,2660893576&fm=21&gp=0.jpg");
-        list.add("http://img3.imgtn.bdimg.com/it/u=1044444211,2572483856&fm=21&gp=0.jpg");
-        list.add("http://img3.imgtn.bdimg.com/it/u=483858826,2272895723&fm=21&gp=0.jpg");
-        list.add("http://img3.imgtn.bdimg.com/it/u=4071608181,27029970&fm=21&gp=0.jpg");
-        list.add("http://img0.imgtn.bdimg.com/it/u=1887652557,2285785299&fm=21&gp=0.jpg");
-        list.add("http://img1.imgtn.bdimg.com/it/u=762511538,651924239&fm=21&gp=0.jpg");
-        list.add("http://img4.imgtn.bdimg.com/it/u=2968956529,3618979033&fm=21&gp=0.jpg");
+        sec_type_id = getIntent().getExtras().getString(K.SEC_TYPE_ID);
 
-        for (int i = 0; i < list.size(); i++) {
-            isCheck.put(i, false);
-        }
-
+        //模式一
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        searchRecycler.setLayoutManager(gridLayoutManager);
-        searchRecycler.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, getResources().getColor(R.color.background), 10, 0, 0));
+        hotRecycler1.setLayoutManager(gridLayoutManager);
+        hotRecycler1.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, getResources().getColor(R.color.background), 10, 0, 0));
+        //模式二
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(OrientationHelper.VERTICAL);
+        hotRecycler2.setLayoutManager(manager);
+        hotRecycler2.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_HORIZONTAL, getResources().getColor(R.color.background), 10, 0, 0));
 
-        adapter = new CommonAdapter<String>(this, R.layout.item_hot_2, list) {
-
-            @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                Picasso.with(ClassitySearchActivity.this).load(s).into((ImageView) holder.getView(R.id.hot_2_image));
-            }
-        };
-        adapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                intent = new Intent(ClassitySearchActivity.this, DetailsActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
-                return false;
-            }
-        });
-        searchRecycler.setAdapter(adapter);
-
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        //热门
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         hotRecycler.setLayoutManager(layoutManager);
         hotRecycler.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, Color.WHITE, DensityUtils.dp2px(this, 10), 0, 0));
-        popupAdapter = new CommonAdapter<String>(this, R.layout.item_hot_popup, list) {
+
+
+        hotRecycler1.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        && lastVisibleItem + 1 == adapter_1.getItemCount()) {
+                    p++;
+                    getListData();
+                }
+            }
 
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            }
+        });
+
+        hotRecycler2.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        && lastVisibleItem + 1 == adapter_2.getItemCount()) {
+                    p++;
+                    getListData();
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            }
+        });
+
+        setAdapter();
+        setHotAdapter();
+        getListData();
+
+    }
+
+    private void setHotAdapter() {
+
+        popupAdapter = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_popup, goodsList) {
+
+            @Override
+            protected void convert(ViewHolder holder, GoodsInfoEntity s, int position) {
                 CheckBox checkBox = holder.getView(R.id.hot_classify);
                 checkBox.setBackgroundResource(R.drawable.check_blue90_blue);
                 checkBox.setText("分类" + position);
+                if (isCheck.get(position) == null)
+                    isCheck.put(position, false);
                 checkBox.setChecked(isCheck.get(position));
             }
         };
@@ -138,6 +221,61 @@ public class ClassitySearchActivity extends BaseActivity {
         hotRecycler.setAdapter(popupAdapter);
     }
 
+    private void setAdapter() {
+        adapter_1 = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_2, goodsList) {
+
+            @Override
+            protected void convert(ViewHolder holder, GoodsInfoEntity s, int position) {
+                Picasso.with(ClassitySearchActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_2_image));
+                holder.setText(R.id.hot_2_title, s.getGoods_name());
+                holder.setText(R.id.hot_2_price, "￥" + s.getGoods_price());
+                holder.setText(R.id.hot_2_number, s.getSales() + "人付款");
+            }
+        };
+        adapter_1.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                intent = new Intent(ClassitySearchActivity.this, DetailsActivity.class);
+                intent.putExtra(K.GOODS_ID, goodsList.get(position).getGoods_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
+        hotRecycler1.setAdapter(adapter_1);
+
+        adapter_2 = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_1, goodsList) {
+
+            @Override
+            protected void convert(ViewHolder holder, GoodsInfoEntity goodsInfoEntity, int position) {
+                Picasso.with(ClassitySearchActivity.this).load(goodsInfoEntity.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_image));
+                holder.setText(R.id.hot_title, goodsInfoEntity.getGoods_name());
+                holder.setText(R.id.hot_price, "￥" + goodsInfoEntity.getGoods_price());
+                holder.setText(R.id.hot_number, goodsInfoEntity.getSales() + "人付款");
+
+            }
+        };
+        adapter_2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                intent = new Intent(ClassitySearchActivity.this, DetailsActivity.class);
+                intent.putExtra(K.GOODS_ID, goodsList.get(position).getGoods_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
+        hotRecycler2.setAdapter(adapter_2);
+    }
+
+    int showStatus = 1;
+
     @Override
     public void onClick(View v) {
         super.onClick(v);
@@ -145,7 +283,42 @@ public class ClassitySearchActivity extends BaseActivity {
             case R.id.back:
                 finish();
                 break;
+            case R.id.synthesize:
+                p = 1;
+                sort = 1;
+                getListData();
+                break;
+            case R.id.sales_volume:
+                p = 1;
+                sort = 2;
+                getListData();
+                break;
+
+            case R.id.classify_search:
+                intent = new Intent(this, HomeSearchActivity.class);
+                startActivity(intent);
+                break;
             case R.id.search_show:
+                if (showStatus == 1) {
+                    showStatus = 2;
+                    searchShow.setImageResource(R.mipmap.show_black);
+                    hotRecycler1.setVisibility(View.GONE);
+                    hotRecycler2.setVisibility(View.VISIBLE);
+                    //升序
+                    p = 1;
+                    sort = 3;
+                    getListData();
+                } else {
+                    showStatus = 1;
+                    searchShow.setImageResource(R.mipmap.list_black);
+                    hotRecycler1.setVisibility(View.VISIBLE);
+                    hotRecycler2.setVisibility(View.GONE);
+                    p = 1;
+                    sort = 4;
+                    getListData();
+                }
+                break;
+            case R.id.screen:
                 searchDrawer.openDrawer(Gravity.RIGHT);
                 break;
             case R.id.price:
@@ -162,6 +335,18 @@ public class ClassitySearchActivity extends BaseActivity {
                     price.setCompoundDrawables(null, null, drawable, null);
 
                 }
+                break;
+            case R.id.popup_3_sure:
+                String start = startPrice.getText().toString();
+                String end = endPrice.getText().toString();
+                d_price = Float.valueOf(start.equals("") ? "0" : start);
+                h_price = Float.valueOf(end.equals("") ? "0" : end);
+                getListData();
+                searchDrawer.closeDrawer(Gravity.RIGHT);
+                break;
+            case R.id.popup_3_clear:
+                startPrice.setText("");
+                endPrice.setText("");
                 break;
 
         }

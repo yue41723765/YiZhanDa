@@ -1,24 +1,28 @@
 package com.android.yzd.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.yzd.R;
+import com.android.yzd.been.SystemMessageEntity;
+import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.ProgressSubscriber;
+import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
+import com.android.yzd.tools.StatusBarUtil;
 import com.android.yzd.ui.custom.BaseActivity;
-import com.android.yzd.ui.view.MyItemDecoration;
-import com.squareup.picasso.Picasso;
-import com.zhy.adapter.recyclerview.CommonAdapter;
-import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
-import com.zhy.adapter.recyclerview.base.ViewHolder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,73 +32,146 @@ import butterknife.ButterKnife;
  */
 public class MessageManagerActivity extends BaseActivity {
 
-    @BindView(R.id.message_recycler)
-    RecyclerView messageRecycler;
+    SubscriberOnNextListener messageOnNextListener;
+    ProgressSubscriber progressSubscriber;
+    Map<String, String> params = new HashMap<>();
+    UserInfoEntity userInfo;
 
-
-    CommonAdapter adapter;
+    @BindView(R.id.service_image)
+    ImageView serviceImage;
+    @BindView(R.id.service_number)
+    TextView serviceNumber;
+    @BindView(R.id.service_title)
+    TextView serviceTitle;
+    @BindView(R.id.service_content)
+    TextView serviceContent;
+    @BindView(R.id.service_data)
+    TextView serviceData;
+    @BindView(R.id.service_message)
+    RelativeLayout serviceMessage;
+    @BindView(R.id.system_image)
+    ImageView systemImage;
+    @BindView(R.id.system_number)
+    TextView systemNumber;
+    @BindView(R.id.system_title)
+    TextView systemTitle;
+    @BindView(R.id.system_content)
+    TextView systemContent;
+    @BindView(R.id.system_data)
+    TextView systemData;
+    @BindView(R.id.system_message)
+    RelativeLayout systemMessage;
+    @BindView(R.id.order_image)
+    ImageView orderImage;
+    @BindView(R.id.order_number)
+    TextView orderNumber;
+    @BindView(R.id.order_title)
+    TextView orderTitle;
+    @BindView(R.id.message_content)
+    TextView messageContent;
+    @BindView(R.id.order_data)
+    TextView orderData;
+    @BindView(R.id.order_message)
+    RelativeLayout orderMessage;
 
     @Override
     public int getContentViewId() {
         return R.layout.activity_message_manage;
     }
 
+
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
-        messageRecycler.setLayoutManager(linearLayoutManager);
-        messageRecycler.addItemDecoration(new MyItemDecoration(OrientationHelper.VERTICAL, getResources().getDrawable(R.color.background_2), 1));
+        AppManager.getAppManager().addActivity(this);
+
+        userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
+        setServiceMessage();
+
+    }
 
 
-        final List<String> list = new ArrayList<>();
-        list.add("一站达客服");
-        list.add("系统消息");
-        list.add("订单消息");
+    @Override
+    public void onClick(View v) {
+        super.onClick(v);
+        switch (v.getId()) {
+            case R.id.service_message:
+                intent = new Intent(MessageManagerActivity.this, MessageActivity.class);
+                intent.putExtra("nameNick", "土坷垃客服");
+                intent.putExtra("ecId", messageEntity.getService_account());
+                intent.putExtra("yourHead", messageEntity.getService_logo());
+                intent.putExtra("myHead", userInfo.getHead_pic());
+                startActivity(intent);
+                break;
+            case R.id.system_message:
+                intent = new Intent(MessageManagerActivity.this, SystemMessageActivity.class);
+                intent.putExtra("receiver_type", "3");
+                startActivity(intent);
+                SPUtils.put(this, "sysNumber", sys_num);
+                break;
+            case R.id.order_message:
+                intent = new Intent(MessageManagerActivity.this, OrderMessageActivity.class);
+                intent.putExtra("receiver_type", "3");
+                startActivity(intent);
+                SPUtils.put(this, "OrderNumber", order_num);
+                break;
+        }
+    }
 
-        adapter = new CommonAdapter<String>(this, R.layout.item_message, list) {
+    SystemMessageEntity messageEntity;
 
+    //系统消息
+    private void setServiceMessage() {
+        messageOnNextListener = new SubscriberOnNextListener() {
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                holder.setText(R.id.message_title, s);
-                switch (position) {
-                    case 0:
-                        Picasso.with(MessageManagerActivity.this).load(R.mipmap.message_service).into((ImageView) holder.getView(R.id.message_image));
-                        break;
-                    case 1:
-                        Picasso.with(MessageManagerActivity.this).load(R.mipmap.message).into((ImageView) holder.getView(R.id.message_image));
-                        break;
-                    case 2:
-                        Picasso.with(MessageManagerActivity.this).load(R.mipmap.message_order).into((ImageView) holder.getView(R.id.message_image));
-                        break;
-                }
+            public void onNext(Object o) {
+                messageEntity = gson.fromJson(gson.toJson(o), SystemMessageEntity.class);
+                showUi(messageEntity);
             }
         };
-        adapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-
-                if (list.get(position).equals("系统消息")) {
-                    intent = new Intent(MessageManagerActivity.this, SystemMessageActivity.class);
-                    startActivity(intent);
-                }
-                if (list.get(position).equals("订单提示")) {
-                }
-
-            }
-
-            @Override
-            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
-                return false;
-            }
-        });
-        messageRecycler.setAdapter(adapter);
+        setProgressSubscriber(messageOnNextListener);
+        params.clear();
+        params.put("m_id", userInfo.getM_id());
+        HttpMethods.getInstance(this).messageIndex(progressSubscriber, params);
     }
+
+    int sys_num;
+    int order_num;
+
+    private void showUi(SystemMessageEntity messageEntity) {
+
+//        Picasso.with(this).load(messageEntity.getCustomer_head_pic()).into(serviceImage);
+        sys_num = Integer.valueOf(messageEntity.getSystem_count());
+        int msysNumber = (int) SPUtils.get(this, "sysNumber", 0);
+        if (sys_num != msysNumber) {
+            systemNumber.setVisibility(View.VISIBLE);
+            systemNumber.setText(sys_num + "");
+        }
+        systemContent.setText(messageEntity.getSystem_title());
+        systemData.setText(messageEntity.getSystem_time());
+        order_num = Integer.valueOf(messageEntity.getNotice_count());
+        int OrderNumber = (int) SPUtils.get(this, "OrderNumber", 0);
+        if (order_num != OrderNumber) {
+            orderNumber.setVisibility(View.VISIBLE);
+            orderNumber.setText(order_num + "");
+        }
+
+        systemContent.setText(messageEntity.getNotice_title());
+        messageContent.setText(messageEntity.getNotice_title());
+    }
+
+
+    public void setProgressSubscriber(SubscriberOnNextListener listener) {
+        progressSubscriber = new ProgressSubscriber(listener, this, false, false);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(Color.WHITE);
+            StatusBarUtil.StatusBarLightMode(this);
+        }
         ButterKnife.bind(this);
     }
 }

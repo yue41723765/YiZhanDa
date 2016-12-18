@@ -1,10 +1,11 @@
 package com.android.yzd.tools;
 
 import android.app.Activity;
-import android.content.Context;
-import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,5 +38,50 @@ public class U {
         WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
         lp.alpha = alphe;
         activity.getWindow().setAttributes(lp);
+    }
+
+
+    /**
+     * 时间戳转为字符串 yyyy-MM-dd HH:mm:ss
+     *
+     * @param timestamp
+     * @return
+     */
+    public static String timeStampToStr_(String timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        long lcc_time = Long.valueOf(timestamp);
+        String re_StrTime = sdf.format(new Date(lcc_time * 1000L));
+        return re_StrTime;
+    }
+
+    /**
+     * 时间戳转为字符串 yyyy-MM-dd HH:mm:ss
+     *
+     * @param timestamp
+     * @return
+     */
+    public static String timeStampToStrDMY(long timestamp) {
+//
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        return String.format(sdf.format(new Date(timestamp)), calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
+    }
+
+    /**
+     * 时间戳转为字符串 yyyy-MM-dd HH:mm:ss
+     *
+     * @param timestamp
+     * @return
+     */
+    public static String timeStampToStr(String timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long lcc_time = Long.valueOf(timestamp);
+        String re_StrTime = sdf.format(new Date(lcc_time * 1000L));
+        return re_StrTime;
     }
 }

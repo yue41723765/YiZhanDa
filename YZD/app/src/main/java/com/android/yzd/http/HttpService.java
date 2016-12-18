@@ -67,5 +67,87 @@ public interface HttpService {
     @POST("index.php/Api/Member/couponList")
     Observable<HttpResult> couponList(@FieldMap Map<String, String> param);
 
+    //地址模块
 
+    @FormUrlEncoded
+    @POST("index.php/Api/Address/addAddress")
+    Observable<HttpResult> addAddress(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Address/addressList")
+    Observable<HttpResult> addressList(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Address/addressInfo")
+    Observable<HttpResult> addressInfo(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Address/modifyAddress")
+    Observable<HttpResult> modifyAddress(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Address/setDefaultAddress")
+    Observable<HttpResult> setDefaultAddress(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Address/deleteAddress")
+    Observable<HttpResult> deleteAddress(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Address/getOneAddress")
+    Observable<HttpResult> getOneAddress(@FieldMap Map<String, String> param);
+
+    //消息模块
+    @FormUrlEncoded
+    @POST("index.php/Api/Message/messageIndex")
+    Observable<HttpResult> messageIndex(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Message/systemMessageList")
+    Observable<HttpResult> systemMessageList(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Message/systemMessageInfo")
+    Observable<HttpResult> systemMessageInfo(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Message/orderNoticeList")
+    Observable<HttpResult> orderNoticeList(@FieldMap Map<String, String> param);
+
+    //    商品模块
+    @Multipart
+    @POST("index.php/Api/Goods/index")
+    Observable<HttpResult> index(@PartMap Map<String, RequestBody> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Goods/hotSearch")
+    Observable<HttpResult> hotSearch(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Goods/goodsTypeList")
+    Observable<HttpResult> goodsTypeList(@FieldMap Map<String, String> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/searchResult")
+    Observable<HttpResult> searchResult(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/hotSalesList")
+    Observable<HttpResult> hotSalesList(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/goodsList")
+    Observable<HttpResult> goodsList(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/goodsInfo")
+    Observable<HttpResult> goodsInfo(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/addCollect")
+    Observable<HttpResult> addCollect(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/deleteCollect")
+    Observable<HttpResult> deleteCollect(@PartMap Map<String, RequestBody> param);
 }

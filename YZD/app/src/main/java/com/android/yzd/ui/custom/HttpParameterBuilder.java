@@ -41,4 +41,9 @@ public class HttpParameterBuilder {
     public Map<String, RequestBody> bulider() {
         return params;
     }
+
+    public void clear() {
+        params.clear();
+        params = new HashMap<>();
+    }
 }

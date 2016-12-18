@@ -12,21 +12,29 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.yzd.R;
+import com.android.yzd.been.DetailsEntity;
+import com.android.yzd.been.GoodsPictureBean;
+import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.DensityUtils;
+import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
+import com.android.yzd.tools.T;
 import com.android.yzd.tools.U;
 import com.android.yzd.ui.adapter.ViewPagerAdapter;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.view.AutoScrollViewPager;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
-import com.android.yzd.ui.view.TitleBarView;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
@@ -35,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.relex.circleindicator.CircleIndicator;
 
 /**
@@ -60,7 +67,7 @@ public class DetailsActivity extends BaseActivity {
     @BindView(R.id.details_viewpager)
     AutoScrollViewPager detailsViewpager;
     @BindView(R.id.isCollect)
-    CheckBox isCollect;
+    TextView isCollect;
     @BindView(R.id.details_title)
     TextView detailsTitle;
     @BindView(R.id.details_price)
@@ -83,7 +90,6 @@ public class DetailsActivity extends BaseActivity {
     TextView detailsStatus;
 
 
-    List<String> list = new ArrayList<>();
     List<View> views = new ArrayList<>();
     @BindView(R.id.viewpage_circle)
     CircleIndicator viewpageCircle;
@@ -100,6 +106,9 @@ public class DetailsActivity extends BaseActivity {
     CommonAdapter Adapter;
 
     CommonAdapter itemAdapter;
+    UserInfoEntity userInfo;
+
+    String goods_id;
 
     @Override
     public int getContentViewId() {
@@ -108,70 +117,54 @@ public class DetailsActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
-
+        AppManager.getAppManager().addActivity(this);
         init();
 
-        list.add("http://img5.imgtn.bdimg.com/it/u=712109773,2660893576&fm=21&gp=0.jpg");
-        list.add("http://img3.imgtn.bdimg.com/it/u=1044444211,2572483856&fm=21&gp=0.jpg");
-        list.add("http://img3.imgtn.bdimg.com/it/u=483858826,2272895723&fm=21&gp=0.jpg");
+        getDetailsData();
 
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        for (int i = 0; i < list.size(); i++) {
-            ImageView imageView = new ImageView(this);
-            imageView.setLayoutParams(layoutParams);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            Picasso.with(this).load(list.get(i)).into(imageView);
-            views.add(imageView);
-        }
-
-        ViewPagerAdapter adapter = new ViewPagerAdapter(views);
-        detailsViewpager.setAdapter(adapter);
-        viewpageCircle.setViewPager(detailsViewpager);
-
-
-        Adapter = new CommonAdapter<String>(this, R.layout.item_details_more_1, list) {
-            @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                switch (position) {
-                    case 0:
-                        holder.setText(R.id.item_title, "无忧安装");
-                        holder.setText(R.id.item_content, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-                        Picasso.with(DetailsActivity.this).load(R.mipmap.null_).into((ImageView) holder.getView(R.id.item_image));
-                        break;
-                    case 1:
-                        holder.setText(R.id.item_title, "三年保质");
-                        Picasso.with(DetailsActivity.this).load(R.mipmap.real).into((ImageView) holder.getView(R.id.item_image));
-                        holder.setText(R.id.item_content, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-                        break;
-                    case 2:
-                        holder.setText(R.id.item_title, "假一赔十");
-                        Picasso.with(DetailsActivity.this).load(R.mipmap.keep).into((ImageView) holder.getView(R.id.item_image));
-                        holder.setText(R.id.item_content, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-                        break;
-                }
-            }
-        };
-        recycler.setAdapter(Adapter);
-        recyclerAdapter = new CommonAdapter<String>(this, R.layout.popup_item_address, list) {
-
-            @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                TextView textview = holder.getView(R.id.address);
-                if (position == 0) {
-                    textview.setTextColor(getResources().getColor(R.color.red_30));
-                    Drawable left = getResources().getDrawable(R.mipmap.details_position);
-                    Drawable right = getResources().getDrawable(R.mipmap.red_check);
-                    left.setBounds(0, 0, left.getMinimumWidth(), left.getMinimumHeight());
-                    right.setBounds(0, 0, right.getMinimumWidth(), right.getMinimumHeight());
-                    textview.setCompoundDrawables(left, null, right, null);
-                } else {
-                    textview.setText(s);
-                }
-
-            }
-        };
-        address_recycler.setAdapter(recyclerAdapter);
+//        Adapter = new CommonAdapter<String>(this, R.layout.item_details_more_1, list) {
+//            @Override
+//            protected void convert(ViewHolder holder, String s, int position) {
+//                switch (position) {
+//                    case 0:
+//                        holder.setText(R.id.item_title, "无忧安装");
+//                        holder.setText(R.id.item_content, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+//                        Picasso.with(DetailsActivity.this).load(R.mipmap.null_).into((ImageView) holder.getView(R.id.item_image));
+//                        break;
+//                    case 1:
+//                        holder.setText(R.id.item_title, "三年保质");
+//                        Picasso.with(DetailsActivity.this).load(R.mipmap.real).into((ImageView) holder.getView(R.id.item_image));
+//                        holder.setText(R.id.item_content, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+//                        break;
+//                    case 2:
+//                        holder.setText(R.id.item_title, "假一赔十");
+//                        Picasso.with(DetailsActivity.this).load(R.mipmap.keep).into((ImageView) holder.getView(R.id.item_image));
+//                        holder.setText(R.id.item_content, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+//                        break;
+//                }
+//            }
+//        };
+//        recycler.setAdapter(Adapter);
+//        recyclerAdapter = new CommonAdapter<String>(this, R.layout.popup_item_address, list) {
+//
+//            @Override
+//            protected void convert(ViewHolder holder, String s, int position) {
+//                TextView textview = holder.getView(R.id.address);
+//                if (position == 0) {
+//                    textview.setTextColor(getResources().getColor(R.color.red_30));
+//                    Drawable left = getResources().getDrawable(R.mipmap.details_position);
+//                    Drawable right = getResources().getDrawable(R.mipmap.red_check);
+//                    left.setBounds(0, 0, left.getMinimumWidth(), left.getMinimumHeight());
+//                    right.setBounds(0, 0, right.getMinimumWidth(), right.getMinimumHeight());
+//                    textview.setCompoundDrawables(left, null, right, null);
+//                } else {
+//                    textview.setText(s);
+//                }
+//
+//            }
+//        };
+//        address_recycler.setAdapter(recyclerAdapter);
 
         List<String> list = new ArrayList<>();
         list.add("上面安装");
@@ -192,9 +185,73 @@ public class DetailsActivity extends BaseActivity {
         detailsRecycler.setAdapter(itemAdapter);
     }
 
+    DetailsEntity detailsEntity;
+
+    private void getDetailsData() {
+
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                detailsEntity = gson.fromJson(gson.toJson(o), DetailsEntity.class);
+                showUi(detailsEntity);
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        httpParamet.addParameter("m_id", userInfo.getM_id());
+        httpParamet.addParameter("goods_id", goods_id);
+        HttpMethods.getInstance(this).goodsInfo(progressSubscriber, httpParamet.bulider());
+    }
+
+    private void showUi(DetailsEntity detailsEntity) {
+        //广告界面
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        for (int i = 0; i < detailsEntity.getGoods_picture().size(); i++) {
+            GoodsPictureBean picture = detailsEntity.getGoods_picture().get(i);
+            ImageView imageView = new ImageView(this);
+            imageView.setLayoutParams(layoutParams);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            Picasso.with(this).load(picture.getPic()).into(imageView);
+            views.add(imageView);
+        }
+        ViewPagerAdapter adapter = new ViewPagerAdapter(views);
+        detailsViewpager.setAdapter(adapter);
+        viewpageCircle.setViewPager(detailsViewpager);
+
+        detailsTitle.setText(detailsEntity.getGoods_name());
+        detailsPrice.setText("￥" + detailsEntity.getGoods_price());
+        if (detailsEntity.getIs_collect().equals("1")) {
+            Drawable drawable = getResources().getDrawable(R.mipmap.collect_true);
+            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+            detailsCollect.setCompoundDrawables(null, drawable, null, null);
+            isCollect.setCompoundDrawables(null, drawable, null, null);
+        } else {
+            Drawable drawable = getResources().getDrawable(R.mipmap.collect_false);
+            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+            detailsCollect.setCompoundDrawables(null, drawable, null, null);
+            isCollect.setCompoundDrawables(null, drawable, null, null);
+        }
+        //购买人数
+        detailsNumber.setText(detailsEntity.getSales() + "人购买");
+        //积分
+        detailsIntegral.setText("买可送" + detailsEntity.getService_logo() + "疾风");
+        //购物车数量
+        if (detailsEntity.getCart_number().equals("0") | detailsEntity.equals("")) {
+            detailsShoppingCartNumber.setVisibility(View.GONE);
+        } else {
+            int nuumber = Integer.valueOf(detailsEntity.getCart_number());
+            if (nuumber > 0 && nuumber < 100) {
+                detailsShoppingCartNumber.setText(nuumber + "");
+            } else {
+                detailsShoppingCartNumber.setText(99 + "+");
+            }
+        }
+
+    }
+
 
     private void init() {
-
+        userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
+        goods_id = getIntent().getExtras().getString(K.GOODS_ID);
 
         addressView = getLayoutInflater().inflate(R.layout.popup_details_address, null);
         address_recycler = (RecyclerView) addressView.findViewById(R.id.popup_recycler);
@@ -241,6 +298,51 @@ public class DetailsActivity extends BaseActivity {
                 popupWindow.setContentView(view);
                 popupWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0);
                 break;
+            case R.id.isCollect:
+            case R.id.details_collect:
+                if (detailsEntity != null) {
+                    if (detailsEntity.getIs_collect().equals("0")) {
+                        addCollect(goods_id);
+                    } else {
+                        delCollect(goods_id);
+                    }
+                }
+                break;
         }
     }
+
+    private void addCollect(String goods_id) {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                detailsEntity.setIs_collect("1");
+                showUi(detailsEntity);
+                T.show(DetailsActivity.this, "收藏成功", Toast.LENGTH_SHORT);
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        httpParamet.clear();
+        httpParamet.addParameter("goods_id", goods_id);
+        httpParamet.addParameter("m_id", userInfo.getM_id());
+        HttpMethods.getInstance(this).addCollect(progressSubscriber, httpParamet.bulider());
+
+    }
+
+    private void delCollect(String goods_id) {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                detailsEntity.setIs_collect("0");
+                showUi(detailsEntity);
+                T.show(DetailsActivity.this, "取消收藏成功", Toast.LENGTH_SHORT);
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        httpParamet.clear();
+        httpParamet.addParameter("goods_id", goods_id);
+        httpParamet.addParameter("m_id", userInfo.getM_id());
+        HttpMethods.getInstance(this).deleteCollect(progressSubscriber, httpParamet.bulider());
+
+    }
+
 }

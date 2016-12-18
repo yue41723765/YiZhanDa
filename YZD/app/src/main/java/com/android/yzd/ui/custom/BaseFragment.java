@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.yzd.http.ProgressSubscriber;
+import com.android.yzd.http.SubscriberOnNextListener;
+import com.google.gson.Gson;
+
 import butterknife.ButterKnife;
 
 
@@ -21,6 +25,14 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     protected View mRootView;
 
     public Intent intent;
+
+    public Gson gson = new Gson();
+    public ProgressSubscriber progressSubscriber;
+    public HttpParameterBuilder builder = new HttpParameterBuilder();
+
+    public void setProgressSubscriber(SubscriberOnNextListener onNextListener) {
+        progressSubscriber = new ProgressSubscriber(onNextListener, context, false);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

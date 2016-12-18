@@ -30,6 +30,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     public ProgressSubscriber progressSubscriber;
 
+    public HttpParameterBuilder httpParamet = new HttpParameterBuilder();
+
     public void setProgressSubscriber(SubscriberOnNextListener onNextListener) {
         progressSubscriber = new ProgressSubscriber(onNextListener, this, false);
     }

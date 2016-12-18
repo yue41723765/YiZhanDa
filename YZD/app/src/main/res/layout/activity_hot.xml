@@ -9,14 +9,15 @@
     <com.android.yzd.ui.view.TitleBarView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:setRightImage="@mipmap/type_search"
+        app:setRightImage="@mipmap/show_black"
         app:setRightImageVisibility="visible" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@android:color/white"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/hot_show_type"
@@ -117,9 +118,9 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/hot_recycler_2"
             android:layout_width="match_parent"
-            android:visibility="gone"
             android:layout_height="match_parent"
-            android:overScrollMode="never" />
+            android:overScrollMode="never"
+            android:visibility="gone" />
 
 
         <TextView
@@ -127,6 +128,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/translucence_a"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="80dp"
+            android:src="@mipmap/empty"
             android:visibility="gone" />
     </FrameLayout>
 

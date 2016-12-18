@@ -81,7 +81,8 @@
                 android:background="@drawable/circle_red"
                 android:gravity="center"
                 android:textColor="@android:color/white"
-                android:textSize="8sp" />
+                android:textSize="8sp"
+                android:visibility="gone" />
         </FrameLayout>
 
         <LinearLayout
@@ -143,7 +144,7 @@
                 <me.relex.circleindicator.CircleIndicator
                     android:id="@+id/viewpage_circle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="20dp"
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="10dp"
                     app:ci_height="5dp"
@@ -159,7 +160,7 @@
                 android:paddingRight="15dp"
                 android:paddingTop="15dp">
 
-                <CheckBox
+                <TextView
                     android:id="@+id/isCollect"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -168,8 +169,9 @@
                     android:button="@null"
                     android:drawableTop="@drawable/collect"
                     android:gravity="center"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
+                    android:padding="5dp"
+                    android:onClick="onClick"
+                    android:clickable="true"
                     android:text="收藏"
                     android:textColor="@color/black_90"
                     android:textSize="10sp" />
