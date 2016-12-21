@@ -7,23 +7,30 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.yzd.R;
+import com.android.yzd.been.FindEntity;
+import com.android.yzd.been.GoodsListBean;
+import com.android.yzd.been.IntegralListBean;
+import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
-import com.android.yzd.ui.activity.EditAddressActivity;
+import com.android.yzd.tools.SPUtils;
+import com.android.yzd.ui.activity.ConfirmConversionActivity;
+import com.android.yzd.ui.activity.DetailsActivity;
 import com.android.yzd.ui.activity.IntegralActivity;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.MyItemDecoration;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,6 +57,7 @@ public class FindFragment extends BaseFragment {
 
     CommonAdapter adapter_1;
     CommonAdapter adapter_2;
+    UserInfoEntity userInfo;
 
     @Override
     public int getContentViewId() {
@@ -58,51 +66,18 @@ public class FindFragment extends BaseFragment {
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context) {
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
         };
+
         linearLayoutManager.setOrientation(OrientationHelper.HORIZONTAL);
         boutiqueRecycler.setLayoutManager(linearLayoutManager);
         Drawable drawable = getResources().getDrawable(android.R.color.white);
         boutiqueRecycler.addItemDecoration(new MyItemDecoration(OrientationHelper.HORIZONTAL, drawable, DensityUtils.dp2px(context, 10)));
-        List<String> list = new ArrayList<>();
-        final List<Integer> image = new ArrayList<>();
-        list.add("欧式吊扇");
-        list.add("后现代壁纸");
-        list.add("简约现代吊扇");
-        list.add("xxxxxxx");
-        image.add(R.drawable.find_1);
-        image.add(R.drawable.find_2);
-        image.add(R.drawable.find_3);
-        image.add(R.drawable.find_3);
-        adapter_1 = new CommonAdapter<String>(context, R.layout.item_find_1, list) {
-
-            @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                View view = holder.getConvertView();
-                if (position == 0) {
-                    view.setPadding(DensityUtils.dp2px(context, 10), 0, 0, 0);
-                }
-                holder.setText(R.id.find_name, s);
-                ImageView imageView = holder.getView(R.id.find_image);
-                imageView.setImageResource(image.get(position));
-            }
-        };
-        boutiqueRecycler.setAdapter(adapter_1);
-
-        List<String> list2 = new ArrayList<>();
-        final List<Integer> image2 = new ArrayList<>();
-        list2.add("小海豚电动车");
-        list2.add("欧式简约换鞋凳");
-        list2.add("简约时尚衣架");
-        list2.add("xxxxxxx");
-        image2.add(R.drawable.find2_1);
-        image2.add(R.drawable.find2_2);
-        image2.add(R.drawable.find2_3);
-        image2.add(R.drawable.find2_3);
 
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(context) {
             @Override
@@ -115,17 +90,80 @@ public class FindFragment extends BaseFragment {
         integrationRecycler.setLayoutManager(linearLayoutManager2);
         drawable = getResources().getDrawable(R.color.background);
         integrationRecycler.addItemDecoration(new MyItemDecoration(OrientationHelper.VERTICAL, drawable, 2));
-        adapter_2 = new CommonAdapter<String>(context, R.layout.item_find_2, list2) {
+    }
+
+
+    private void getFindData(String m_id) {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                FindEntity findEntity = gson.fromJson(gson.toJson(o), FindEntity.class);
+                setBoutiqueRecommend(findEntity.getGoods_list());
+                setIntegralAdapter(findEntity.getIntegral_list());
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        builder.clear();
+        builder.addParameter("m_id", userInfo.getM_id());
+        HttpMethods.getInstance(context).findIndex(progressSubscriber, builder.bulider());
+    }
+
+    //积分
+    private void setIntegralAdapter(final List<IntegralListBean> integral_list) {
+        adapter_2 = new CommonAdapter<IntegralListBean>(context, R.layout.item_find_2, integral_list) {
 
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                holder.setText(R.id.find_title, s);
-                ImageView imageView = holder.getView(R.id.find_image);
-                imageView.setImageResource(image2.get(position));
+            protected void convert(ViewHolder holder, IntegralListBean s, final int position) {
+                Picasso.with(context).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.find_image));
+                holder.setText(R.id.find_title, s.getGoods_name());
+                holder.setText(R.id.find_content, s.getGoods_brief());
+                holder.setText(R.id.find_integral, s.getNeed_integral());
+
+                holder.setOnClickListener(R.id.conversion, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        intent = new Intent(context, ConfirmConversionActivity.class);
+                        intent.putExtra(K.DATA, integral_list.get(position));
+                        startActivity(intent);
+                    }
+                });
             }
         };
         integrationRecycler.setAdapter(adapter_2);
     }
+
+    //精品推荐
+    private void setBoutiqueRecommend(final List<GoodsListBean> goods_list) {
+        adapter_1 = new CommonAdapter<GoodsListBean>(context, R.layout.item_find_1, goods_list) {
+
+            @Override
+            protected void convert(ViewHolder holder, GoodsListBean s, int position) {
+                View view = holder.getConvertView();
+                if (position == 0) {
+                    view.setPadding(DensityUtils.dp2px(context, 10), 0, 0, 0);
+                }
+
+                Picasso.with(context).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.find_image));
+
+                holder.setText(R.id.find_name, s.getGoods_name());
+            }
+        };
+        adapter_1.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                intent = new Intent(context, DetailsActivity.class);
+                intent.putExtra(K.GOODS_ID, goods_list.get(position).getGoods_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
+        boutiqueRecycler.setAdapter(adapter_1);
+    }
+
 
     @OnClick({R.id.find_more})
     public void onClick(View v) {
@@ -137,5 +175,12 @@ public class FindFragment extends BaseFragment {
                 break;
 
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        userInfo = (UserInfoEntity) SPUtils.get(context, K.USERINFO, UserInfoEntity.class);
+        getFindData(userInfo.getM_id());
     }
 }

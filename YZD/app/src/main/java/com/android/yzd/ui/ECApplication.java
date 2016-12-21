@@ -1,6 +1,8 @@
 package com.android.yzd.ui;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
@@ -21,9 +23,14 @@ public class ECApplication extends Application {
         options.setAcceptInvitationAlways(true);
         EaseUI.getInstance().init(this, null);
         //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
-        EMClient.getInstance().setDebugMode(true);
+        EMClient.getInstance().setDebugMode(false);
     }
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        MultiDex.install(newBase);
+        super.attachBaseContext(newBase);
+    }
 //    @Override
 //    protected void attachBaseContext(Context newBase) {
 //        MultiDex.install(newBase);

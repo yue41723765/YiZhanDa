@@ -3,21 +3,27 @@ package com.android.yzd.ui.activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.yzd.R;
-import com.android.yzd.ui.adapter.ViewPagerAdapter;
+import com.android.yzd.been.IntegralEsEntity;
+import com.android.yzd.been.IntegralListBean;
+import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.view.MyItemDecoration;
+import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
@@ -26,28 +32,33 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.relex.circleindicator.CircleIndicator;
 
 /**
  * Created by Administrator on 2016/10/10 0010.
  */
 public class IntegralActivity extends BaseActivity {
 
-    @BindView(R.id.ecshop_viepage)
-    ViewPager ecshopViepage;
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout collapsingToolbar;
     @BindView(R.id.integral_number)
     TextView integralNumber;
     @BindView(R.id.integral_getIntegral)
     TextView integralGetIntegral;
     @BindView(R.id.integral_history)
     Button integralHistory;
+    @BindView(R.id.appbar)
+    AppBarLayout appbar;
     @BindView(R.id.integral_recycler)
     RecyclerView integralRecycler;
 
+
     CommonAdapter adapter_2;
     List<View> views = new ArrayList<>();
-    @BindView(R.id.circleIndicator)
-    CircleIndicator circleIndicator;
+    int p = 1;
+    UserInfoEntity userinfo;
+    List<IntegralListBean> integral_list = new ArrayList<>();
+    int lastVisibleItem = -1;
+    boolean isData = true;
 
     @Override
     public int getContentViewId() {
@@ -56,58 +67,81 @@ public class IntegralActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
-        List<String> list = new ArrayList<>();
-        final List<Integer> image = new ArrayList<>();
+        userinfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
+        initList();
+        setAdapter();
+        getIntegralData();
+    }
 
-        image.add(R.drawable.find_find);
-        image.add(R.drawable.find_find);
-
-        for (int i = 0; i < image.size(); i++) {
-            ImageView imageView = new ImageView(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            imageView.setLayoutParams(params);
-            imageView.setImageResource(image.get(i));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            views.add(imageView);
-        }
-
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views);
-        ecshopViepage.setAdapter(viewPagerAdapter);
-
-        circleIndicator.setViewPager(ecshopViepage);
-
-        list.clear();
-        list.add("小海豚电动车");
-        list.add("欧式简约换鞋凳");
-        list.add("简约时尚衣架");
-        list.add("xxxxxxx");
-        image.clear();
-        image.add(R.drawable.find2_1);
-        image.add(R.drawable.find2_2);
-        image.add(R.drawable.find2_3);
-        image.add(R.drawable.find2_3);
-
-        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
+    private void initList() {
+        final LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);
         linearLayoutManager2.setOrientation(OrientationHelper.VERTICAL);
         linearLayoutManager2.setSmoothScrollbarEnabled(true);
         integralRecycler.setLayoutManager(linearLayoutManager2);
         Drawable drawable = getResources().getDrawable(R.color.background);
         integralRecycler.addItemDecoration(new MyItemDecoration(OrientationHelper.VERTICAL, drawable, 2));
-        adapter_2 = new CommonAdapter<String>(this, R.layout.item_find_2, list) {
+
+        integralRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE
+                        && lastVisibleItem + 1 == adapter_2.getItemCount()) {
+                    p++;
+                    getIntegralData();
+                }
+            }
 
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                holder.setText(R.id.find_title, s);
-                ImageView imageView = holder.getView(R.id.find_image);
-                imageView.setImageResource(image.get(position));
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = linearLayoutManager2.findLastVisibleItemPosition();
+            }
+        });
+    }
+
+    private void setAdapter() {
+        adapter_2 = new CommonAdapter<IntegralListBean>(this, R.layout.item_find_2, integral_list) {
+
+            @Override
+            protected void convert(ViewHolder holder, IntegralListBean s, final int position) {
+                Picasso.with(IntegralActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.find_image));
+                holder.setText(R.id.find_title, s.getGoods_name());
+                holder.setText(R.id.find_content, s.getGoods_brief());
+                holder.setText(R.id.find_integral, s.getNeed_integral());
+
+                holder.setOnClickListener(R.id.conversion, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        intent = new Intent(IntegralActivity.this, ConfirmConversionActivity.class);
+                        intent.putExtra(K.DATA, integral_list.get(position));
+                        startActivity(intent);
+                    }
+                });
             }
         };
         integralRecycler.setAdapter(adapter_2);
+    }
+
+    private void getIntegralData() {
+        if (isData) {
+            SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+                @Override
+                public void onNext(Object o) {
+                    IntegralEsEntity esEntity = gson.fromJson(gson.toJson(o), IntegralEsEntity.class);
+                    integral_list.addAll(esEntity.getIntegral_list());
+                    adapter_2.notifyDataSetChanged();
+                    if (esEntity.getIntegral_list().size() == 0)
+                        isData = false;
+
+                    integralNumber.setText(esEntity.getIntegral() + "");
+                }
+            };
+            setProgressSubscriber(onNextListener);
+            httpParamet.addParameter("m_id", userinfo.getM_id());
+            httpParamet.addParameter("p", p + "");
+            HttpMethods.getInstance(this).integralShop(progressSubscriber, httpParamet.bulider());
+        }
     }
 
     @Override
@@ -123,5 +157,12 @@ public class IntegralActivity extends BaseActivity {
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

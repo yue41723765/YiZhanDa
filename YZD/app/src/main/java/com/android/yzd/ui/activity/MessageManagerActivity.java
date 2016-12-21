@@ -17,6 +17,7 @@ import com.android.yzd.http.ProgressSubscriber;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.StatusBarUtil;
 import com.android.yzd.ui.custom.BaseActivity;
@@ -95,8 +96,10 @@ public class MessageManagerActivity extends BaseActivity {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.service_message:
+                L.i(messageEntity.getService_account() + "");
+
                 intent = new Intent(MessageManagerActivity.this, MessageActivity.class);
-                intent.putExtra("nameNick", "土坷垃客服");
+                intent.putExtra("nameNick", "一站达客服");
                 intent.putExtra("ecId", messageEntity.getService_account());
                 intent.putExtra("yourHead", messageEntity.getService_logo());
                 intent.putExtra("myHead", userInfo.getHead_pic());

@@ -204,6 +204,7 @@ public class DetailsActivity extends BaseActivity {
 
     private void showUi(DetailsEntity detailsEntity) {
         //广告界面
+        views.clear();
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         for (int i = 0; i < detailsEntity.getGoods_picture().size(); i++) {
             GoodsPictureBean picture = detailsEntity.getGoods_picture().get(i);
@@ -233,7 +234,7 @@ public class DetailsActivity extends BaseActivity {
         //购买人数
         detailsNumber.setText(detailsEntity.getSales() + "人购买");
         //积分
-        detailsIntegral.setText("买可送" + detailsEntity.getService_logo() + "疾风");
+        detailsIntegral.setText("买可送可获得积分");
         //购物车数量
         if (detailsEntity.getCart_number().equals("0") | detailsEntity.equals("")) {
             detailsShoppingCartNumber.setVisibility(View.GONE);
@@ -245,7 +246,6 @@ public class DetailsActivity extends BaseActivity {
                 detailsShoppingCartNumber.setText(99 + "+");
             }
         }
-
     }
 
 
@@ -308,7 +308,28 @@ public class DetailsActivity extends BaseActivity {
                     }
                 }
                 break;
+            case R.id.add_shoppingCart:
+
+                addCart(goods_id);
+                break;
+            case R.id.details_shopping_cart:
+                
+                break;
         }
+    }
+
+    private void addCart(String goods_id) {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                T.show(DetailsActivity.this, "添加购物车成功", Toast.LENGTH_SHORT);
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        httpParamet.clear();
+        httpParamet.addParameter("m_id", userInfo.getM_id());
+        httpParamet.addParameter("goods_id", goods_id);
+        HttpMethods.getInstance(this).addCart(progressSubscriber, httpParamet.bulider());
     }
 
     private void addCollect(String goods_id) {

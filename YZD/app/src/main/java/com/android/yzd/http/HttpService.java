@@ -93,9 +93,6 @@ public interface HttpService {
     @POST("index.php/Api/Address/deleteAddress")
     Observable<HttpResult> deleteAddress(@FieldMap Map<String, String> param);
 
-    @FormUrlEncoded
-    @POST("index.php/Api/Address/getOneAddress")
-    Observable<HttpResult> getOneAddress(@FieldMap Map<String, String> param);
 
     //消息模块
     @FormUrlEncoded
@@ -150,4 +147,48 @@ public interface HttpService {
     @Multipart
     @POST("index.php/Api/Goods/deleteCollect")
     Observable<HttpResult> deleteCollect(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/addCart")
+    Observable<HttpResult> addCart(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/collectList")
+    Observable<HttpResult> collectList(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/modifyCart")
+    Observable<HttpResult> modifyCart(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/deleteCart")
+    Observable<HttpResult> deleteCart(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/cartList")
+    Observable<HttpResult> cartList(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Goods/cartToCollect")
+    Observable<HttpResult> cartToCollect(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Find/findIndex")
+    Observable<HttpResult> findIndex(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Find/integralShop")
+    Observable<HttpResult> integralShop(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Find/exchangeLog")
+    Observable<HttpResult> exchangeLog(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Address/getOneAddress")
+    Observable<HttpResult> getOneAddress(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Find/exchangeGoods")
+    Observable<HttpResult> exchangeGoods(@PartMap Map<String, RequestBody> param);
 }

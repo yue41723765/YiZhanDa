@@ -7,8 +7,6 @@
     android:button="@null"
     android:gravity="center"
     android:paddingBottom="5dp"
-    android:paddingLeft="18dp"
-    android:paddingRight="18dp"
     android:paddingTop="5dp"
     android:textColor="@color/black30_white"
     android:textSize="13sp" />

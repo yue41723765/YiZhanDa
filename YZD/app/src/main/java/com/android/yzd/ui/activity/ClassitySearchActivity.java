@@ -19,14 +19,16 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
 import com.android.yzd.R;
-import com.android.yzd.been.GoodsInfoEntity;
+import com.android.yzd.been.ClassListEntity;
+import com.android.yzd.been.ClassityListEntity;
+import com.android.yzd.been.TypeListBean;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
@@ -91,7 +93,8 @@ public class ClassitySearchActivity extends BaseActivity {
 
     int lastVisibleItem = -1;
     int p = 1;
-    List<GoodsInfoEntity> goodsList = new ArrayList<>();
+    List<ClassListEntity> goodsList = new ArrayList<>();
+    List<TypeListBean> typeList = new ArrayList<>();
     boolean isData = true;
 
     @Override
@@ -107,12 +110,14 @@ public class ClassitySearchActivity extends BaseActivity {
                 public void onNext(Object o) {
                     if (p == 1)
                         goodsList.clear();
-                    List<GoodsInfoEntity> list = gson.fromJson(gson.toJson(o), new TypeToken<List<GoodsInfoEntity>>() {
-                    }.getType());
-                    if (list.size() == 0)
+                    typeList.clear();
+                    ClassityListEntity list = gson.fromJson(gson.toJson(o), ClassityListEntity.class);
+                    if (list.getGoods_list().size() == 0)
                         isData = false;
-                    goodsList.addAll(list);
+                    goodsList.addAll(list.getGoods_list());
+                    typeList.addAll(list.getType_list());
                     adapter_1.notifyDataSetChanged();
+                    popupAdapter.notifyDataSetChanged();
                 }
             };
             setProgressSubscriber(onNextListener);
@@ -128,7 +133,7 @@ public class ClassitySearchActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
-
+        AppManager.getAppManager().addActivity(this);
         sec_type_id = getIntent().getExtras().getString(K.SEC_TYPE_ID);
 
         //模式一
@@ -191,13 +196,13 @@ public class ClassitySearchActivity extends BaseActivity {
 
     private void setHotAdapter() {
 
-        popupAdapter = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_popup, goodsList) {
+        popupAdapter = new CommonAdapter<TypeListBean>(this, R.layout.item_hot_popup, typeList) {
 
             @Override
-            protected void convert(ViewHolder holder, GoodsInfoEntity s, int position) {
+            protected void convert(ViewHolder holder, TypeListBean s, int position) {
                 CheckBox checkBox = holder.getView(R.id.hot_classify);
                 checkBox.setBackgroundResource(R.drawable.check_blue90_blue);
-                checkBox.setText("分类" + position);
+                checkBox.setText(s.getType_name());
                 if (isCheck.get(position) == null)
                     isCheck.put(position, false);
                 checkBox.setChecked(isCheck.get(position));
@@ -222,10 +227,10 @@ public class ClassitySearchActivity extends BaseActivity {
     }
 
     private void setAdapter() {
-        adapter_1 = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_2, goodsList) {
+        adapter_1 = new CommonAdapter<ClassListEntity>(this, R.layout.item_hot_2, goodsList) {
 
             @Override
-            protected void convert(ViewHolder holder, GoodsInfoEntity s, int position) {
+            protected void convert(ViewHolder holder, ClassListEntity s, int position) {
                 Picasso.with(ClassitySearchActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_2_image));
                 holder.setText(R.id.hot_2_title, s.getGoods_name());
                 holder.setText(R.id.hot_2_price, "￥" + s.getGoods_price());
@@ -247,10 +252,10 @@ public class ClassitySearchActivity extends BaseActivity {
         });
         hotRecycler1.setAdapter(adapter_1);
 
-        adapter_2 = new CommonAdapter<GoodsInfoEntity>(this, R.layout.item_hot_1, goodsList) {
+        adapter_2 = new CommonAdapter<ClassListEntity>(this, R.layout.item_hot_1, goodsList) {
 
             @Override
-            protected void convert(ViewHolder holder, GoodsInfoEntity goodsInfoEntity, int position) {
+            protected void convert(ViewHolder holder, ClassListEntity goodsInfoEntity, int position) {
                 Picasso.with(ClassitySearchActivity.this).load(goodsInfoEntity.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_image));
                 holder.setText(R.id.hot_title, goodsInfoEntity.getGoods_name());
                 holder.setText(R.id.hot_price, "￥" + goodsInfoEntity.getGoods_price());
@@ -304,18 +309,13 @@ public class ClassitySearchActivity extends BaseActivity {
                     searchShow.setImageResource(R.mipmap.show_black);
                     hotRecycler1.setVisibility(View.GONE);
                     hotRecycler2.setVisibility(View.VISIBLE);
-                    //升序
-                    p = 1;
-                    sort = 3;
-                    getListData();
+
                 } else {
                     showStatus = 1;
                     searchShow.setImageResource(R.mipmap.list_black);
                     hotRecycler1.setVisibility(View.VISIBLE);
                     hotRecycler2.setVisibility(View.GONE);
-                    p = 1;
-                    sort = 4;
-                    getListData();
+
                 }
                 break;
             case R.id.screen:
@@ -327,26 +327,52 @@ public class ClassitySearchActivity extends BaseActivity {
                 if (price_status % 2 == 0) {
                     drawable = getResources().getDrawable(R.mipmap.price_down);
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
-
                     price.setCompoundDrawables(null, null, drawable, null);
+
+                    //升序
+                    p = 1;
+                    sort = 3;
+                    isData = true;
+                    getListData();
                 } else {
                     drawable = getResources().getDrawable(R.mipmap.price_up);
                     drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                     price.setCompoundDrawables(null, null, drawable, null);
-
+                    p = 1;
+                    sort = 4;
+                    isData = true;
+                    getListData();
                 }
                 break;
             case R.id.popup_3_sure:
                 String start = startPrice.getText().toString();
                 String end = endPrice.getText().toString();
+
+                for (int i = 0; i < isCheck.size(); i++) {
+                    if (isCheck.get(i)) {
+                        sec_type_id = typeList.get(i).getSec_type_id();
+                    }
+                }
+
                 d_price = Float.valueOf(start.equals("") ? "0" : start);
                 h_price = Float.valueOf(end.equals("") ? "0" : end);
+
+                isData = true;
+                p = 1;
                 getListData();
+                goodsList.clear();
+                adapter_1.notifyDataSetChanged();
+                adapter_2.notifyDataSetChanged();
+
                 searchDrawer.closeDrawer(Gravity.RIGHT);
                 break;
             case R.id.popup_3_clear:
                 startPrice.setText("");
                 endPrice.setText("");
+                for (int i = 0; i < isCheck.size(); i++) {
+                    isCheck.put(i, false);
+                }
+                popupAdapter.notifyDataSetChanged();
                 break;
 
         }

@@ -350,17 +350,6 @@ public class HttpMethods {
         toSubscribe(observable, subscriber);
     }
 
-    /**
-     * 获取一条收货地址
-     *
-     * @param subscriber
-     * @param param
-     */
-    public void getOneAddress(Subscriber<HttpResult> subscriber, Map<String, String> param) {
-        Observable observable = httpService.getOneAddress(param)
-                .map(new HttpResultFunc());
-        toSubscribe(observable, subscriber);
-    }
 
     //消息模块
 
@@ -508,6 +497,126 @@ public class HttpMethods {
      */
     public void deleteCollect(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
         Observable observable = httpService.deleteCollect(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 添加购物车
+     *
+     * @param subscriber
+     */
+    public void addCart(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.addCart(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 收藏列表
+     *
+     * @param subscriber
+     */
+    public void collectList(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.collectList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 收藏列表
+     *
+     * @param subscriber
+     */
+    public void modifyCart(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.modifyCart(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 修改购物车
+     *
+     * @param subscriber
+     */
+    public void deleteCart(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.deleteCart(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 购物车列表
+     *
+     * @param subscriber
+     */
+    public void cartList(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.cartList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 购物车移入收藏
+     *
+     * @param subscriber
+     */
+    public void cartToCollect(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.cartToCollect(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 发现首页
+     *
+     * @param subscriber
+     */
+    public void findIndex(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.findIndex(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 积分商城
+     *
+     * @param subscriber
+     */
+    public void integralShop(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.integralShop(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 积分兑换记录
+     *
+     * @param subscriber
+     */
+    public void exchangeLog(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.exchangeLog(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 获取一条收货地址
+     *
+     * @param subscriber
+     */
+    public void getOneAddress(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.getOneAddress(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+    /**
+     * 兑换商品
+     *
+     * @param subscriber
+     */
+    public void exchangeGoods(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.exchangeGoods(param)
                 .map(new HttpResultFunc());
         toSubscribe(observable, subscriber);
     }

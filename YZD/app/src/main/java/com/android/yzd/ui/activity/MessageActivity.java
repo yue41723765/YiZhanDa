@@ -55,6 +55,7 @@ public class MessageActivity extends BaseActivity {
         args.putString("myHead", myHead);
         chatFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().add(R.id.message_content, chatFragment).commit();
+
     }
 
 
