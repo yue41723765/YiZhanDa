@@ -86,10 +86,14 @@ public class MessageManagerActivity extends BaseActivity {
         AppManager.getAppManager().addActivity(this);
 
         userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
-        setServiceMessage();
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setServiceMessage();
+    }
 
     @Override
     public void onClick(View v) {
@@ -107,15 +111,11 @@ public class MessageManagerActivity extends BaseActivity {
                 break;
             case R.id.system_message:
                 intent = new Intent(MessageManagerActivity.this, SystemMessageActivity.class);
-                intent.putExtra("receiver_type", "3");
                 startActivity(intent);
-                SPUtils.put(this, "sysNumber", sys_num);
                 break;
             case R.id.order_message:
                 intent = new Intent(MessageManagerActivity.this, OrderMessageActivity.class);
-                intent.putExtra("receiver_type", "3");
                 startActivity(intent);
-                SPUtils.put(this, "OrderNumber", order_num);
                 break;
         }
     }
@@ -144,16 +144,14 @@ public class MessageManagerActivity extends BaseActivity {
 
 //        Picasso.with(this).load(messageEntity.getCustomer_head_pic()).into(serviceImage);
         sys_num = Integer.valueOf(messageEntity.getSystem_count());
-        int msysNumber = (int) SPUtils.get(this, "sysNumber", 0);
-        if (sys_num != msysNumber) {
+        if (sys_num > 0) {
             systemNumber.setVisibility(View.VISIBLE);
             systemNumber.setText(sys_num + "");
         }
-        systemContent.setText(messageEntity.getSystem_title());
+        orderData.setText(messageEntity.getNotice_time());
         systemData.setText(messageEntity.getSystem_time());
         order_num = Integer.valueOf(messageEntity.getNotice_count());
-        int OrderNumber = (int) SPUtils.get(this, "OrderNumber", 0);
-        if (order_num != OrderNumber) {
+        if (order_num > 0) {
             orderNumber.setVisibility(View.VISIBLE);
             orderNumber.setText(order_num + "");
         }

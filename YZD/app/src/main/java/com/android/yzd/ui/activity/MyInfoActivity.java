@@ -92,11 +92,11 @@ public class MyInfoActivity extends BaseActivity {
     protected void initAllMembersView(Bundle savedInstanceState) {
 
         init();
-        getUserInfo();
+        getUserInfo_();
         setImageChoose();
     }
 
-    private void getUserInfo() {
+    private void getUserInfo_() {
 
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
@@ -223,7 +223,7 @@ public class MyInfoActivity extends BaseActivity {
             @Override
             public void onNext(Object o) {
                 T.show(MyInfoActivity.this, "修改个人资料成功", Toast.LENGTH_SHORT);
-                getUserInfo();
+                getUserInfo_();
             }
         };
         setProgressSubscriber(onNext);

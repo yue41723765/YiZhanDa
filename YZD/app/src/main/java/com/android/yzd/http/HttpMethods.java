@@ -3,7 +3,6 @@ package com.android.yzd.http;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.android.yzd.tools.L;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -122,8 +121,9 @@ public class HttpMethods {
 
         @Override
         public T call(HttpResult<T> httpResult) {
-            L.i(httpResult.toString());
             if (httpResult.getMessage().equals("暂无优惠券"))
+                return httpResult.getData();
+            if (httpResult.getMessage().equals("暂无数据"))
                 return httpResult.getData();
             if (httpResult.getFlag().equals("error")) {
                 throw new ApiException(httpResult.getMessage());
@@ -610,6 +610,7 @@ public class HttpMethods {
                 .map(new HttpResultFunc());
         toSubscribe(observable, subscriber);
     }
+
     /**
      * 兑换商品
      *
@@ -617,6 +618,94 @@ public class HttpMethods {
      */
     public void exchangeGoods(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
         Observable observable = httpService.exchangeGoods(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 新增订单
+     *
+     * @param subscriber
+     */
+    public void addOrder(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.addOrder(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 支付说明
+     *
+     * @param subscriber
+     */
+    public void payDescription(Subscriber<HttpResult> subscriber) {
+        Observable observable = httpService.payDescription(new HashMap<String, String>())
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 订单列表
+     *
+     * @param subscriber
+     */
+    public void orderList(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.orderList(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 取消订单
+     *
+     * @param subscriber
+     */
+    public void cancelOrder(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.cancelOrder(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 删除订单
+     *
+     * @param subscriber
+     */
+    public void deleteOrder(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.deleteOrder(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 意见反馈
+     *
+     * @param subscriber
+     */
+    public void addFeedback(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.addFeedback(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 设置界面
+     *
+     * @param subscriber
+     */
+    public void setPage(Subscriber<HttpResult> subscriber, Map<String, String> param) {
+        Observable observable = httpService.setPage(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 安卓检查更新
+     *
+     * @param subscriber
+     */
+    public void upgrade(Subscriber<HttpResult> subscriber) {
+        Observable observable = httpService.upgrade(new HashMap<String, String>())
                 .map(new HttpResultFunc());
         toSubscribe(observable, subscriber);
     }

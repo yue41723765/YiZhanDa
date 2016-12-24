@@ -31,9 +31,4 @@ public class ECApplication extends Application {
         MultiDex.install(newBase);
         super.attachBaseContext(newBase);
     }
-//    @Override
-//    protected void attachBaseContext(Context newBase) {
-//        MultiDex.install(newBase);
-//        super.attachBaseContext(newBase);
-//    }
 }

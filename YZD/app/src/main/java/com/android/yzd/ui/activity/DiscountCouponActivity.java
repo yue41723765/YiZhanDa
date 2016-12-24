@@ -1,5 +1,6 @@
 package com.android.yzd.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,14 +17,13 @@ import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
 import com.android.yzd.tools.SPUtils;
-import com.android.yzd.tools.U;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.google.gson.reflect.TypeToken;
 import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -45,6 +45,7 @@ public class DiscountCouponActivity extends BaseActivity {
 
     List<CouponEntity> couponList = new ArrayList<>();
     int lastVisibleItem = -1;
+    int status = 0;
 
     @Override
     public int getContentViewId() {
@@ -55,6 +56,10 @@ public class DiscountCouponActivity extends BaseActivity {
     protected void initAllMembersView(Bundle savedInstanceState) {
         AppManager.getAppManager().addActivity(this);
         userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
+        try {
+            status = getIntent().getIntExtra(K.STATUS, 0);
+        } catch (Exception e) {
+        }
         getData();
 
         initList();
@@ -70,26 +75,61 @@ public class DiscountCouponActivity extends BaseActivity {
         adapter = new CommonAdapter<CouponEntity>(this, R.layout.item_coupon, couponList) {
             @Override
             protected void convert(ViewHolder holder, CouponEntity entity, int position) {
-                holder.setText(R.id.coupon_name, entity.getTitle());
-                holder.setText(R.id.coupon_validity, "有效期至：" + U.timeStampToStr_(entity.getEnd_time()));
-                holder.setText(R.id.coupon_price, entity.getValue());
-                holder.setText(R.id.coupon_full, entity.getCondition());
-                holder.setText(R.id.coupon_user, "仅限" + entity.getAccount() + "使用");
+//                holder.setText(R.id.coupon_name, entity.getTitle());
+//                holder.setText(R.id.coupon_validity, "有效期至：" + U.timeStampToStr_(entity.getEnd_time()));
+//                holder.setText(R.id.coupon_price, entity.getValue());
+//                holder.setText(R.id.coupon_full, entity.getCondition());
+//                holder.setText(R.id.coupon_user, "仅限" + entity.getAccount() + "使用");
+//
+//                switch (entity.getIs_use()) {
+//                    case "0":
+//                        long end_time = Long.valueOf(entity.getEnd_time());
+//                        L.i("end_time" + end_time);
+//                        L.i("currentTimeMillis" + System.currentTimeMillis());
+//                        Date date = new Date();
+//                        if (end_time < System.currentTimeMillis()) {
+//                            holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
+//                            holder.setVisible(R.id.coupon_status, true);
+//                            holder.setImageResource(R.id.coupon_status, R.mipmap.have_expired);
+//                            holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
+//                            holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
+//                            holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
+//                            holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
+//                            holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
+//                            holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
+//                        }
+//                        break;
+//                    case "1":
+//                        holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
+//                        holder.setVisible(R.id.coupon_status, true);
+//                        holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
+//                        holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
+//                        holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
+//                        holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
+//                        holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
+//                        holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
+//                        break;
+//                }
+//
 
-                long end_time = Long.valueOf(entity.getEnd_time());
-                Date date = new Date();
-                if (end_time < date.getTime()) {
-                    holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
-                    holder.setVisible(R.id.coupon_status, true);
-                    holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
-                    holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
-                    holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
-                    holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
-                    holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
-                    holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
-                }
             }
         };
+        adapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                if (status == 111) {
+                    intent = new Intent();
+                    intent.putExtra(K.DATA, couponList.get(position));
+                    setResult(200, intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
         discountCouponRecycler.setAdapter(adapter);
 
 
@@ -124,7 +164,6 @@ public class DiscountCouponActivity extends BaseActivity {
                 if (list.size() == 0) {
                     notDiscountCoupon.setVisibility(View.VISIBLE);
                 }
-
             }
         };
         setProgressSubscriber(onNextListener);

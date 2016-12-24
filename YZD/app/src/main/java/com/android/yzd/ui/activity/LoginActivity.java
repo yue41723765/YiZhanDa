@@ -18,6 +18,7 @@ import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.StatusBarUtil;
 import com.android.yzd.tools.T;
@@ -95,7 +96,6 @@ public class LoginActivity extends BaseActivity {
             public void onNext(Object o) {
                 UserInfoEntity userInfo = gson.fromJson(gson.toJson(o), UserInfoEntity.class);
                 SPUtils.put(LoginActivity.this, K.USERINFO, userInfo);
-
                 loginEC(userInfo.getEasemob_account(), userInfo.getEasemob_password());
             }
         };
@@ -130,6 +130,7 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onError(int code, String message) {
+                L.i("----onError----");
                 handler.sendEmptyMessageAtTime(code, 0);
             }
         });

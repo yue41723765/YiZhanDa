@@ -27,6 +27,7 @@ import com.android.yzd.ui.view.MyItemDecoration;
 import com.android.yzd.ui.view.TitleBarView;
 import com.google.gson.reflect.TypeToken;
 import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class AddressManageActivity extends BaseActivity {
     List<AddressEntity> addressList = new ArrayList<>();
     Map<Integer, Boolean> isCheck = new HashMap<>();
 
+    int status = 0;
+
     @Override
     public int getContentViewId() {
         return R.layout.activity_address_manage;
@@ -63,6 +66,10 @@ public class AddressManageActivity extends BaseActivity {
     protected void initAllMembersView(Bundle savedInstanceState) {
         userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
         init();
+        try {
+            status = getIntent().getIntExtra(K.STATUS, 0);
+        } catch (Exception e) {
+        }
     }
 
     private void init() {
@@ -133,6 +140,22 @@ public class AddressManageActivity extends BaseActivity {
                 });
             }
         };
+        adapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                if (status == 111) {
+                    intent = new Intent();
+                    intent.putExtra(K.DATA, addressList.get(position));
+                    setResult(100, intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
         amRecycler.setAdapter(adapter);
     }
 

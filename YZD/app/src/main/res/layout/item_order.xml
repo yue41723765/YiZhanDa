@@ -18,7 +18,6 @@
         android:gravity="center_vertical|right"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="待支付"
         android:textColor="@color/colorPrimary"
         android:textSize="14sp" />
 
@@ -80,19 +79,22 @@
                 android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:background="@drawable/round_line_black30"
-                android:text="取消订单"
                 android:textColor="@color/black_30"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/order_pay"
-                android:layout_width="80dp"
+                android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_marginLeft="10dp"
                 android:background="@drawable/round_red"
-                android:text="立即支付"
+                android:minWidth="80dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:textColor="@android:color/white"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
 
         </LinearLayout>
     </LinearLayout>

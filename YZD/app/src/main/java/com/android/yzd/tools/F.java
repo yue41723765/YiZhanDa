@@ -16,4 +16,6 @@ public class F {
     public static final String RETRIEVE = "retrieve";//找回密码
     public static final String MOD_BIND = "bind_one";//修改绑定手机号
     public static final String RE_BIND = "bind_two";//绑定新手机号
+
+    public static final String SAVEPATH = "/sdcard/yzd/";
 }

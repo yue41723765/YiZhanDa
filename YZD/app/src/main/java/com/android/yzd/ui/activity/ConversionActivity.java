@@ -12,6 +12,7 @@ import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.K;
 import com.android.yzd.tools.SPUtils;
+import com.android.yzd.tools.U;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.view.MyItemDecoration;
 import com.google.gson.reflect.TypeToken;
@@ -89,6 +90,7 @@ public class ConversionActivity extends BaseActivity {
                 }
                 holder.setText(R.id.history_name, s.getGoods_name());
                 holder.setText(R.id.integral_number, "-" + s.getUse_integral());
+                holder.setText(R.id.history_date, U.timeStampToStr(s.getCreate_time()));
             }
         };
 

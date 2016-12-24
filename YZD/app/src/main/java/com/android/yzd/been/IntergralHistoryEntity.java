@@ -15,6 +15,7 @@ public class IntergralHistoryEntity {
     private String goods_name;
     private String use_integral;
     private int status;
+    private String create_time;
 
     public String getGoods_name() {
         return goods_name;
@@ -38,5 +39,13 @@ public class IntergralHistoryEntity {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getCreate_time() {
+        return create_time;
+    }
+
+    public void setCreate_time(String create_time) {
+        this.create_time = create_time;
     }
 }

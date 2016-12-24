@@ -1,10 +1,13 @@
 package com.android.yzd.been;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Administrator on 2016/12/21 0021.
  */
 
-public class CartListBean {
+public class CartListBean implements Parcelable {
     /**
      * goods_name : 商品id
      * goods_logo : 商品logo
@@ -66,4 +69,44 @@ public class CartListBean {
     public void setCart_id(String cart_id) {
         this.cart_id = cart_id;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.goods_name);
+        dest.writeString(this.goods_logo);
+        dest.writeFloat(this.goods_price);
+        dest.writeInt(this.number);
+        dest.writeString(this.goods_id);
+        dest.writeString(this.cart_id);
+    }
+
+    public CartListBean() {
+    }
+
+    protected CartListBean(Parcel in) {
+        this.goods_name = in.readString();
+        this.goods_logo = in.readString();
+        this.goods_price = in.readFloat();
+        this.number = in.readInt();
+        this.goods_id = in.readString();
+        this.cart_id = in.readString();
+    }
+
+    public static final Parcelable.Creator<CartListBean> CREATOR = new Parcelable.Creator<CartListBean>() {
+        @Override
+        public CartListBean createFromParcel(Parcel source) {
+            return new CartListBean(source);
+        }
+
+        @Override
+        public CartListBean[] newArray(int size) {
+            return new CartListBean[size];
+        }
+    };
 }

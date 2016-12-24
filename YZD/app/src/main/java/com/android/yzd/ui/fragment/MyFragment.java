@@ -9,13 +9,15 @@ import android.widget.TextView;
 
 import com.android.yzd.R;
 import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.K;
-import com.android.yzd.tools.SPUtils;
 import com.android.yzd.ui.activity.AddressManageActivity;
 import com.android.yzd.ui.activity.BankCardActivity;
 import com.android.yzd.ui.activity.CollectActivity;
 import com.android.yzd.ui.activity.DiscountCouponActivity;
 import com.android.yzd.ui.activity.IntegralActivity;
+import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.activity.MyInfoActivity;
 import com.android.yzd.ui.activity.OrderActivity;
 import com.android.yzd.ui.activity.SetActivity;
@@ -23,6 +25,9 @@ import com.android.yzd.ui.activity.WalletActivity;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.CircleImageView;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -61,6 +66,8 @@ public class MyFragment extends BaseFragment {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.my_message:
+                intent = new Intent(getContext(), MessageManagerActivity.class);
+                startActivity(intent);
                 break;
             case R.id.my_info:
                 intent = new Intent(getContext(), MyInfoActivity.class);
@@ -126,8 +133,7 @@ public class MyFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        userInfo = (UserInfoEntity) SPUtils.get(context, K.USERINFO, UserInfoEntity.class);
-        showUserInfo();
+        getUserInfoEntity();
     }
 
     //刷新个人信息
@@ -135,7 +141,26 @@ public class MyFragment extends BaseFragment {
         Picasso.with(context).load(userInfo.getHead_pic()).into(myHead);
         myNick.setText(userInfo.getNickname());
         myTel.setText(userInfo.getAccount());
+        if (userInfo.getNot_read().equals("1")) {
+            myMessage.setImageResource(R.mipmap.home_message_);
+        } else {
+            myMessage.setImageResource(R.mipmap.home_message);
+        }
     }
 
+
+    private void getUserInfoEntity() {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                userInfo = gson.fromJson(gson.toJson(o), UserInfoEntity.class);
+                showUserInfo();
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        Map<String, String> params = new HashMap<>();
+        params.put("m_id", getUserInfo().getM_id());
+        HttpMethods.getInstance(context).memberCenter(progressSubscriber, params);
+    }
 
 }

@@ -14,7 +14,16 @@ public class ScEntity {
      */
 
     private String not_read;
+    private float delivery_price;
     private List<CartListBean> cart_list;
+
+    public float getDelivery_price() {
+        return delivery_price;
+    }
+
+    public void setDelivery_price(float delivery_price) {
+        this.delivery_price = delivery_price;
+    }
 
     public String getNot_read() {
         return not_read;

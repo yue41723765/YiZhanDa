@@ -1,5 +1,8 @@
 package com.android.yzd.ui.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,12 +12,21 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.android.yzd.R;
+import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.tools.AppManager;
+import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
+import com.android.yzd.tools.T;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.fragment.ClassifyFragment;
 import com.android.yzd.ui.fragment.FindFragment;
 import com.android.yzd.ui.fragment.HomeFragment;
 import com.android.yzd.ui.fragment.MyFragment;
 import com.android.yzd.ui.fragment.ShoppingCartFragment;
+import com.hyphenate.EMConnectionListener;
+import com.hyphenate.EMError;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.util.NetUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,6 +60,10 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
+        AppManager.getAppManager().addActivity(this);
+        EMClient.getInstance().addConnectionListener(new MyConnectionListener());
+
+
 
         homeFragment = new HomeFragment();
         classifyFragment = new ClassifyFragment();
@@ -135,6 +151,57 @@ public class MainActivity extends BaseActivity {
         } else {
             finish();
             System.exit(0);
+        }
+    }
+
+    //实现ConnectionListener接口
+    private class MyConnectionListener implements EMConnectionListener {
+        @Override
+        public void onConnected() {
+        }
+
+        @Override
+        public void onDisconnected(final int error) {
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (error == EMError.USER_REMOVED) {
+                        // 显示帐号已经被移除
+                    } else if (error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
+                        // 显示帐号在其他设备登录
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("提示");
+                        builder.setMessage("当前账号在其他平台登录！");
+                        builder.setPositiveButton("确定", new AlertDialog.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EMClient.getInstance().logout(true, null);
+                                // TODO Auto-generated method stub
+                                AppManager.getAppManager().finishAllActivity();
+
+                                SPUtils.put(MainActivity.this, K.USERINFO, new UserInfoEntity());
+                                SPUtils.put(MainActivity.this, K.ISLOG, true);
+                                EMClient.getInstance().logout(true);
+                                intent = new Intent(MainActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                            }
+                        });
+                        builder.show();
+
+                    } else {
+                        if (NetUtils.hasNetwork(MainActivity.this)) {
+                            //连接不到聊天服务器
+                        } else {
+                            //当前网络不可用，请检查网络设置
+                            T.show(MainActivity.this, "当前网络不可用，请检查网络设置", Toast.LENGTH_SHORT);
+                        }
+
+                    }
+                }
+            });
         }
     }
 }

@@ -3,6 +3,7 @@ package com.android.yzd.ui.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -28,6 +29,7 @@ import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.T;
 import com.android.yzd.ui.activity.AddOrderActivity;
 import com.android.yzd.ui.activity.DetailsActivity;
+import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
@@ -80,6 +82,8 @@ public class ShoppingCartFragment extends BaseFragment {
     List<CartListBean> cartList = new ArrayList<>();
     UserInfoEntity userInfo;
 
+    float delivery_price = 0;//运费
+
     @Override
     public int getContentViewId() {
         return R.layout.fragment_shopping_cart;
@@ -105,6 +109,7 @@ public class ShoppingCartFragment extends BaseFragment {
                 } else {
                     scMessage.setImageResource(R.mipmap.home_message);
                 }
+                delivery_price = sc.getDelivery_price();
             }
         };
         setProgressSubscriber(onNextListener);
@@ -297,11 +302,13 @@ public class ShoppingCartFragment extends BaseFragment {
         HttpMethods.getInstance(context).cartToCollect(progressSubscriber, builder.bulider());
     }
 
-    @OnClick({R.id.sc_edit, R.id.delete, R.id.sc_message, R.id.cs_choose_all, R.id.add_collect})
+    @OnClick({R.id.sc_edit, R.id.delete, R.id.sc_message, R.id.cs_choose_all, R.id.add_collect, R.id.close_an_account})
     public void onClick(View v) {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.sc_message:
+                intent = new Intent(getContext(), MessageManagerActivity.class);
+                startActivity(intent);
                 break;
             case R.id.sc_edit:
                 if (scEdit.getText().toString().equals("编辑")) {
@@ -317,7 +324,19 @@ public class ShoppingCartFragment extends BaseFragment {
                 break;
             case R.id.close_an_account:
                 //结算
-                intent = new Intent(getContext(), AddOrderActivity.class);
+                List<CartListBean> goodsBeanList = new ArrayList<>();
+                for (int i = 0; i < isCheck.size(); i++) {
+                    if (isCheck.get(i)) {
+                        goodsBeanList.add(cartList.get(i));
+                    }
+                }
+                if (goodsBeanList.size() == 0) {
+                    T.show(context, "请选择商品", Toast.LENGTH_SHORT);
+                    return;
+                }
+                intent = new Intent(context, AddOrderActivity.class);
+                intent.putExtra("delivery_price", delivery_price);
+                intent.putParcelableArrayListExtra(K.DATA, (ArrayList<? extends Parcelable>) goodsBeanList);
                 startActivity(intent);
                 break;
             case R.id.add_collect:

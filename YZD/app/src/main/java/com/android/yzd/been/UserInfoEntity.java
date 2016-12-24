@@ -8,13 +8,14 @@ import java.io.Serializable;
  */
 
 public class UserInfoEntity implements Serializable {
+
     /**
      * m_id : 2
      * account : 18166485393
      * easemob_account : 201612062139446
      * easemob_password : 1481031593
-     * head_pic : http://yzd.txunda.com/Uploads/Member/default.png
-     * nickname : 18166485393
+     * head_pic : http://yzd.txunda.com/Uploads/Member/2016-12-07/58481542c0b96.png
+     * nickname : 测试
      * status : 1
      * not_read : 0
      */
@@ -26,6 +27,7 @@ public class UserInfoEntity implements Serializable {
     private String head_pic;
     private String nickname;
     private String status;
+    private String balance;
     private String not_read;
 
     public String getM_id() {
@@ -84,6 +86,14 @@ public class UserInfoEntity implements Serializable {
         this.status = status;
     }
 
+    public String getBalance() {
+        return balance;
+    }
+
+    public void setBalance(String balance) {
+        this.balance = balance;
+    }
+
     public String getNot_read() {
         return not_read;
     }
@@ -91,4 +101,5 @@ public class UserInfoEntity implements Serializable {
     public void setNot_read(String not_read) {
         this.not_read = not_read;
     }
+
 }

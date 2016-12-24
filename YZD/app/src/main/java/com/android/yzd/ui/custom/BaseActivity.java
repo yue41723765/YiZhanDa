@@ -7,8 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 
+import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.ProgressSubscriber;
 import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
@@ -36,6 +39,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         progressSubscriber = new ProgressSubscriber(onNextListener, this, false);
     }
 
+    public void setProgressSubscriber(SubscriberOnNextListener onNextListener, boolean isShow) {
+        progressSubscriber = new ProgressSubscriber(onNextListener, this, false, isShow);
+    }
+
     public abstract int getContentViewId();
 
     @Override
@@ -52,6 +59,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     public void onClick(View v) {
 
+    }
+
+    public UserInfoEntity getUserInfo() {
+        return (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
     }
 
 }

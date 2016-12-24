@@ -126,7 +126,8 @@
                 android:onClick="onClick"
                 android:text="立即购买"
                 android:textColor="@android:color/white"
-                android:textSize="17sp" />
+                android:textSize="17sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 

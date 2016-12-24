@@ -24,6 +24,7 @@ import com.android.yzd.tools.SPUtils;
 import com.android.yzd.ui.activity.ConfirmConversionActivity;
 import com.android.yzd.ui.activity.DetailsActivity;
 import com.android.yzd.ui.activity.IntegralActivity;
+import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.MyItemDecoration;
 import com.squareup.picasso.Picasso;
@@ -100,6 +101,12 @@ public class FindFragment extends BaseFragment {
                 FindEntity findEntity = gson.fromJson(gson.toJson(o), FindEntity.class);
                 setBoutiqueRecommend(findEntity.getGoods_list());
                 setIntegralAdapter(findEntity.getIntegral_list());
+
+                if (findEntity.getNot_read().equals("1")) {
+                    findMessage.setImageResource(R.mipmap.home_message_);
+                } else {
+                    findMessage.setImageResource(R.mipmap.home_message);
+                }
             }
         };
         setProgressSubscriber(onNextListener);
@@ -165,12 +172,16 @@ public class FindFragment extends BaseFragment {
     }
 
 
-    @OnClick({R.id.find_more})
+    @OnClick({R.id.find_more, R.id.find_message})
     public void onClick(View v) {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.find_more:
                 intent = new Intent(context, IntegralActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.find_message:
+                intent = new Intent(getContext(), MessageManagerActivity.class);
                 startActivity(intent);
                 break;
 

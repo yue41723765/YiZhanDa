@@ -8,8 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.ProgressSubscriber;
 import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.K;
+import com.android.yzd.tools.SPUtils;
 import com.google.gson.Gson;
 
 import butterknife.ButterKnife;
@@ -49,5 +52,9 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
 
 
     public void onClick(View v) {
+    }
+
+    public UserInfoEntity getUserInfo() {
+        return (UserInfoEntity) SPUtils.get(context, K.USERINFO, UserInfoEntity.class);
     }
 }

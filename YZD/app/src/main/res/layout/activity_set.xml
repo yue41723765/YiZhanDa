@@ -153,6 +153,7 @@
                 android:textColor="@color/black_90" />
 
             <TextView
+                android:id="@+id/find_new_ver"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -160,6 +161,7 @@
                 android:layout_marginRight="10dp"
                 android:background="@drawable/round_red"
                 android:padding="3dp"
+                android:visibility="gone"
                 android:text="发现新版本"
                 android:textColor="@android:color/white"
                 android:textSize="10sp" />

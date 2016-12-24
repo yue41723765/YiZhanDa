@@ -191,4 +191,40 @@ public interface HttpService {
     @Multipart
     @POST("index.php/Api/Find/exchangeGoods")
     Observable<HttpResult> exchangeGoods(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/addOrder")
+    Observable<HttpResult> addOrder(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Article/scoreProblem")
+    Observable<HttpResult> scoreProblem(@PartMap Map<String, RequestBody> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Article/payDescription")
+    Observable<HttpResult> payDescription(@FieldMap Map<String, String> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/orderList")
+    Observable<HttpResult> orderList(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/cancelOrder")
+    Observable<HttpResult> cancelOrder(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/deleteOrder")
+    Observable<HttpResult> deleteOrder(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Article/addFeedback")
+    Observable<HttpResult> addFeedback(@PartMap Map<String, RequestBody> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Article/setPage")
+    Observable<HttpResult> setPage(@FieldMap Map<String, String> param);
+
+    @FormUrlEncoded
+    @POST("index.php/Api/Upgrade/upgrade")
+    Observable<HttpResult> upgrade(@FieldMap Map<String, String> param);
 }

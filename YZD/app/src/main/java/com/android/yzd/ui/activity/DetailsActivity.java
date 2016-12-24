@@ -309,7 +309,6 @@ public class DetailsActivity extends BaseActivity {
                 }
                 break;
             case R.id.add_shoppingCart:
-
                 addCart(goods_id);
                 break;
             case R.id.details_shopping_cart:

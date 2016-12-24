@@ -9,46 +9,32 @@ import android.os.Parcelable;
 
 public class MessageEntity implements Parcelable {
 
+
     /**
-     * msg_id : 消息id
-     * status : 0未读 1已读
-     * msg_content : 消息标题
+     * title : 标题
      * order_id : 订单id
      * order_sn : 订单编号
-     * pick_addr : 取货地址
-     * create_time : 时间
+     * order_create_time : 下单时间
+     * content : 内容
+     * create_time : 创建时间
+     * status : 0未读 1 已读
      */
 
-    private String msg_id;
-    private String status;
-    private String msg_content;
+    private String title;
     private String order_id;
     private String order_sn;
-    private String pick_addr;
+    private String order_create_time;
+    private String content;
     private String create_time;
+    private String status;
+    private String order_time;
 
-    public String getMsg_id() {
-        return msg_id;
+    public String getTitle() {
+        return title;
     }
 
-    public void setMsg_id(String msg_id) {
-        this.msg_id = msg_id;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getMsg_content() {
-        return msg_content;
-    }
-
-    public void setMsg_content(String msg_content) {
-        this.msg_content = msg_content;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getOrder_id() {
@@ -67,12 +53,20 @@ public class MessageEntity implements Parcelable {
         this.order_sn = order_sn;
     }
 
-    public String getPick_addr() {
-        return pick_addr;
+    public String getOrder_create_time() {
+        return order_create_time;
     }
 
-    public void setPick_addr(String pick_addr) {
-        this.pick_addr = pick_addr;
+    public void setOrder_create_time(String order_create_time) {
+        this.order_create_time = order_create_time;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getCreate_time() {
@@ -83,6 +77,22 @@ public class MessageEntity implements Parcelable {
         this.create_time = create_time;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getOrder_time() {
+        return order_time;
+    }
+
+    public void setOrder_time(String order_time) {
+        this.order_time = order_time;
+    }
+
 
     @Override
     public int describeContents() {
@@ -91,26 +101,28 @@ public class MessageEntity implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.msg_id);
-        dest.writeString(this.status);
-        dest.writeString(this.msg_content);
+        dest.writeString(this.title);
         dest.writeString(this.order_id);
         dest.writeString(this.order_sn);
-        dest.writeString(this.pick_addr);
+        dest.writeString(this.order_create_time);
+        dest.writeString(this.content);
         dest.writeString(this.create_time);
+        dest.writeString(this.status);
+        dest.writeString(this.order_time);
     }
 
     public MessageEntity() {
     }
 
     protected MessageEntity(Parcel in) {
-        this.msg_id = in.readString();
-        this.status = in.readString();
-        this.msg_content = in.readString();
+        this.title = in.readString();
         this.order_id = in.readString();
         this.order_sn = in.readString();
-        this.pick_addr = in.readString();
+        this.order_create_time = in.readString();
+        this.content = in.readString();
         this.create_time = in.readString();
+        this.status = in.readString();
+        this.order_time = in.readString();
     }
 
     public static final Creator<MessageEntity> CREATOR = new Creator<MessageEntity>() {

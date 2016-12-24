@@ -24,7 +24,6 @@ import com.android.yzd.tools.T;
 import com.android.yzd.tools.U;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.thread.TimeCount;
-import com.google.gson.Gson;
 
 import java.util.HashMap;
 
@@ -114,9 +113,8 @@ public class RegisterActivity extends BaseActivity {
         userRegAgrListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
-                Gson gson = new Gson();
                 UserRegAgr ura = gson.fromJson(gson.toJson(o), UserRegAgr.class);
-                intent = new Intent(RegisterActivity.this, SystemDetailsActivity.class);
+                intent = new Intent(RegisterActivity.this, WebView.class);
                 intent.putExtra(K.DATA, ura);
                 startActivity(intent);
             }

@@ -15,18 +15,18 @@ import com.android.yzd.been.AdvertListBean;
 import com.android.yzd.been.GoodGoodsListBean;
 import com.android.yzd.been.HomeDataEntity;
 import com.android.yzd.been.RecommendGoodsListBean;
-import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.K;
-import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.ScreenUtils;
+import com.android.yzd.ui.activity.ClassitySearchActivity;
 import com.android.yzd.ui.activity.DetailsActivity;
 import com.android.yzd.ui.activity.HomeSearchActivity;
 import com.android.yzd.ui.activity.HotActivity;
 import com.android.yzd.ui.activity.IntegralActivity;
 import com.android.yzd.ui.activity.LoginActivity;
 import com.android.yzd.ui.activity.MessageManagerActivity;
+import com.android.yzd.ui.activity.OrderActivity;
 import com.android.yzd.ui.adapter.ViewPagerAdapter;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.AutoScrollViewPager;
@@ -48,7 +48,6 @@ import me.relex.circleindicator.CircleIndicator;
  */
 public class HomeFragment extends BaseFragment {
 
-    UserInfoEntity userInfo;
     HomeDataEntity homeData;
     @BindView(R.id.home_message)
     ImageView homeMessage;
@@ -72,7 +71,6 @@ public class HomeFragment extends BaseFragment {
     RecyclerView homeRecommendRecycler;
 
 
-    CommonAdapter itemAdapter1;
     CommonAdapter itemAdapter2;
 
     List<View> views = new ArrayList<>();
@@ -94,11 +92,14 @@ public class HomeFragment extends BaseFragment {
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         width = ScreenUtils.getScreenWidth(getContext());
-        userInfo = (UserInfoEntity) SPUtils.get(context, K.USERINFO, UserInfoEntity.class);
-        getHomeData();
-
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getHomeData();
+    }
 
     private void getHomeData() {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
@@ -109,7 +110,7 @@ public class HomeFragment extends BaseFragment {
             }
         };
 
-        builder.addParameter("m_id", userInfo.getM_id());
+        builder.addParameter("m_id", getUserInfo().getM_id());
         setProgressSubscriber(onNextListener);
         HttpMethods.getInstance(context).index(progressSubscriber, builder.bulider());
     }
@@ -120,8 +121,11 @@ public class HomeFragment extends BaseFragment {
         //本周推荐
         setAdapter1();
 
-        if (homeData.getNot_read().equals("1"))
+        if (homeData.getNot_read().equals("1")) {
             homeMessage.setImageResource(R.mipmap.home_message_);
+        } else {
+            homeMessage.setImageResource(R.mipmap.home_message);
+        }
 
         if (homeData.getGood_goods_list().size() > 0) {
             List<GoodGoodsListBean> entityList = homeData.getGood_goods_list();
@@ -258,13 +262,13 @@ public class HomeFragment extends BaseFragment {
                 startActivity(intent);
                 break;
             case R.id.home_recommend:
-                intent = new Intent(getContext(), HotActivity.class);
-                intent.putExtra(K.TITLE, 2);
+                intent = new Intent(getContext(), ClassitySearchActivity.class);
+                intent.putExtra(K.SEC_TYPE_ID, "");
                 startActivity(intent);
                 break;
             case R.id.home_favorable:
-                intent = new Intent(getContext(), HotActivity.class);
-                intent.putExtra(K.TITLE, 3);
+                intent = new Intent(getContext(), OrderActivity.class);
+                intent.putExtra(K.STATUS, 0);
                 startActivity(intent);
                 break;
             case R.id.home_viewPage:
@@ -274,7 +278,6 @@ public class HomeFragment extends BaseFragment {
             case R.id.home_message:
                 intent = new Intent(getContext(), MessageManagerActivity.class);
                 startActivity(intent);
-                homeMessage.setImageResource(R.mipmap.home_message);
                 break;
         }
     }
