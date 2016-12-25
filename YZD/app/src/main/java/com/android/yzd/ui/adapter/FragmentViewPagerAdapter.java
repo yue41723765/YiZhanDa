@@ -1,12 +1,12 @@
 package com.android.yzd.ui.adapter;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.android.yzd.tools.K;
 import com.android.yzd.ui.fragment.OrderFragment;
+
+import java.util.List;
 
 
 /**
@@ -15,15 +15,17 @@ import com.android.yzd.ui.fragment.OrderFragment;
 
 public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
     String[] mTitle;
+    List<OrderFragment> orderFragments;
 
-    public FragmentViewPagerAdapter(FragmentManager fm, String[] mTitle) {
+    public FragmentViewPagerAdapter(FragmentManager fm, String[] mTitle, List<OrderFragment> orderFragments) {
         super(fm);
         this.mTitle = mTitle;
+        this.orderFragments = orderFragments;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return newInstance(mTitle[position], position);
+        return orderFragments.get(position);
     }
 
     @Override
@@ -36,12 +38,4 @@ public class FragmentViewPagerAdapter extends FragmentPagerAdapter {
         return mTitle[position];
     }
 
-    public Fragment newInstance(String title, int position) {
-        OrderFragment orderFragment = new OrderFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(K.STATUS, title);
-        bundle.putInt(K.POSITION, position);
-        orderFragment.setArguments(bundle);
-        return orderFragment;
-    }
 }

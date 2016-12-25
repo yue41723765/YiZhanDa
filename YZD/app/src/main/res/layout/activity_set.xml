@@ -161,10 +161,10 @@
                 android:layout_marginRight="10dp"
                 android:background="@drawable/round_red"
                 android:padding="3dp"
-                android:visibility="gone"
                 android:text="发现新版本"
                 android:textColor="@android:color/white"
-                android:textSize="10sp" />
+                android:textSize="10sp"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
@@ -211,7 +211,7 @@
         android:background="@drawable/ripple_white"
         android:gravity="center"
         android:onClick="onClick"
-        android:text="退出登陆"
+        android:text="退出登录"
         android:textColor="@color/red_30"
         android:textSize="16sp" />
 

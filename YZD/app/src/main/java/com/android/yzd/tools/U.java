@@ -1,7 +1,15 @@
 package com.android.yzd.tools;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.PopupWindow;
+
+import com.android.yzd.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -84,4 +92,56 @@ public class U {
         String re_StrTime = sdf.format(new Date(lcc_time * 1000L));
         return re_StrTime;
     }
+
+    /**
+     * @param context
+     * @param layout
+     * @param lable
+     * @param width
+     * @param height
+     */
+    public static PopupWindow showPopup(Context context, View view, View lable, int width, int height) {
+        PopupWindow popupWindow = new PopupWindow(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        //点击空白处时，隐藏掉pop窗口
+        popupWindow.setFocusable(true);
+        popupWindow.setContentView(view);
+        popupWindow.setAnimationStyle(R.style.TopStyle);
+        popupWindow.setBackgroundDrawable(new ColorDrawable());
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+            }
+        });
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int[] location = new int[2];
+        int popupWidth = view.getMeasuredWidth();
+        int popupHeight = view.getMeasuredHeight();
+        lable.getLocationOnScreen(location);
+        popupWindow.showAtLocation(lable, Gravity.NO_GRAVITY, location[0] - popupWidth / 2 - width, location[1] + popupHeight / 2 - height);
+        return popupWindow;
+    }
+
+    public static PopupWindow showPopup(Context context, View content, View lable, int width, int height, int gravity) {
+        PopupWindow popupWindow = new PopupWindow(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        //点击空白处时，隐藏掉pop窗口
+        popupWindow.setFocusable(true);
+        popupWindow.setContentView(content);
+        popupWindow.setAnimationStyle(R.style.TopStyle);
+        popupWindow.setBackgroundDrawable(new ColorDrawable());
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+            }
+        });
+        content.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int[] location = new int[2];
+        int popupWidth = content.getMeasuredWidth();
+        int popupHeight = content.getMeasuredHeight();
+        lable.getLocationOnScreen(location);
+        popupWindow.showAtLocation(lable, gravity, location[0] - popupWidth / 2 - width, location[1] + popupHeight / 2 - height);
+        return popupWindow;
+    }
+
 }

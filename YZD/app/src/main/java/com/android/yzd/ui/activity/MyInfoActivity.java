@@ -295,6 +295,11 @@ public class MyInfoActivity extends BaseActivity {
         imagePicker.setOutPutY(1000);//保存文件的高度。单位像素
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getUserInfo_();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

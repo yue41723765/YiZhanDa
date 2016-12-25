@@ -17,14 +17,15 @@ import com.android.yzd.been.HomeDataEntity;
 import com.android.yzd.been.RecommendGoodsListBean;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
+import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
 import com.android.yzd.tools.ScreenUtils;
-import com.android.yzd.ui.activity.ClassitySearchActivity;
 import com.android.yzd.ui.activity.DetailsActivity;
 import com.android.yzd.ui.activity.HomeSearchActivity;
 import com.android.yzd.ui.activity.HotActivity;
 import com.android.yzd.ui.activity.IntegralActivity;
 import com.android.yzd.ui.activity.LoginActivity;
+import com.android.yzd.ui.activity.MainActivity;
 import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.activity.OrderActivity;
 import com.android.yzd.ui.adapter.ViewPagerAdapter;
@@ -83,6 +84,7 @@ public class HomeFragment extends BaseFragment {
     ImageView homeImg3;
     @BindView(R.id.home_img_4)
     ImageView homeImg4;
+    RecyclerViewItemDecoration itemDecoration;
 
     @Override
     public int getContentViewId() {
@@ -92,6 +94,8 @@ public class HomeFragment extends BaseFragment {
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
         width = ScreenUtils.getScreenWidth(getContext());
+        itemDecoration = new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, getResources().getColor(R.color.background), DensityUtils.dp2px(context, 3), 0, 0);
+
     }
 
 
@@ -109,8 +113,7 @@ public class HomeFragment extends BaseFragment {
                 showUi();
             }
         };
-
-        builder.addParameter("m_id", getUserInfo().getM_id());
+        builder.addParameter("m_id", getUserInfo() == null ? "" : getUserInfo().getM_id());
         setProgressSubscriber(onNextListener);
         HttpMethods.getInstance(context).index(progressSubscriber, builder.bulider());
     }
@@ -157,7 +160,8 @@ public class HomeFragment extends BaseFragment {
                 return false;
             }
         };
-        homeRecommendRecycler.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, getResources().getColor(R.color.background), 10, 0, 0));
+        homeRecommendRecycler.removeItemDecoration(itemDecoration);
+        homeRecommendRecycler.addItemDecoration(itemDecoration);
         homeRecommendRecycler.setLayoutManager(gridLayoutManager);
         itemAdapter2 = new CommonAdapter<RecommendGoodsListBean>(getContext(), R.layout.item_hot_2, homeData.getRecommend_goods_list()) {
 
@@ -172,9 +176,14 @@ public class HomeFragment extends BaseFragment {
         itemAdapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                intent = new Intent(context, DetailsActivity.class);
-                intent.putExtra(K.GOODS_ID, homeData.getRecommend_goods_list().get(position).getGoods_id());
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(context, DetailsActivity.class);
+                    intent.putExtra(K.GOODS_ID, homeData.getRecommend_goods_list().get(position).getGoods_id());
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -186,8 +195,8 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void setViewPager() {
+        views.clear();
         for (int i = 0; i < homeData.getAdvert_list().size(); i++) {
-
             AdvertListBean adverList = homeData.getAdvert_list().get(i);
             ImageView imageView = new ImageView(getContext());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -207,6 +216,17 @@ public class HomeFragment extends BaseFragment {
         homeCircle.setViewPager(homeViewPage);
     }
 
+    private void details(int i) {
+        if (getUserInfo() == null) {
+            intent = new Intent(context, LoginActivity.class);
+            startActivity(intent);
+        } else {
+            intent = new Intent(context, DetailsActivity.class);
+            intent.putExtra(K.GOODS_ID, homeData.getGood_goods_list().get(i).getGoods_id());
+            startActivity(intent);
+        }
+    }
+
     @OnClick({R.id.home_search, R.id.home_hot, R.id.home_recommend, R.id.home_favorable,
             R.id.home_integral, R.id.home_viewPage, R.id.home_message,
             R.id.home_img_1, R.id.home_img_2, R.id.home_img_3, R.id.home_img_4})
@@ -215,35 +235,24 @@ public class HomeFragment extends BaseFragment {
         switch (v.getId()) {
             case R.id.home_img_1:
                 try {
-                    intent = new Intent(context, DetailsActivity.class);
-                    intent.putExtra(K.GOODS_ID, homeData.getGood_goods_list().get(0).getGoods_id());
-                    startActivity(intent);
+                    details(0);
                 } catch (Exception e) {
                 }
 
                 break;
             case R.id.home_img_2:
-                try {
-                    intent = new Intent(context, DetailsActivity.class);
-                    intent.putExtra(K.GOODS_ID, homeData.getGood_goods_list().get(1).getGoods_id());
-                    startActivity(intent);
-                } catch (Exception e) {
-                }
+                details(1);
                 break;
             case R.id.home_img_3:
                 try {
-                    intent = new Intent(context, DetailsActivity.class);
-                    intent.putExtra(K.GOODS_ID, homeData.getGood_goods_list().get(2).getGoods_id());
-                    startActivity(intent);
+                    details(2);
                 } catch (Exception e) {
                 }
 
                 break;
             case R.id.home_img_4:
                 try {
-                    intent = new Intent(context, DetailsActivity.class);
-                    intent.putExtra(K.GOODS_ID, homeData.getGood_goods_list().get(3).getGoods_id());
-                    startActivity(intent);
+                    details(3);
                 } catch (Exception e) {
                 }
                 break;
@@ -262,22 +271,33 @@ public class HomeFragment extends BaseFragment {
                 startActivity(intent);
                 break;
             case R.id.home_recommend:
-                intent = new Intent(getContext(), ClassitySearchActivity.class);
-                intent.putExtra(K.SEC_TYPE_ID, "");
-                startActivity(intent);
+                intent = new Intent();
+                intent.setAction(MainActivity.REFRESH);
+                intent.putExtra(K.STATUS, 2);
+                context.sendBroadcast(intent);
                 break;
             case R.id.home_favorable:
-                intent = new Intent(getContext(), OrderActivity.class);
-                intent.putExtra(K.STATUS, 0);
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(getContext(), OrderActivity.class);
+                    intent.putExtra(K.STATUS, 0);
+                    startActivity(intent);
+                }
                 break;
             case R.id.home_viewPage:
                 intent = new Intent(getContext(), LoginActivity.class);
                 startActivity(intent);
                 break;
             case R.id.home_message:
-                intent = new Intent(getContext(), MessageManagerActivity.class);
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(getContext(), MessageManagerActivity.class);
+                    startActivity(intent);
+                }
                 break;
         }
     }

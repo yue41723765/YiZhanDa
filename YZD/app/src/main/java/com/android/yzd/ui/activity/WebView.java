@@ -4,10 +4,10 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.webkit.WebSettings;
 import android.widget.TextView;
 
 import com.android.yzd.R;
+import com.android.yzd.been.QuestionEntity;
 import com.android.yzd.been.SystemMessEntity;
 import com.android.yzd.been.UserRegAgr;
 import com.android.yzd.tools.AppManager;
@@ -43,12 +43,12 @@ public class WebView extends BaseActivity {
         AppManager.getAppManager().addActivity(this);
         Parcelable parcelable = getIntent().getParcelableExtra(K.DATA);
 
-        //支持JS
-        WebSettings settings = contents.getSettings();
-        settings.setJavaScriptEnabled(true);
-        //支持屏幕缩放
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
+//        //支持JS
+//        WebSettings settings = contents.getSettings();
+//        settings.setJavaScriptEnabled(true);
+//        //支持屏幕缩放
+//        settings.setSupportZoom(true);
+//        settings.setBuiltInZoomControls(true);
         if (parcelable instanceof UserRegAgr) {
             UserRegAgr info = (UserRegAgr) parcelable;
             title.setText(info.getTitle());
@@ -57,6 +57,10 @@ public class WebView extends BaseActivity {
         } else if (parcelable instanceof SystemMessEntity) {
             SystemMessEntity entity = (SystemMessEntity) parcelable;
             title.setText(entity.getTitle());
+            titleBarTitle.setText(entity.getTitle());
+            contents.loadDataWithBaseURL("about:blank", entity.getContent(), "text/html", "utf-8", null);
+        } else if (parcelable instanceof QuestionEntity) {
+            QuestionEntity entity = (QuestionEntity) parcelable;
             titleBarTitle.setText(entity.getTitle());
             contents.loadDataWithBaseURL("about:blank", entity.getContent(), "text/html", "utf-8", null);
         }

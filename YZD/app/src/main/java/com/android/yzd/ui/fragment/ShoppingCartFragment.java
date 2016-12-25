@@ -110,6 +110,12 @@ public class ShoppingCartFragment extends BaseFragment {
                     scMessage.setImageResource(R.mipmap.home_message);
                 }
                 delivery_price = sc.getDelivery_price();
+
+                if (cartList.size() == 0) {
+                    csChooseAll.setChecked(false);
+                    scTotalPrice.setText("￥" + 0);
+                }
+
             }
         };
         setProgressSubscriber(onNextListener);

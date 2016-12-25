@@ -14,7 +14,7 @@
         app:setRightText="立即注册"
         app:setRightTextColor="@color/black_30"
         app:setRightTextVisibility="visible"
-        app:setTitle="登陆"
+        app:setTitle="登录"
         app:setTitleColor="@color/black_30" />
 
     <LinearLayout
@@ -50,7 +50,7 @@
             android:background="@drawable/round_background"
             android:drawableLeft="@mipmap/password"
             android:drawablePadding="10dp"
-            android:hint="请输入秘密"
+            android:hint="请输入密码"
             android:inputType="textPassword"
             android:paddingLeft="10dp"
             android:textColor="@color/black_30"
@@ -63,7 +63,7 @@
     <Button
         android:id="@+id/login_login"
         style="@style/button"
-        android:text="登陆" />
+        android:text="登录" />
 
 
     <TextView

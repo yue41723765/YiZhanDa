@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.android.yzd.R;
 import com.android.yzd.been.IntegralEsEntity;
 import com.android.yzd.been.IntegralListBean;
+import com.android.yzd.been.QuestionEntity;
 import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
@@ -149,14 +150,31 @@ public class IntegralActivity extends BaseActivity {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.integral_getIntegral:
-                intent = new Intent(this, IntegralQuestionActivity.class);
-                startActivity(intent);
+//                intent = new Intent(this, IntegralQuestionActivity.class);
+//                startActivity(intent);
+                getQuestionList();
                 break;
             case R.id.integral_history:
                 intent = new Intent(this, ConversionActivity.class);
                 startActivity(intent);
                 break;
         }
+    }
+
+    private void getQuestionList() {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                QuestionEntity questionEntity = gson.fromJson(gson.toJson(o), QuestionEntity.class);
+                if (questionEntity != null) {
+                    intent = new Intent(IntegralActivity.this, WebView.class);
+                    intent.putExtra(K.DATA, questionEntity);
+                    startActivity(intent);
+                }
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        HttpMethods.getInstance(this).scoreProblem(progressSubscriber);
     }
 
     @Override

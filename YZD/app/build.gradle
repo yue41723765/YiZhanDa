@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "com.android.yzd"
         minSdkVersion 15
-        targetSdkVersion 24
+        targetSdkVersion 21
         versionCode 1
         versionName "V1.0"
         multiDexEnabled true

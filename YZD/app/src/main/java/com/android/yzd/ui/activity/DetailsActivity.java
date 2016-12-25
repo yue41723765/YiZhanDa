@@ -43,13 +43,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.relex.circleindicator.CircleIndicator;
 
 /**
  * Created by Administrator on 2016/10/5 0005.
  */
 public class DetailsActivity extends BaseActivity {
+    PopupWindow popupWindow;
 
+    View addressView;
+    RecyclerView address_recycler;
+    CommonAdapter recyclerAdapter;
+    List<View> views = new ArrayList<>();
+
+    View view;
+    RecyclerView recycler;
+    CommonAdapter Adapter;
+
+    CommonAdapter itemAdapter;
+    UserInfoEntity userInfo;
+
+    String goods_id;
+    @BindView(R.id.service_head)
+    ImageView serviceHead;
     @BindView(R.id.details_service)
     TextView detailsService;
     @BindView(R.id.details_collect)
@@ -66,6 +83,8 @@ public class DetailsActivity extends BaseActivity {
     LinearLayout tools;
     @BindView(R.id.details_viewpager)
     AutoScrollViewPager detailsViewpager;
+    @BindView(R.id.viewpage_circle)
+    CircleIndicator viewpageCircle;
     @BindView(R.id.isCollect)
     TextView isCollect;
     @BindView(R.id.details_title)
@@ -89,26 +108,6 @@ public class DetailsActivity extends BaseActivity {
     @BindView(R.id.details_status)
     TextView detailsStatus;
 
-
-    List<View> views = new ArrayList<>();
-    @BindView(R.id.viewpage_circle)
-    CircleIndicator viewpageCircle;
-
-
-    PopupWindow popupWindow;
-
-    View addressView;
-    RecyclerView address_recycler;
-    CommonAdapter recyclerAdapter;
-
-    View view;
-    RecyclerView recycler;
-    CommonAdapter Adapter;
-
-    CommonAdapter itemAdapter;
-    UserInfoEntity userInfo;
-
-    String goods_id;
 
     @Override
     public int getContentViewId() {
@@ -231,6 +230,7 @@ public class DetailsActivity extends BaseActivity {
             detailsCollect.setCompoundDrawables(null, drawable, null, null);
             isCollect.setCompoundDrawables(null, drawable, null, null);
         }
+        detailsTitle.setText(detailsEntity.getGoods_name());
         //购买人数
         detailsNumber.setText(detailsEntity.getSales() + "人购买");
         //积分
@@ -246,6 +246,7 @@ public class DetailsActivity extends BaseActivity {
                 detailsShoppingCartNumber.setText(99 + "+");
             }
         }
+        Picasso.with(this).load(detailsEntity.getService_logo()).into(serviceHead);
     }
 
 
@@ -312,7 +313,22 @@ public class DetailsActivity extends BaseActivity {
                 addCart(goods_id);
                 break;
             case R.id.details_shopping_cart:
-                
+                intent = new Intent();
+                intent.setAction(MainActivity.REFRESH);
+                intent.putExtra(K.STATUS, 3);
+                sendBroadcast(intent);
+                AppManager.getAppManager().finishActivity(ClassitySearchActivity.class);
+                finish();
+                break;
+            case R.id.details_service:
+                if (detailsEntity == null)
+                    return;
+                intent = new Intent(this, MessageActivity.class);
+                intent.putExtra("nameNick", "一站达客服");
+                intent.putExtra("ecId", detailsEntity.getService_account());
+                intent.putExtra("yourHead", detailsEntity.getService_logo());
+                intent.putExtra("myHead", userInfo.getHead_pic());
+                startActivity(intent);
                 break;
         }
     }
@@ -365,4 +381,10 @@ public class DetailsActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

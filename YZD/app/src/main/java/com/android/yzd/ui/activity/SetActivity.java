@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.android.yzd.R;
 import com.android.yzd.been.SetEntity;
-import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
@@ -155,16 +154,16 @@ public class SetActivity extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-
                                 EMClient.getInstance().logout(true, null);
-                                AppManager.getAppManager().finishAllActivity();
-
-                                SPUtils.put(SetActivity.this, K.USERINFO, new UserInfoEntity());
+                                SPUtils.put(SetActivity.this, K.USERINFO, null);
                                 SPUtils.put(SetActivity.this, K.ISLOG, true);
-                                EMClient.getInstance().logout(true);
-                                intent = new Intent(SetActivity.this, LoginActivity.class);
-                                startActivity(intent);
+                                T.show(SetActivity.this, "退出成功!", Toast.LENGTH_SHORT);
 
+                                intent = new Intent(MainActivity.REFRESH);
+                                intent.putExtra(K.STATUS, 1);
+                                sendBroadcast(intent);
+
+                                finish();
                             }
                         })
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {

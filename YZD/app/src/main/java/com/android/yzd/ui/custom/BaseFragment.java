@@ -37,6 +37,10 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
         progressSubscriber = new ProgressSubscriber(onNextListener, context, false);
     }
 
+    public void setProgressSubscriber(SubscriberOnNextListener onNextListener, boolean isShow) {
+        progressSubscriber = new ProgressSubscriber(onNextListener, context, false, isShow);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = inflater.inflate(getContentViewId(), container, false);

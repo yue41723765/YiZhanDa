@@ -125,6 +125,10 @@ public class HttpMethods {
                 return httpResult.getData();
             if (httpResult.getMessage().equals("暂无数据"))
                 return httpResult.getData();
+            if (httpResult.getMessage().equals("无更多数据"))
+                return httpResult.getData();
+            if (httpResult.getMessage().equals("无收货地址"))
+                return httpResult.getData();
             if (httpResult.getFlag().equals("error")) {
                 throw new ApiException(httpResult.getMessage());
             }
@@ -634,6 +638,17 @@ public class HttpMethods {
     }
 
     /**
+     * 积分问题
+     *
+     * @param subscriber
+     */
+    public void scoreProblem(Subscriber<HttpResult> subscriber) {
+        Observable observable = httpService.scoreProblem(new HashMap<String, String>())
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
      * 支付说明
      *
      * @param subscriber
@@ -684,6 +699,28 @@ public class HttpMethods {
      */
     public void addFeedback(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
         Observable observable = httpService.addFeedback(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param subscriber
+     */
+    public void orderInfo(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.orderInfo(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 订单详情
+     *
+     * @param subscriber
+     */
+    public void confirmOrder(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.confirmOrder(param)
                 .map(new HttpResultFunc());
         toSubscribe(observable, subscriber);
     }

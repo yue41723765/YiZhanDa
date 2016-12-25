@@ -240,9 +240,15 @@ public class ClassitySearchActivity extends BaseActivity {
         adapter_1.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                intent = new Intent(ClassitySearchActivity.this, DetailsActivity.class);
-                intent.putExtra(K.GOODS_ID, goodsList.get(position).getGoods_id());
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(ClassitySearchActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(ClassitySearchActivity.this, DetailsActivity.class);
+                    intent.putExtra(K.GOODS_ID, goodsList.get(position).getGoods_id());
+                    startActivity(intent);
+                }
+
             }
 
             @Override
@@ -266,9 +272,14 @@ public class ClassitySearchActivity extends BaseActivity {
         adapter_2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                intent = new Intent(ClassitySearchActivity.this, DetailsActivity.class);
-                intent.putExtra(K.GOODS_ID, goodsList.get(position).getGoods_id());
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(ClassitySearchActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(ClassitySearchActivity.this, DetailsActivity.class);
+                    intent.putExtra(K.GOODS_ID, goodsList.get(position).getGoods_id());
+                    startActivity(intent);
+                }
             }
 
             @Override

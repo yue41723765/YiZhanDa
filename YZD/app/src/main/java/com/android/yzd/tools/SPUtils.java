@@ -72,7 +72,7 @@ public class SPUtils {
             String imageBase64 = new String(Base64.encodeBase64(baos.toByteArray()));
             editor.putString(key, imageBase64);
         } else {
-            editor.putString(key, object.toString());
+            editor.putString(key, null);
         }
 
         SharedPreferencesCompat.apply(editor);

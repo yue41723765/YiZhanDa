@@ -1,13 +1,18 @@
 package com.android.yzd.ui.activity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
+import android.widget.FrameLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -32,6 +37,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Administrator on 2016/10/1 0001.
@@ -53,9 +59,67 @@ public class MainActivity extends BaseActivity {
     FindFragment findFragment;
     MyFragment myFragment;
 
+    public static final String REFRESH = "com.android.yzd.ui.activity.MainActivity.refresh";
+    @BindView(R.id.main_home)
+    RadioButton mainHome;
+    @BindView(R.id.main_classify)
+    RadioButton mainClassify;
+    @BindView(R.id.main_shoppingCart)
+    RadioButton mainShoppingCart;
+    @BindView(R.id.main_find)
+    RadioButton mainFind;
+    @BindView(R.id.main_my)
+    RadioButton mainMy;
+    @BindView(R.id.main_contents)
+    FrameLayout mainContents;
+
+    RadioButton contentButton;
+
     @Override
     public int getContentViewId() {
         return R.layout.activity_main;
+    }
+
+
+    public void register() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(REFRESH);
+        //注册广播
+        try {
+            registerReceiver(receiver, filter);
+        } catch (Exception e) {
+        }
+    }
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(REFRESH)) {
+                int status = intent.getExtras().getInt(K.STATUS);
+                switch (status) {
+                    case 1:
+                        showFragment(homeFragment, mainHome);
+                        mainHome.setChecked(true);
+                        break;
+                    case 2:
+                        showFragment(classifyFragment, mainClassify);
+                        mainClassify.setChecked(true);
+                        break;
+                    case 3:
+                        mainShoppingCart.setChecked(true);
+                        showFragment(shoppingCartFragment, mainShoppingCart);
+                        break;
+                }
+            }
+        }
+    };
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -63,8 +127,7 @@ public class MainActivity extends BaseActivity {
         AppManager.getAppManager().addActivity(this);
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
 
-
-
+        register();
         homeFragment = new HomeFragment();
         classifyFragment = new ClassifyFragment();
         shoppingCartFragment = new ShoppingCartFragment();
@@ -77,6 +140,7 @@ public class MainActivity extends BaseActivity {
         transaction.commit();
         mContent = homeFragment;
         mainTools.setOnCheckedChangeListener(onCheckedChangeListener);
+        contentButton = mainHome;
     }
 
 
@@ -85,26 +149,38 @@ public class MainActivity extends BaseActivity {
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             switch (group.getCheckedRadioButtonId()) {
                 case R.id.main_home:
-                    showFragment(homeFragment);
+                    showFragment(homeFragment, mainHome);
                     break;
                 case R.id.main_classify:
-                    showFragment(classifyFragment);
+                    showFragment(classifyFragment, mainClassify);
                     break;
                 case R.id.main_shoppingCart:
-                    showFragment(shoppingCartFragment);
+                    if (getUserInfo() == null) {
+                        intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        contentButton.setChecked(true);
+                    } else {
+                        showFragment(shoppingCartFragment, mainShoppingCart);
+                    }
                     break;
                 case R.id.main_find:
-                    showFragment(findFragment);
+                    showFragment(findFragment, mainFind);
                     break;
                 case R.id.main_my:
-                    showFragment(myFragment);
+                    if (getUserInfo() == null) {
+                        intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        contentButton.setChecked(true);
+                    } else {
+                        showFragment(myFragment, mainMy);
+                    }
                     break;
             }
         }
     };
 
 
-    private void showFragment(Fragment to) {
+    private void showFragment(Fragment to, RadioButton button) {
         if (mContent != to) {
             transaction = fragmentManager.beginTransaction();
 
@@ -114,7 +190,8 @@ public class MainActivity extends BaseActivity {
                 transaction.hide(mContent).show(to);
             }
             mContent = to;
-            transaction.commit();
+            contentButton = button;
+            transaction.commitAllowingStateLoss();
         }
     }
 
@@ -152,6 +229,13 @@ public class MainActivity extends BaseActivity {
             finish();
             System.exit(0);
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 
     //实现ConnectionListener接口

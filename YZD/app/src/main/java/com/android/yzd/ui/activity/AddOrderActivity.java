@@ -127,11 +127,13 @@ public class AddOrderActivity extends BaseActivity {
         //保留两位小数
         DecimalFormat df = new DecimalFormat("#.##");
         String allPrice = "￥" + df.format(total + delivery_price);
+        orderAllPrice.setText(allPrice);
+        bottomAllPrice.setText(allPrice);
+
 
         goodsNumber.setText("共" + GoodsNum + "件商品");
         bottomGoodsNumber.setText(GoodsNum + "");
-        orderAllPrice.setText(allPrice);
-        bottomAllPrice.setText(allPrice);
+
 
         init();
         setAdapter();
@@ -233,7 +235,7 @@ public class AddOrderActivity extends BaseActivity {
 
             }
         };
-        setProgressSubscriber(onNextListener);
+        setProgressSubscriber(onNextListener, false);
         HttpMethods.getInstance(this).payDescription(progressSubscriber);
     }
 
@@ -255,7 +257,21 @@ public class AddOrderActivity extends BaseActivity {
                 break;
             case 200:
                 entity = data.getParcelableExtra(K.DATA);
-                coupon.setText("-￥" + entity.getValue());
+                if (entity != null) {
+                    float value = Float.valueOf(entity.getValue());
+                    if (value < (total + delivery_price)) {
+                        coupon.setText("-￥" + entity.getValue());
+
+                        //保留两位小数
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        String allPrice = "￥" + df.format(total + delivery_price - value);
+                        orderAllPrice.setText(allPrice);
+                        bottomAllPrice.setText(allPrice);
+
+                    } else {
+                        T.show(this, "优惠券满" + entity.getValue() + "元使用", Toast.LENGTH_SHORT);
+                    }
+                }
                 break;
         }
     }
@@ -271,10 +287,14 @@ public class AddOrderActivity extends BaseActivity {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                if (o.toString().equals("[]"))
+                    return;
                 addressEntity = gson.fromJson(gson.toJson(o), AddressEntity.class);
-                orderAddressName.setText("收货人：" + addressEntity.getConsignee());
-                orderAddressTel.setText(addressEntity.getMobile());
-                itemAddress.setText(addressEntity.getAddress());
+                if (addressEntity != null) {
+                    orderAddressName.setText("收货人：" + addressEntity.getConsignee());
+                    orderAddressTel.setText(addressEntity.getMobile());
+                    itemAddress.setText(addressEntity.getAddress());
+                }
             }
         };
         setProgressSubscriber(onNextListener);

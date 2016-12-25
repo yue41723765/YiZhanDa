@@ -2,6 +2,7 @@ package com.android.yzd.ui.activity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Administrator on 2016/10/2 0002.
@@ -43,6 +45,8 @@ public class CollectActivity extends BaseActivity {
 
     UserInfoEntity userInfo;
     List<GoodsInfoEntity> goodsList = new ArrayList<>();
+    @BindView(R.id.not_data)
+    ImageView notData;
 
     @Override
     public int getContentViewId() {
@@ -71,7 +75,7 @@ public class CollectActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
 
-                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(CollectActivity.this)
+                        AlertDialog.Builder builder = new AlertDialog.Builder(CollectActivity.this)
                                 .setTitle("提示")
                                 .setMessage("是否取消收藏?")
                                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -114,6 +118,9 @@ public class CollectActivity extends BaseActivity {
                 }.getType());
                 goodsList.addAll(list);
                 adapter.notifyDataSetChanged();
+                if (list.size() == 0) {
+                    notData.setVisibility(View.VISIBLE);
+                }
             }
         };
         setProgressSubscriber(onNextListener);
@@ -137,5 +144,12 @@ public class CollectActivity extends BaseActivity {
         httpParamet.addParameter("m_id", userInfo.getM_id());
         HttpMethods.getInstance(this).deleteCollect(progressSubscriber, httpParamet.bulider());
 
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

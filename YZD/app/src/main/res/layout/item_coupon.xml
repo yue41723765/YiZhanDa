@@ -50,7 +50,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
-                                android:text="有效期至：2016.8.20"
                                 android:textColor="@color/black_60"
                                 android:textSize="10sp" />
                         </LinearLayout>
@@ -81,7 +80,6 @@
                                     android:id="@+id/coupon_price"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="100"
                                     android:textColor="@color/red_30"
                                     android:textSize="24sp" />
 
@@ -92,7 +90,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:text="满500可用"
                                 android:textColor="@color/black_90" />
                         </LinearLayout>
 
@@ -121,7 +118,6 @@
                     android:layout_height="40dp"
                     android:gravity="center_vertical"
                     android:paddingLeft="25dp"
-                    android:text="仅限1336069696使用"
                     android:textColor="@color/black_90"
                     android:textSize="11sp" />
 

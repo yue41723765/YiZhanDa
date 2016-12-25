@@ -196,9 +196,9 @@ public interface HttpService {
     @POST("index.php/Api/Order/addOrder")
     Observable<HttpResult> addOrder(@PartMap Map<String, RequestBody> param);
 
-    @Multipart
+    @FormUrlEncoded
     @POST("index.php/Api/Article/scoreProblem")
-    Observable<HttpResult> scoreProblem(@PartMap Map<String, RequestBody> param);
+    Observable<HttpResult> scoreProblem(@FieldMap Map<String, String> param);
 
     @FormUrlEncoded
     @POST("index.php/Api/Article/payDescription")
@@ -220,6 +220,14 @@ public interface HttpService {
     @POST("index.php/Api/Article/addFeedback")
     Observable<HttpResult> addFeedback(@PartMap Map<String, RequestBody> param);
 
+    @Multipart
+    @POST("index.php/Api/Order/orderInfo")
+    Observable<HttpResult> orderInfo(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/confirmOrder")
+    Observable<HttpResult> confirmOrder(@PartMap Map<String, RequestBody> param);
+
     @FormUrlEncoded
     @POST("index.php/Api/Article/setPage")
     Observable<HttpResult> setPage(@FieldMap Map<String, String> param);
@@ -227,4 +235,5 @@ public interface HttpService {
     @FormUrlEncoded
     @POST("index.php/Api/Upgrade/upgrade")
     Observable<HttpResult> upgrade(@FieldMap Map<String, String> param);
+
 }

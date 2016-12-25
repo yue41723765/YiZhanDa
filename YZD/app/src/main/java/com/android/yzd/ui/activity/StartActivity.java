@@ -62,12 +62,12 @@ public class StartActivity extends Activity {
             if (isRun) {
                 intent = new Intent(StartActivity.this, WelComeActivity.class);
             } else {
-                boolean isLog = (boolean) SPUtils.get(StartActivity.this, K.ISLOG, true);//是否登陆
-                if (isLog) {
-                    intent = new Intent(StartActivity.this, LoginActivity.class);
-                } else {
-                    intent = new Intent(StartActivity.this, MainActivity.class);
-                }
+//                boolean isLog = (boolean) SPUtils.get(StartActivity.this, K.ISLOG, true);//是否登陆
+                intent = new Intent(StartActivity.this, MainActivity.class);
+//                if (isLog) {
+//                    intent = new Intent(StartActivity.this, LoginActivity.class);
+//                } else {
+//                }
             }
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);//放到线程会无效

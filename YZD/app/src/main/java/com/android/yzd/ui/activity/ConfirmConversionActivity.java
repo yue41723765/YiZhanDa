@@ -1,5 +1,6 @@
 package com.android.yzd.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -81,13 +82,17 @@ public class ConfirmConversionActivity extends BaseActivity {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                if (o.toString().equals("[]"))
+                    return;
                 addressEntity = gson.fromJson(gson.toJson(o), AddressEntity.class);
-                orderAddressName.setText("收货人：" + addressEntity.getConsignee());
-                orderAddressTel.setText(addressEntity.getMobile());
-                itemAddress.setText(addressEntity.getAddress());
+                if (addressEntity != null) {
+                    orderAddressName.setText("收货人：" + addressEntity.getConsignee());
+                    orderAddressTel.setText(addressEntity.getMobile());
+                    itemAddress.setText(addressEntity.getAddress());
+                }
             }
         };
-        setProgressSubscriber(onNextListener);
+        setProgressSubscriber(onNextListener, false);
         httpParamet.addParameter("m_id", userInfo.getM_id());
         HttpMethods.getInstance(this).getOneAddress(progressSubscriber, httpParamet.bulider());
     }
@@ -97,7 +102,32 @@ public class ConfirmConversionActivity extends BaseActivity {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.sure_conversion:
-                exchangeGoods();
+                if (addressEntity == null) {
+                    T.show(this, "请选择收货地址", Toast.LENGTH_SHORT);
+                } else {
+                    exchangeGoods();
+                }
+                break;
+            case R.id.order_address:
+                intent = new Intent(this, AddressManageActivity.class);
+                intent.putExtra(K.STATUS, 111);
+                startActivityForResult(intent, 100);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null)
+            return;
+        switch (requestCode) {
+            case 100:
+                //地址
+                addressEntity = data.getParcelableExtra(K.DATA);
+                orderAddressName.setText("收货人：" + addressEntity.getConsignee());
+                orderAddressTel.setText(addressEntity.getMobile());
+                itemAddress.setText(addressEntity.getAddress());
                 break;
         }
     }

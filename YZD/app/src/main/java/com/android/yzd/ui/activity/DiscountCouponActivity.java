@@ -16,7 +16,9 @@ import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.tools.SPUtils;
+import com.android.yzd.tools.U;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.google.gson.reflect.TypeToken;
 import com.zhy.adapter.recyclerview.CommonAdapter;
@@ -46,6 +48,7 @@ public class DiscountCouponActivity extends BaseActivity {
     List<CouponEntity> couponList = new ArrayList<>();
     int lastVisibleItem = -1;
     int status = 0;
+    boolean isData = true;
 
     @Override
     public int getContentViewId() {
@@ -75,42 +78,39 @@ public class DiscountCouponActivity extends BaseActivity {
         adapter = new CommonAdapter<CouponEntity>(this, R.layout.item_coupon, couponList) {
             @Override
             protected void convert(ViewHolder holder, CouponEntity entity, int position) {
-//                holder.setText(R.id.coupon_name, entity.getTitle());
-//                holder.setText(R.id.coupon_validity, "有效期至：" + U.timeStampToStr_(entity.getEnd_time()));
-//                holder.setText(R.id.coupon_price, entity.getValue());
-//                holder.setText(R.id.coupon_full, entity.getCondition());
-//                holder.setText(R.id.coupon_user, "仅限" + entity.getAccount() + "使用");
-//
-//                switch (entity.getIs_use()) {
-//                    case "0":
-//                        long end_time = Long.valueOf(entity.getEnd_time());
-//                        L.i("end_time" + end_time);
-//                        L.i("currentTimeMillis" + System.currentTimeMillis());
-//                        Date date = new Date();
-//                        if (end_time < System.currentTimeMillis()) {
-//                            holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
-//                            holder.setVisible(R.id.coupon_status, true);
-//                            holder.setImageResource(R.id.coupon_status, R.mipmap.have_expired);
-//                            holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
-//                            holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
-//                            holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
-//                            holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
-//                            holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
-//                            holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
-//                        }
-//                        break;
-//                    case "1":
-//                        holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
-//                        holder.setVisible(R.id.coupon_status, true);
-//                        holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
-//                        holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
-//                        holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
-//                        holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
-//                        holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
-//                        holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
-//                        break;
-//                }
-//
+                holder.setText(R.id.coupon_name, entity.getTitle());
+                holder.setText(R.id.coupon_validity, "有效期至：" + U.timeStampToStr_(entity.getEnd_time()));
+                holder.setText(R.id.coupon_price, entity.getValue());
+                holder.setText(R.id.coupon_full, "满" + entity.getCondition() + "使用");
+                holder.setText(R.id.coupon_user, "仅限" + entity.getAccount() + "使用");
+
+                switch (entity.getIs_use()) {
+                    case "0":
+                        long end_time = Long.valueOf(entity.getEnd_time());
+                        if (end_time < System.currentTimeMillis() / 1000) {
+                            holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
+                            holder.setVisible(R.id.coupon_status, true);
+                            holder.setImageResource(R.id.coupon_status, R.mipmap.have_expired);
+                            holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
+                            holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
+                            holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
+                            holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
+                            holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
+                            holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
+                        }
+                        break;
+                    case "1":
+                        holder.setImageResource(R.id.coupon_top, R.mipmap.coupon_top_2);
+                        holder.setVisible(R.id.coupon_status, true);
+                        holder.setTextColor(R.id.coupon_name, getResources().getColor(R.color.black_90));
+                        holder.setTextColor(R.id.coupon_validity, getResources().getColor(R.color.black_90));
+                        holder.setTextColor(R.id.coupon_price_title, getResources().getColor(R.color.black_90));
+                        holder.setTextColor(R.id.coupon_price, getResources().getColor(R.color.black_90));
+                        holder.setTextColor(R.id.coupon_full, getResources().getColor(R.color.black_90));
+                        holder.setTextColor(R.id.coupon_user, getResources().getColor(R.color.black_90));
+                        break;
+                }
+
 
             }
         };
@@ -118,10 +118,15 @@ public class DiscountCouponActivity extends BaseActivity {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
                 if (status == 111) {
-                    intent = new Intent();
-                    intent.putExtra(K.DATA, couponList.get(position));
-                    setResult(200, intent);
-                    finish();
+                    if (couponList.get(position).getIs_use().equals("0")) {
+                        long end_time = Long.valueOf(couponList.get(position).getEnd_time());
+                        if (end_time > System.currentTimeMillis() / 1000) {
+                            intent = new Intent();
+                            intent.putExtra(K.DATA, couponList.get(position));
+                            setResult(200, intent);
+                            finish();
+                        }
+                    }
                 }
             }
 
@@ -154,15 +159,21 @@ public class DiscountCouponActivity extends BaseActivity {
 
 
     private void getData() {
+        if (!isData)
+            return;
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                L.i(gson.toJson(o));
                 List<CouponEntity> list = gson.fromJson(gson.toJson(o), new TypeToken<List<CouponEntity>>() {
                 }.getType());
                 couponList.addAll(list);
                 adapter.notifyDataSetChanged();
-                if (list.size() == 0) {
+                if (couponList.size() == 0) {
                     notDiscountCoupon.setVisibility(View.VISIBLE);
+                }
+                if (list.size() == 0) {
+                    isData = false;
                 }
             }
         };

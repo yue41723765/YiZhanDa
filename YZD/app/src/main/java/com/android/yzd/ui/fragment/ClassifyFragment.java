@@ -1,7 +1,6 @@
 package com.android.yzd.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +8,6 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -24,8 +22,12 @@ import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.U;
 import com.android.yzd.ui.activity.ClassitySearchActivity;
 import com.android.yzd.ui.activity.HomeSearchActivity;
+import com.android.yzd.ui.activity.LoginActivity;
+import com.android.yzd.ui.activity.MainActivity;
+import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
 import com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader;
@@ -109,6 +111,7 @@ public class ClassifyFragment extends BaseFragment {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                ClassifyFragment.this.list.clear();
                 List<ClassifyToolsEntity> list = gson.fromJson(gson.toJson(o), new TypeToken<List<ClassifyToolsEntity>>() {
                 }.getType());
                 ClassifyFragment.this.list.addAll(list);
@@ -206,15 +209,26 @@ public class ClassifyFragment extends BaseFragment {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.classify_more:
-                popupWindow.showAsDropDown(classifyMore, 0, DensityUtils.dp2px(getContext(), 10));
+                popupWindow = U.showPopup(context, view, classifyMore, DensityUtils.dp2px(context, 15), DensityUtils.dp2px(context, 10));
                 break;
             case R.id.popup_refresh:
+                getTools();
                 popupWindow.dismiss();
                 break;
             case R.id.popup_message:
+                if (getUserInfo() == null) {
+                    intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(getContext(), MessageManagerActivity.class);
+                    startActivity(intent);
+                }
                 popupWindow.dismiss();
                 break;
             case R.id.popup_home:
+                intent = new Intent(MainActivity.REFRESH);
+                intent.putExtra(K.STATUS, 1);
+                context.sendBroadcast(intent);
                 popupWindow.dismiss();
                 break;
             case R.id.classify_search:
@@ -232,19 +246,6 @@ public class ClassifyFragment extends BaseFragment {
         relresh.setOnClickListener(this);
         message.setOnClickListener(this);
         home.setOnClickListener(this);
-
-        popupWindow = new PopupWindow(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
-        //点击空白处时，隐藏掉pop窗口
-        popupWindow.setFocusable(true);
-        popupWindow.setContentView(view);
-        popupWindow.setAnimationStyle(R.style.TopStyle);
-        popupWindow.setBackgroundDrawable(new BitmapDrawable());
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-            }
-        });
     }
 
 

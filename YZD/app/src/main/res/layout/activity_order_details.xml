@@ -15,7 +15,7 @@
     <RelativeLayout
         android:id="@+id/bottom_tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white">
 
@@ -30,18 +30,45 @@
             android:padding="5dp"
             android:text="联系客服"
             android:textColor="@color/colorPrimary"
-            android:textSize="8sp" />
+            android:textSize="8sp"
+            android:visibility="gone" />
 
-        <Button
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/round_red_30"
-            android:text="提醒配送"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/order_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/round_line_black30"
+                android:onClick="onClick"
+                android:textColor="@color/black_30"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/order_pay"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/round_red_30"
+                android:onClick="onClick"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="提醒配送"
+
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
 
     </RelativeLayout>
 
@@ -235,7 +262,8 @@
                     android:layout_height="40dp"
                     android:background="@android:color/white"
                     android:paddingLeft="10dp"
-                    android:paddingRight="10dp">
+                    android:paddingRight="10dp"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -271,7 +299,8 @@
                     android:layout_marginTop="2px"
                     android:background="@android:color/white"
                     android:paddingLeft="10dp"
-                    android:paddingRight="10dp">
+                    android:paddingRight="10dp"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -384,7 +413,6 @@
                             android:id="@+id/order_name_tel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="王大锤     18111111111"
                             android:textColor="@color/black_30"
                             android:textSize="13sp" />
 
@@ -393,7 +421,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="地址"
                             android:textColor="@color/black_30"
                             android:textSize="13sp" />
 
@@ -440,6 +467,7 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/order_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
@@ -463,10 +491,10 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/order_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
-                        android:text="时间"
                         android:textColor="@color/black_30"
                         android:textSize="14sp" />
                 </LinearLayout>

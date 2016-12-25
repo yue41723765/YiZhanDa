@@ -15,15 +15,14 @@ import com.android.yzd.R;
 import com.android.yzd.been.FindEntity;
 import com.android.yzd.been.GoodsListBean;
 import com.android.yzd.been.IntegralListBean;
-import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
-import com.android.yzd.tools.SPUtils;
 import com.android.yzd.ui.activity.ConfirmConversionActivity;
 import com.android.yzd.ui.activity.DetailsActivity;
 import com.android.yzd.ui.activity.IntegralActivity;
+import com.android.yzd.ui.activity.LoginActivity;
 import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.MyItemDecoration;
@@ -58,7 +57,6 @@ public class FindFragment extends BaseFragment {
 
     CommonAdapter adapter_1;
     CommonAdapter adapter_2;
-    UserInfoEntity userInfo;
 
     @Override
     public int getContentViewId() {
@@ -111,7 +109,7 @@ public class FindFragment extends BaseFragment {
         };
         setProgressSubscriber(onNextListener);
         builder.clear();
-        builder.addParameter("m_id", userInfo.getM_id());
+        builder.addParameter("m_id", m_id);
         HttpMethods.getInstance(context).findIndex(progressSubscriber, builder.bulider());
     }
 
@@ -129,9 +127,14 @@ public class FindFragment extends BaseFragment {
                 holder.setOnClickListener(R.id.conversion, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        intent = new Intent(context, ConfirmConversionActivity.class);
-                        intent.putExtra(K.DATA, integral_list.get(position));
-                        startActivity(intent);
+                        if (getUserInfo() == null) {
+                            intent = new Intent(context, LoginActivity.class);
+                            startActivity(intent);
+                        } else {
+                            intent = new Intent(context, ConfirmConversionActivity.class);
+                            intent.putExtra(K.DATA, integral_list.get(position));
+                            startActivity(intent);
+                        }
                     }
                 });
             }
@@ -158,9 +161,14 @@ public class FindFragment extends BaseFragment {
         adapter_1.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                intent = new Intent(context, DetailsActivity.class);
-                intent.putExtra(K.GOODS_ID, goods_list.get(position).getGoods_id());
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(context, DetailsActivity.class);
+                    intent.putExtra(K.GOODS_ID, goods_list.get(position).getGoods_id());
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -177,12 +185,23 @@ public class FindFragment extends BaseFragment {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.find_more:
-                intent = new Intent(context, IntegralActivity.class);
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(context, IntegralActivity.class);
+                    startActivity(intent);
+                }
+
                 break;
             case R.id.find_message:
-                intent = new Intent(getContext(), MessageManagerActivity.class);
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(getContext(), MessageManagerActivity.class);
+                    startActivity(intent);
+                }
                 break;
 
         }
@@ -191,7 +210,6 @@ public class FindFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        userInfo = (UserInfoEntity) SPUtils.get(context, K.USERINFO, UserInfoEntity.class);
-        getFindData(userInfo.getM_id());
+        getFindData(getUserInfo() == null ? "" : getUserInfo().getM_id());
     }
 }

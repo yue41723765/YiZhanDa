@@ -61,9 +61,14 @@ public class WelComeActivity extends BaseActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.welcome_immediately:
+//                SPUtils.put(this, K.ISRUN, false);
+//                intent = new Intent(this, LoginActivity.class);
+//                startActivity(intent);
+//                finish();
                 SPUtils.put(this, K.ISRUN, false);
-                intent = new Intent(this, LoginActivity.class);
+                intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 finish();
                 break;
             case R.id.go_main:

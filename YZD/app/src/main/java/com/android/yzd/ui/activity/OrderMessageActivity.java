@@ -103,7 +103,7 @@ public class OrderMessageActivity extends BaseActivity {
             protected void convert(ViewHolder holder, MessageEntity info, final int position) {
 
                 holder.setText(R.id.item_date, U.timeStampToStr(info.getCreate_time()));
-//                holder.setText(R.id.order_time, U.timeStampToStr(info.getOrder_time()));
+                holder.setText(R.id.order_time, U.timeStampToStr(info.getOrder_create_time()));
 
                 holder.setText(R.id.message_title, info.getTitle());
                 holder.setText(R.id.order_number, info.getOrder_sn());

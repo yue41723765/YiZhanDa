@@ -6,11 +6,11 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 
 import com.android.yzd.R;
+import com.android.yzd.been.QuestionEntity;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,19 +33,21 @@ public class IntegralQuestionActivity extends BaseActivity {
 
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
+//        getQuestionList();
+    }
+
+
+    private void setList(List<QuestionEntity> list) {
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
         questionRecycler.setLayoutManager(linearLayoutManager);
-
-        List<String> list = new ArrayList<>();
-        list.add("");
-        list.add("");
-        list.add("");
-        adapter = new CommonAdapter<String>(this, R.layout.item_question, list) {
+        adapter = new CommonAdapter<QuestionEntity>(this, R.layout.item_question, list) {
 
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
-                holder.setText(R.id.question_title, "Q" + (position + 1) + ":" + "怎样获取积分");
+            protected void convert(ViewHolder holder, QuestionEntity s, int position) {
+                holder.setText(R.id.question_title, "Q" + (position + 1) + ":" + s.getTitle());
+                holder.setText(R.id.question_content, s.getContent());
             }
         };
         questionRecycler.setAdapter(adapter);

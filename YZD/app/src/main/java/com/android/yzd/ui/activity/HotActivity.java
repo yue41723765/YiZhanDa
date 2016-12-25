@@ -216,9 +216,14 @@ public class HotActivity extends BaseActivity {
         adapter1.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                intent = new Intent(HotActivity.this, DetailsActivity.class);
-                intent.putExtra(K.GOODS_ID, hotEntity.get(position).getGoods_id());
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(HotActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(HotActivity.this, DetailsActivity.class);
+                    intent.putExtra(K.GOODS_ID, hotEntity.get(position).getGoods_id());
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -229,9 +234,14 @@ public class HotActivity extends BaseActivity {
         adapter2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                intent = new Intent(HotActivity.this, DetailsActivity.class);
-                intent.putExtra(K.GOODS_ID, hotEntity.get(position).getGoods_id());
-                startActivity(intent);
+                if (getUserInfo() == null) {
+                    intent = new Intent(HotActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    intent = new Intent(HotActivity.this, DetailsActivity.class);
+                    intent.putExtra(K.GOODS_ID, hotEntity.get(position).getGoods_id());
+                    startActivity(intent);
+                }
             }
 
             @Override

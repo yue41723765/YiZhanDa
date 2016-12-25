@@ -86,6 +86,7 @@ public class SystemMessageActivity extends BaseActivity {
             @Override
             protected void convert(ViewHolder holder, SystemMessEntity info, final int position) {
                 holder.setText(R.id.item_date, U.timeStampToStr(info.getCreate_time()));
+                holder.setText(R.id.item_date, U.timeStampToStr(info.getCreate_time()));
                 holder.setText(R.id.message_title, info.getTitle());
                 holder.setText(R.id.message_content, info.getContent());
 

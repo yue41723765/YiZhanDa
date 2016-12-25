@@ -1,9 +1,11 @@
 package com.android.yzd.ui.fragment;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,14 +18,17 @@ import android.widget.Toast;
 
 import com.android.yzd.R;
 import com.android.yzd.been.OrderInfoEntity;
+import com.android.yzd.been.UserRegAgr;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.tools.T;
 import com.android.yzd.ui.activity.OrderDetailsActivity;
+import com.android.yzd.ui.activity.WebView;
 import com.android.yzd.ui.custom.BaseFragment;
-import com.android.yzd.ui.view.MyItemDecoration;
+import com.android.yzd.ui.view.RecyclerViewItemDecoration;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
@@ -48,17 +53,44 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
     ImageView notData;
 
     CommonAdapter adapter;
-
     String status;
     int p = 1;
     int lastVisibleItem = -1;
     List<OrderInfoEntity> orderList = new ArrayList<>();
     boolean isData = true;
 
+    public static final String REFRESH = "com.android.service.ui.fragment.OrderFragment_1";
 
     @Override
     public int getContentViewId() {
         return R.layout.refresh_recycler;
+    }
+
+    public void register() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(REFRESH);
+        //注册广播
+        try {
+            getContext().registerReceiver(receiver, filter);
+        } catch (Exception e) {
+        }
+    }
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(REFRESH)) {
+                onRefresh();
+            }
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (receiver != null)
+            getContext().unregisterReceiver(receiver);
     }
 
     @Override
@@ -67,15 +99,19 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
         init();
         setAdapter();
         getOrderInfo();
+        register();
         refresh.setOnRefreshListener(this);
     }
 
     private void init() {
+
+        refresh.setColorSchemeResources(com.hyphenate.easeui.R.color.holo_blue_bright, com.hyphenate.easeui.R.color.holo_green_light,
+                com.hyphenate.easeui.R.color.holo_orange_light, com.hyphenate.easeui.R.color.holo_red_light);
+
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
         recycler.setLayoutManager(linearLayoutManager);
-        Drawable drawable1 = getResources().getDrawable(android.R.color.black);
-        recycler.addItemDecoration(new MyItemDecoration(OrientationHelper.VERTICAL, drawable1, DensityUtils.dp2px(context, 3)));
+        recycler.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_HORIZONTAL, getResources().getColor(R.color.background), DensityUtils.dp2px(context, 10), 0, 0));
 
         recycler.setLayoutManager(linearLayoutManager);
         recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -99,9 +135,17 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
 
     private void setAdapter() {
         adapter = new CommonAdapter<OrderInfoEntity>(getContext(), R.layout.item_order, orderList) {
+            RecyclerViewItemDecoration itemDecoration = new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_HORIZONTAL, getResources().getColor(R.color.white), DensityUtils.dp2px(context, 3), 0, 0);
 
             @Override
             protected void convert(ViewHolder holder, final OrderInfoEntity s, int position) {
+                holder.setText(R.id.order_price, "￥" + s.getOrder_price());
+                int allNumber = 0;
+                for (OrderInfoEntity.GoodsListBean list : s.getGoods_list()) {
+                    allNumber += list.getNumber();
+                }
+                holder.setText(R.id.order_goods_number, "共" + allNumber + "件商品");
+
                 switch (s.getStatus()) {
                     case "0":
                         holder.setText(R.id.order_status, "待支付");
@@ -118,7 +162,7 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
                     case "2":
                         holder.setText(R.id.order_status, "待收货");
                         holder.setVisible(R.id.order_pay, true);
-                        holder.setText(R.id.order_pay, "确定支付");
+                        holder.setText(R.id.order_pay, "确认收货");
                         break;
                     case "3":
                         holder.setText(R.id.order_status, "已完成");
@@ -132,20 +176,19 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
                         break;
                 }
 
-
                 RecyclerView recyclerView = holder.getView(R.id.order_recycler);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                 linearLayoutManager.setOrientation(OrientationHelper.VERTICAL);
                 recyclerView.setLayoutManager(linearLayoutManager);
-                Drawable drawable1 = getResources().getDrawable(android.R.color.white);
-                recyclerView.addItemDecoration(new MyItemDecoration(OrientationHelper.VERTICAL, drawable1, DensityUtils.dp2px(context, 3)));
+                recyclerView.removeItemDecoration(itemDecoration);
+                recyclerView.addItemDecoration(itemDecoration);
                 CommonAdapter adapter = new CommonAdapter<OrderInfoEntity.GoodsListBean>(context, R.layout.item_order_item, s.getGoods_list()) {
 
                     @Override
                     protected void convert(ViewHolder holder, OrderInfoEntity.GoodsListBean s, int position) {
                         Picasso.with(context).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.order_image));
                         holder.setText(R.id.order_title_, s.getGoods_name());
-                        holder.setText(R.id.order_number, s.getNumber() + "");
+                        holder.setText(R.id.order_number, "x" + s.getNumber());
                         holder.setText(R.id.order_price, "￥" + s.getGoods_price());
                     }
                 };
@@ -155,6 +198,7 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
                 holder.setOnClickListener(R.id.order_cancel, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        L.i(s.getStatus());
                         switch (s.getStatus()) {
                             case "0":
                             case "1":
@@ -200,6 +244,39 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
                                         deleteOrder(s.getOrder_id());
                                     }
                                 });
+                                builder.show();
+                                break;
+                        }
+                    }
+                });
+                holder.setOnClickListener(R.id.order_pay, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        switch (s.getStatus()) {
+                            case "0":
+                                payDescription();
+                                break;
+                            case "2":
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                builder.setTitle("提示");
+                                builder.setMessage("是否确定收货?");
+                                builder.setNegativeButton("取消", new AlertDialog.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                builder.setPositiveButton("确定", new AlertDialog.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        confirmOrder(s.getOrder_id());
+                                    }
+                                });
+                                builder.show();
                                 break;
                         }
                     }
@@ -210,6 +287,7 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
                 intent = new Intent(context, OrderDetailsActivity.class);
+                intent.putExtra(K.ORDER_ID, orderList.get(position).getOrder_id());
                 startActivity(intent);
             }
 
@@ -226,20 +304,39 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                if (p == 1) {
+                    orderList.clear();
+                    adapter.notifyDataSetChanged();
+                }
+
                 List<OrderInfoEntity> list = gson.fromJson(gson.toJson(o), new TypeToken<List<OrderInfoEntity>>() {
                 }.getType());
-                orderList.addAll(list);
-                adapter.notifyDataSetChanged();
                 if (list.size() == 0) {
-                    isData = false;
                     if (p == 1) {
+                        orderList.clear();
+                        adapter.notifyDataSetChanged();
                         notData.setVisibility(View.VISIBLE);
-                        refresh.setVisibility(View.GONE);
+                    } else {
+                        p--;
+                        T.show(context, "无更多数据", Toast.LENGTH_SHORT);
                     }
                 } else {
                     notData.setVisibility(View.GONE);
-                    refresh.setVisibility(View.VISIBLE);
+                    orderList.addAll(list);
+                    adapter.notifyDataSetChanged();
                 }
+
+
+//                orderList.addAll(list);
+//                adapter.notifyDataSetChanged();
+//                if (orderList.size() == 0) {
+//                    isData = false;
+////                    notData.setVisibility(View.VISIBLE);
+////                    refresh.setVisibility(View.GONE);
+//                } else {
+////                    notData.setVisibility(View.GONE);
+////                    refresh.setVisibility(View.VISIBLE);
+//                }
             }
         };
         if (isData) {
@@ -264,9 +361,40 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
             }
 
             builder.addParameter("p", p + "");
-            setProgressSubscriber(onNextListener);
+            setProgressSubscriber(onNextListener, false);
             HttpMethods.getInstance(context).orderList(progressSubscriber, builder.bulider());
         }
+    }
+
+    //确认收货
+    private void confirmOrder(final String order_id) {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                T.show(context, "确认收货成功", Toast.LENGTH_SHORT);
+                onRefresh();
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        builder.clear();
+        builder.addParameter("order_id", order_id);
+        HttpMethods.getInstance(context).confirmOrder(progressSubscriber, builder.bulider());
+
+    }
+
+    //查看支付方式
+    private void payDescription() {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                UserRegAgr ura = gson.fromJson(gson.toJson(o), UserRegAgr.class);
+                intent = new Intent(context, WebView.class);
+                intent.putExtra(K.DATA, ura);
+                startActivity(intent);
+            }
+        };
+        setProgressSubscriber(onNextListener, false);
+        HttpMethods.getInstance(context).payDescription(progressSubscriber);
     }
 
     //取消订单
@@ -299,19 +427,18 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
         HttpMethods.getInstance(context).deleteOrder(progressSubscriber, builder.bulider());
     }
 
-
     @Override
     public void onRefresh() {
+        refresh.setRefreshing(true);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 refresh.setRefreshing(false);
                 p = 1;
                 isData = true;
-                orderList.clear();
-                adapter.notifyDataSetChanged();
                 getOrderInfo();
+
             }
-        }, 500);
+        }, 1000);
     }
 }

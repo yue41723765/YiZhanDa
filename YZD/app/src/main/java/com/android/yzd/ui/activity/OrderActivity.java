@@ -54,7 +54,7 @@ public class OrderActivity extends BaseActivity {
         }
 
 
-        FragmentViewPagerAdapter viewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager(), titles);
+        FragmentViewPagerAdapter viewPagerAdapter = new FragmentViewPagerAdapter(getSupportFragmentManager(), titles, orderFragments);
         orderViewpager.setAdapter(viewPagerAdapter);
         orderTablayout.setupWithViewPager(orderViewpager);
         orderViewpager.setCurrentItem(status);

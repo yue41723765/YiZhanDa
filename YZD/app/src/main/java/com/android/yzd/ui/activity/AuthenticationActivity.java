@@ -12,15 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.yzd.R;
-import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.ProgressSubscriber;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.F;
-import com.android.yzd.tools.K;
-import com.android.yzd.tools.L;
-import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.StatusBarUtil;
 import com.android.yzd.tools.T;
 import com.android.yzd.tools.U;
@@ -59,7 +55,6 @@ public class AuthenticationActivity extends BaseActivity {
     SubscriberOnNextListener mSendCodeSubscriberOnNextListener;
     ProgressSubscriber mSendCodeProgressSubscriber;
     Map<String, String> param = new HashMap<>();
-    UserInfoEntity mUserinfo;
 
     TimeCount count;
     String mNewTel;
@@ -75,9 +70,10 @@ public class AuthenticationActivity extends BaseActivity {
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
         AppManager.getAppManager().addActivity(this);
+        authenticationTel.setFocusable(false);
+        authenticationTel.setFocusableInTouchMode(false);
 
-        mUserinfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
-        String tel = mUserinfo.getAccount();
+        String tel = getUserInfo().getAccount();
         tel = tel.substring(0, 3) + "****" + tel.substring(7, 11);
         authenticationTel.setText(tel);
         count = new TimeCount(60 * 1000, 1000);
@@ -101,6 +97,9 @@ public class AuthenticationActivity extends BaseActivity {
         mVerifyTelSubscriberOnNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                authenticationTel.setFocusable(true);
+                authenticationTel.setFocusableInTouchMode(true);
+                authenticationTel.requestFocus();
                 count.onStop();
                 count.onFinish();
                 getCode.setText("发送验证码");
@@ -124,7 +123,7 @@ public class AuthenticationActivity extends BaseActivity {
         switch (v.getId()) {
             case R.id.sure:
                 if (status == 1) {
-                    mNewTel = mUserinfo.getAccount();
+                    mNewTel = getUserInfo().getAccount();
                     mCode = authenticationCode.getText().toString();
                     mVerifyTelProgressSubscriber = new ProgressSubscriber(mVerifyTelSubscriberOnNextListener, this, false);
                     param.clear();
@@ -134,13 +133,12 @@ public class AuthenticationActivity extends BaseActivity {
                     HttpMethods.getInstance(this).checkVerify(mVerifyTelProgressSubscriber, param);
 
                 } else if (status == 2) {
-                    mNewTel = mUserinfo.getAccount();
+                    mNewTel = authenticationTel.getText().toString();
                     mCode = authenticationCode.getText().toString();
                     if (TextUtils.isEmpty(mNewTel)) {
                         T.show(this, "请输入需要跟换的手机号码", Toast.LENGTH_LONG);
                         return;
                     }
-                    L.i(mNewTel);
                     if (!U.isTel(mNewTel)) {
                         T.show(this, "手机号码错误，请重新输入", Toast.LENGTH_SHORT);
                         return;
@@ -151,14 +149,18 @@ public class AuthenticationActivity extends BaseActivity {
                     }
                     mProgressSubscriber = new ProgressSubscriber(mChangeTelSubscriberOnNextListener, this, false);
                     param.clear();
-                    param.put("m_id", mUserinfo.getM_id());
+                    param.put("m_id", getUserInfo().getM_id());
                     param.put("account", mNewTel);
                     param.put("verify", mCode);
                     HttpMethods.getInstance(this).modifyAccount(mProgressSubscriber, param);
                 }
                 break;
             case R.id.get_code:
-                mNewTel = mUserinfo.getAccount();
+                if (status == 1) {
+                    mNewTel = getUserInfo().getAccount();
+                } else {
+                    mNewTel = authenticationTel.getText().toString();
+                }
                 if (mNewTel.equals("")) {
                     T.show(this, "请出入手机号码", Toast.LENGTH_SHORT);
                     return;
