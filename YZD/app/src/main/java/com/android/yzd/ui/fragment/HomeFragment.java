@@ -19,6 +19,7 @@ import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.tools.ScreenUtils;
 import com.android.yzd.ui.activity.DetailsActivity;
 import com.android.yzd.ui.activity.HomeSearchActivity;
@@ -109,6 +110,7 @@ public class HomeFragment extends BaseFragment {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                L.i(gson.toJson(o));
                 homeData = gson.fromJson(gson.toJson(o), HomeDataEntity.class);
                 showUi();
             }

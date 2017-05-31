@@ -183,7 +183,8 @@ public class ClassifyFragment extends BaseFragment {
             @Override
             protected void convert(ViewHolder holder, SecListBean classifyInfo, int position) {
                 holder.setText(R.id.item_title, classifyInfo.getType_name());
-                Picasso.with(context).load(classifyInfo.getType_pic()).into((ImageView) holder.getView(R.id.item_image));
+                if (!classifyInfo.getType_pic().isEmpty())
+                    Picasso.with(context).load(classifyInfo.getType_pic()).into((ImageView) holder.getView(R.id.item_image));
             }
         };
         adapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {

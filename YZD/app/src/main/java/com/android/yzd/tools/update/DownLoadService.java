@@ -59,7 +59,7 @@ public class DownLoadService extends Service {
         Log.i("DownloadService", "intent=" + intent.toString() + " ;           flags= " + flags + " ;    startId" + startId);
         if (intent.hasExtra("url")) {
             apkUrl = (String) intent.getExtras().get("url");
-            L.v("apkUrl=="+apkUrl);
+            L.v("apkUrl==" + apkUrl);
         }
         progress = 0;
         setUpNotification();
@@ -97,11 +97,24 @@ public class DownLoadService extends Service {
                     mNotificationManager.cancel(NOTIFY_ID);
                     break;
                 case 1:
-                    int rate = msg.arg1;
+                    int rate = (int) msg.obj;
                     if (rate < 100) {
-                        RemoteViews contentview = mNotification.contentView;
-                        contentview.setTextViewText(R.id.tv_text, rate + "%");
-                        contentview.setProgressBar(R.id.tv_progress, 100, rate, false);
+                        Notification.Builder builder = new Notification.Builder(mContext)
+                                .setAutoCancel(false)
+                                .setSmallIcon(R.mipmap.logo)
+                                .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.logo))
+                                .setTicker("开始下载")
+                                .setWhen(System.currentTimeMillis())
+                                //      .setDefaults(Notification.DEFAULT_ALL)
+                                .setOngoing(true)
+                                .setContentText(rate + "%")
+                                .setProgress(100, rate, false);
+
+                        contentView.setTextViewText(R.id.tv_progress, rate + "%");
+                        contentView.setProgressBar(R.id.progress, 100, rate, false);
+                        // 指定内容意图
+//                        builder.setContent(contentView);
+                        mNotification = builder.getNotification();
                     } else {
                         // 下载完毕后变换通知形式
 
@@ -196,7 +209,7 @@ public class DownLoadService extends Service {
                     // 更新进度
                     Message msg = mHandler.obtainMessage();
                     msg.what = 1;
-                    msg.arg1 = progress;
+                    msg.obj = progress;
                     if (progress >= lastRate + 1) {
                         mHandler.sendMessage(msg);
                         lastRate = progress;
@@ -233,6 +246,7 @@ public class DownLoadService extends Service {
 
         }
     };
+    RemoteViews contentView;
 
     /**
      * 创建通知
@@ -245,12 +259,13 @@ public class DownLoadService extends Service {
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.logo))
                 .setTicker("开始下载")
                 .setWhen(System.currentTimeMillis())
-          //      .setDefaults(Notification.DEFAULT_ALL)
+                //      .setDefaults(Notification.DEFAULT_ALL)
                 .setOngoing(true);
 
 
-        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification_item);
+        contentView = new RemoteViews(getPackageName(), R.layout.notification_item);
         contentView.setTextViewText(R.id.tv_text, notify_name);
+        contentView.setImageViewResource(R.id.image, R.mipmap.logo);
         // 指定个性化视图
         builder.setContent(contentView);
 
@@ -263,6 +278,5 @@ public class DownLoadService extends Service {
 
         mNotificationManager.notify(NOTIFY_ID, mNotification);
     }
-
 }
 

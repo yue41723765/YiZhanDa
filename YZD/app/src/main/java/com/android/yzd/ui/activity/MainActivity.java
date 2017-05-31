@@ -84,11 +84,7 @@ public class MainActivity extends BaseActivity {
     public void register() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(REFRESH);
-        //注册广播
-        try {
-            registerReceiver(receiver, filter);
-        } catch (Exception e) {
-        }
+        registerReceiver(receiver, filter);
     }
 
     BroadcastReceiver receiver = new BroadcastReceiver() {

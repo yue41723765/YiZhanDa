@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 
-import com.android.yzd.ui.custom.BaseActivity;
-
 import java.util.Stack;
 
 /**
@@ -13,7 +11,7 @@ import java.util.Stack;
  */
 
 public class AppManager {
-    private static Stack<BaseActivity> activityStack;
+    private static Stack<Activity> activityStack;
     private static AppManager instance;
 
     private AppManager() {
@@ -32,9 +30,9 @@ public class AppManager {
     /**
      * 添加Activity到栈
      */
-    public void addActivity(BaseActivity activity) {
+    public void addActivity(Activity activity) {
         if (activityStack == null) {
-            activityStack = new Stack<BaseActivity>();
+            activityStack = new Stack<Activity>();
         }
         activityStack.add(activity);
     }
@@ -42,20 +40,20 @@ public class AppManager {
     /**
      * 获取当前Activity（栈顶Activity）
      */
-    public BaseActivity currentActivity() {
+    public Activity currentActivity() {
         if (activityStack == null || activityStack.isEmpty()) {
             return null;
         }
-        BaseActivity activity = activityStack.lastElement();
+        Activity activity = activityStack.lastElement();
         return activity;
     }
 
     /**
      * 获取当前Activity（栈顶Activity） 没有找到则返回null
      */
-    public BaseActivity findActivity(Class<?> cls) {
-        BaseActivity activity = null;
-        for (BaseActivity aty : activityStack) {
+    public Activity findActivity(Class<?> cls) {
+        Activity activity = null;
+        for (Activity aty : activityStack) {
             if (aty.getClass().equals(cls)) {
                 activity = aty;
                 break;
@@ -68,7 +66,7 @@ public class AppManager {
      * 结束当前Activity（栈顶Activity）
      */
     public void finishActivity() {
-        BaseActivity activity = activityStack.lastElement();
+        Activity activity = activityStack.lastElement();
         finishActivity(activity);
     }
 
@@ -87,7 +85,7 @@ public class AppManager {
      * 结束指定的Activity(重载)
      */
     public void finishActivity(Class<?> cls) {
-        for (BaseActivity activity : activityStack) {
+        for (Activity activity : activityStack) {
             if (activity.getClass().equals(cls)) {
                 finishActivity(activity);
             }
@@ -100,7 +98,7 @@ public class AppManager {
      * @param cls
      */
     public void finishOthersActivity(Class<?> cls) {
-        for (BaseActivity activity : activityStack) {
+        for (Activity activity : activityStack) {
             if (!(activity.getClass().equals(cls))) {
                 finishActivity(activity);
             }

@@ -17,6 +17,7 @@ import com.android.yzd.http.ProgressSubscriber;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.StatusBarUtil;
 import com.android.yzd.ui.custom.BaseActivity;
@@ -83,9 +84,7 @@ public class MessageManagerActivity extends BaseActivity {
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
         AppManager.getAppManager().addActivity(this);
-
         userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
-
     }
 
     @Override
@@ -124,6 +123,7 @@ public class MessageManagerActivity extends BaseActivity {
         messageOnNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                L.i(gson.toJson(o));
                 messageEntity = gson.fromJson(gson.toJson(o), SystemMessageEntity.class);
                 showUi(messageEntity);
             }

@@ -177,6 +177,7 @@
 
         <activity
             android:name=".ui.activity.LoginActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.RegisterActivity"
@@ -196,6 +197,8 @@
         <activity
             android:name=".ui.activity.WebView"
             android:screenOrientation="portrait" />
+
+        <service android:name=".tools.update.DownLoadService"/>
     </application>
 
 </manifest>

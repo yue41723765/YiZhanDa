@@ -38,4 +38,14 @@ public class SecListBean {
     public void setType_pic(String type_pic) {
         this.type_pic = type_pic;
     }
+
+
+    @Override
+    public String toString() {
+        return "SecListBean{" +
+                "sec_type_id='" + sec_type_id + '\'' +
+                ", type_name='" + type_name + '\'' +
+                ", type_pic='" + type_pic + '\'' +
+                '}';
+    }
 }
