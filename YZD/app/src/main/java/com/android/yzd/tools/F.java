@@ -11,6 +11,8 @@ public class F {
     public static final int CONTENT = 3;
 
     public static final int PHOTO = 10;
+
+    public static final int SIZE = 10;
     //短信类型type
     public static final String ACTIVATE = "activate";//注册
     public static final String RETRIEVE = "retrieve";//找回密码

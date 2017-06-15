@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 
+import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -53,11 +54,11 @@ public class AppManager {
      */
     public Activity findActivity(Class<?> cls) {
         Activity activity = null;
-        for (Activity aty : activityStack) {
-            if (aty.getClass().equals(cls)) {
+        Iterator<Activity> it = activityStack.iterator();
+        while (it.hasNext()) {
+            Activity aty = it.next();
+            if (aty.getClass().equals(cls))
                 activity = aty;
-                break;
-            }
         }
         return activity;
     }
@@ -77,7 +78,6 @@ public class AppManager {
         if (activity != null) {
             activityStack.remove(activity);
             activity.finish();
-            activity = null;
         }
     }
 
@@ -85,11 +85,15 @@ public class AppManager {
      * 结束指定的Activity(重载)
      */
     public void finishActivity(Class<?> cls) {
-        for (Activity activity : activityStack) {
-            if (activity.getClass().equals(cls)) {
-                finishActivity(activity);
-            }
+        Activity activity = null;
+        Iterator<Activity> it = activityStack.iterator();
+        while (it.hasNext()) {
+            Activity aty = it.next();
+            if (aty.getClass().equals(cls))
+                activity = aty;
         }
+        if (activity != null)
+            activity.finish();
     }
 
     /**

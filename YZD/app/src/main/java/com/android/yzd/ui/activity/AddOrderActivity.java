@@ -230,9 +230,7 @@ public class AddOrderActivity extends BaseActivity {
                 intent = new Intent(AddOrderActivity.this, WebView.class);
                 intent.putExtra(K.DATA, ura);
                 startActivity(intent);
-
                 finish();
-
             }
         };
         setProgressSubscriber(onNextListener, false);

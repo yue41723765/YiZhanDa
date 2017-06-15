@@ -8,6 +8,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -77,7 +79,8 @@ public class ShoppingCartFragment extends BaseFragment {
     @BindView(R.id.sc_recycler)
     RecyclerView scRecycler;
 
-    Map<Integer, Boolean> isCheck = new HashMap<>();
+    SparseBooleanArray isCheck = new SparseBooleanArray();
+
     CommonAdapter adapter;
     List<CartListBean> cartList = new ArrayList<>();
     UserInfoEntity userInfo;
@@ -132,8 +135,6 @@ public class ShoppingCartFragment extends BaseFragment {
                 holder.setText(R.id.goods_price, "￥" + s.getGoods_price());
                 holder.setText(R.id.order_buy_number, s.getNumber() + "");
 
-                if (isCheck.get(position) == null)
-                    isCheck.put(position, false);
                 CheckBox checkBox = holder.getView(R.id.item_check);
                 checkBox.setChecked(isCheck.get(position));
                 Picasso.with(getContext()).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.image));
@@ -236,12 +237,13 @@ public class ShoppingCartFragment extends BaseFragment {
     //计算总价格
     private void totalPrice() {
         float price = 0;
-        for (int i = 0; i < isCheck.size(); i++) {
-            CartListBean goodsBean = cartList.get(i);
+        for (int i = 0; i < cartList.size(); i++) {
             if (isCheck.get(i)) {
+                CartListBean goodsBean = cartList.get(i);
                 price += goodsBean.getNumber() * goodsBean.getGoods_price();
             }
         }
+        Log.i("TAG", "price--------------" + price);
         //保留两位小数
         DecimalFormat df = new java.text.DecimalFormat("#.##");
         scTotalPrice.setText("￥" + df.format(price));
@@ -331,7 +333,7 @@ public class ShoppingCartFragment extends BaseFragment {
             case R.id.close_an_account:
                 //结算
                 List<CartListBean> goodsBeanList = new ArrayList<>();
-                for (int i = 0; i < isCheck.size(); i++) {
+                for (int i = 0; i < cartList.size(); i++) {
                     if (isCheck.get(i)) {
                         goodsBeanList.add(cartList.get(i));
                     }
@@ -348,7 +350,7 @@ public class ShoppingCartFragment extends BaseFragment {
             case R.id.add_collect:
                 //收藏
                 List<String> list = new ArrayList<String>();
-                for (int i = 0; i < isCheck.size(); i++) {
+                for (int i = 0; i < cartList.size(); i++) {
                     if (isCheck.get(i)) {
                         Map<String, String> params = new HashMap<String, String>();
                         params.put("goods_id", cartList.get(i).getGoods_id());
@@ -365,7 +367,7 @@ public class ShoppingCartFragment extends BaseFragment {
                 list = new ArrayList<String>();
                 //删除
 
-                for (int i = 0; i < isCheck.size(); i++) {
+                for (int i = 0; i < cartList.size(); i++) {
                     if (isCheck.get(i)) {
                         //拼装格式，删除操作
                         Map<String, String> params = new HashMap<String, String>();

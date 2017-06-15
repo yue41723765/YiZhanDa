@@ -87,6 +87,7 @@ public class MainActivity extends BaseActivity {
         registerReceiver(receiver, filter);
     }
 
+
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

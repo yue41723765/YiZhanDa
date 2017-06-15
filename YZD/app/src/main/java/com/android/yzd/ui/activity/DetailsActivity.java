@@ -192,7 +192,11 @@ public class DetailsActivity extends BaseActivity {
             @Override
             public void onNext(Object o) {
                 detailsEntity = gson.fromJson(gson.toJson(o), DetailsEntity.class);
-                showUi(detailsEntity);
+                try {
+                    showUi(detailsEntity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         };
         setProgressSubscriber(onNextListener);
@@ -201,7 +205,7 @@ public class DetailsActivity extends BaseActivity {
         HttpMethods.getInstance(this).goodsInfo(progressSubscriber, httpParamet.bulider());
     }
 
-    private void showUi(DetailsEntity detailsEntity) {
+    private void showUi(DetailsEntity detailsEntity) throws Exception {
         //广告界面
         views.clear();
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -210,7 +214,8 @@ public class DetailsActivity extends BaseActivity {
             ImageView imageView = new ImageView(this);
             imageView.setLayoutParams(layoutParams);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            Picasso.with(this).load(picture.getPic()).into(imageView);
+            if (picture.getPic() != null)
+                Picasso.with(this).load(picture.getPic()).into(imageView);
             views.add(imageView);
         }
         ViewPagerAdapter adapter = new ViewPagerAdapter(views);
@@ -246,7 +251,8 @@ public class DetailsActivity extends BaseActivity {
                 detailsShoppingCartNumber.setText(99 + "+");
             }
         }
-        Picasso.with(this).load(detailsEntity.getService_logo()).into(serviceHead);
+        if (detailsEntity.getService_logo() != null)
+            Picasso.with(this).load(detailsEntity.getService_logo()).into(serviceHead);
     }
 
 
@@ -352,7 +358,11 @@ public class DetailsActivity extends BaseActivity {
             @Override
             public void onNext(Object o) {
                 detailsEntity.setIs_collect("1");
-                showUi(detailsEntity);
+                try {
+                    showUi(detailsEntity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 T.show(DetailsActivity.this, "收藏成功", Toast.LENGTH_SHORT);
             }
         };
@@ -369,7 +379,11 @@ public class DetailsActivity extends BaseActivity {
             @Override
             public void onNext(Object o) {
                 detailsEntity.setIs_collect("0");
-                showUi(detailsEntity);
+                try {
+                    showUi(detailsEntity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 T.show(DetailsActivity.this, "取消收藏成功", Toast.LENGTH_SHORT);
             }
         };
