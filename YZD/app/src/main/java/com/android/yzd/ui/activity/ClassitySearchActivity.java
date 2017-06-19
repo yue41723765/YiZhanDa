@@ -20,6 +20,7 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
 import com.android.yzd.R;
+import com.android.yzd.been.BrandList;
 import com.android.yzd.been.ClassListEntity;
 import com.android.yzd.been.ClassityListEntity;
 import com.android.yzd.been.TypeListBean;
@@ -28,6 +29,7 @@ import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
 import com.android.yzd.ui.view.recyclerview.EndlessRecyclerOnScrollListener;
@@ -41,7 +43,9 @@ import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,18 +94,24 @@ public class ClassitySearchActivity extends BaseActivity {
     CommonAdapter adapter_1;
     CommonAdapter adapter_2;
     CommonAdapter popupAdapter;
+    CommonAdapter brandAdapter;
     SparseBooleanArray isCheck = new SparseBooleanArray();
+    SparseBooleanArray brandCheck = new SparseBooleanArray();
     String sec_type_id;
+    String brand_id;
     int sort = 1;//1综合排序，2销量排序;3价格升序；4价格降序；
 
     float d_price = 0;
     float h_price = 0;
 
-    int lastVisibleItem = -1;
     int p = 1;
     List<ClassListEntity> goodsList = new ArrayList<>();
     List<TypeListBean> typeList = new ArrayList<>();
+    List<BrandList> brandList = new ArrayList<>();
+
     boolean isData = true;
+    @BindView(R.id.brand_recycler)
+    RecyclerView brandRecycler;
 
     @Override
     public int getContentViewId() {
@@ -117,8 +127,8 @@ public class ClassitySearchActivity extends BaseActivity {
                 if (p == 1) {
                     goodsList.clear();
                 }
-
                 typeList.clear();
+                brandList.clear();
                 ClassityListEntity list = gson.fromJson(gson.toJson(o), ClassityListEntity.class);
                 if (list.getGoods_list().size() == 0) {
                     RecyclerViewStateUtils.setFooterViewState(ClassitySearchActivity.this, hotRecycler1, SIZE, LoadingFooter.State.TheEnd, null);
@@ -129,9 +139,19 @@ public class ClassitySearchActivity extends BaseActivity {
                     RecyclerViewStateUtils.setFooterViewState(hotRecycler2, LoadingFooter.State.Normal);
                 }
                 goodsList.addAll(list.getGoods_list());
+                if (goodsList.size() == 0) {
+                    empty.setVisibility(View.VISIBLE);
+                } else {
+                    empty.setVisibility(View.GONE);
+                }
+
+
                 typeList.addAll(list.getType_list());
+                brandList.addAll(list.getBrand_list());
+
                 adapter_1.notifyDataSetChanged();
                 popupAdapter.notifyDataSetChanged();
+                brandAdapter.notifyDataSetChanged();
             }
         };
         setProgressSubscriber(onNextListener);
@@ -139,7 +159,18 @@ public class ClassitySearchActivity extends BaseActivity {
         httpParamet.addParameter("sort", sort + "");
         httpParamet.addParameter("d_price", d_price == 0 ? "" : "" + d_price);
         httpParamet.addParameter("h_price", h_price == 0 ? "" : "" + h_price);
+        httpParamet.addParameter("brand_id", brand_id);
         httpParamet.addParameter("p", p + "");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("sec_type_id", sec_type_id);
+        map.put("sort", sort + "");
+        map.put("d_price", d_price == 0 ? "" : "" + d_price);
+        map.put("h_price", h_price == 0 ? "" : "" + h_price);
+        map.put("brand_id", brand_id);
+        map.put("p", p + "");
+
+        L.i(map.toString());
         HttpMethods.getInstance(this).goodsList(progressSubscriber, httpParamet.bulider());
     }
 
@@ -159,9 +190,24 @@ public class ClassitySearchActivity extends BaseActivity {
         hotRecycler2.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_HORIZONTAL, getResources().getColor(R.color.background), 10, 0, 0));
 
         //热门
-        final GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        final GridLayoutManager layoutManager = new GridLayoutManager(this, 3) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
         hotRecycler.setLayoutManager(layoutManager);
         hotRecycler.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, Color.WHITE, DensityUtils.dp2px(this, 10), 0, 0));
+
+        //品牌
+        final GridLayoutManager layoutManager2 = new GridLayoutManager(this, 3) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        brandRecycler.setLayoutManager(layoutManager2);
+        brandRecycler.addItemDecoration(new RecyclerViewItemDecoration(RecyclerViewItemDecoration.MODE_GRID, Color.WHITE, DensityUtils.dp2px(this, 10), 0, 0));
 
 
         hotRecycler1.addOnScrollListener(onScrollListener1);
@@ -169,6 +215,7 @@ public class ClassitySearchActivity extends BaseActivity {
 
         setAdapter();
         setHotAdapter();
+        setBrandAdapter();
         getListData();
 
     }
@@ -223,6 +270,34 @@ public class ClassitySearchActivity extends BaseActivity {
         }
     };
 
+    private void setBrandAdapter() {
+
+        brandAdapter = new CommonAdapter<BrandList>(this, R.layout.item_hot_popup, brandList) {
+
+            @Override
+            protected void convert(ViewHolder holder, BrandList s, int position) {
+                CheckBox checkBox = holder.getView(R.id.hot_classify);
+                checkBox.setBackgroundResource(R.drawable.check_blue90_blue);
+                checkBox.setText(s.getBrand_name());
+                checkBox.setChecked(brandCheck.get(position));
+            }
+        };
+        brandAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                brandCheck.clear();
+                brandCheck.put(position, true);
+                brandAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
+        brandRecycler.setAdapter(brandAdapter);
+    }
+
     private void setHotAdapter() {
 
         popupAdapter = new CommonAdapter<TypeListBean>(this, R.layout.item_hot_popup, typeList) {
@@ -256,7 +331,11 @@ public class ClassitySearchActivity extends BaseActivity {
 
             @Override
             protected void convert(ViewHolder holder, ClassListEntity s, int position) {
-                Picasso.with(ClassitySearchActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_2_image));
+                try {
+                    Picasso.with(ClassitySearchActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_2_image));
+                } catch (Exception e) {
+                    holder.setImageResource(R.id.hot_2_image, R.mipmap.default_image);
+                }
                 holder.setText(R.id.hot_2_title, s.getGoods_name());
                 holder.setText(R.id.hot_2_price, "￥" + s.getGoods_price());
                 holder.setText(R.id.hot_2_number, s.getSales() + "人付款");
@@ -384,9 +463,15 @@ public class ClassitySearchActivity extends BaseActivity {
                 String start = startPrice.getText().toString();
                 String end = endPrice.getText().toString();
 
-                for (int i = 0; i < isCheck.size(); i++) {
+                for (int i = 0; i < typeList.size(); i++) {
                     if (isCheck.get(i)) {
                         sec_type_id = typeList.get(i).getSec_type_id();
+                    }
+                }
+
+                for (int i = 0; i < brandList.size(); i++) {
+                    if (brandCheck.get(i)) {
+                        brand_id = brandList.get(i).getBrand_id();
                     }
                 }
 
@@ -395,6 +480,8 @@ public class ClassitySearchActivity extends BaseActivity {
 
                 isData = true;
                 p = 1;
+                empty.setVisibility(View.GONE);
+
                 getListData();
                 goodsList.clear();
                 adapter_1.notifyDataSetChanged();
@@ -405,10 +492,13 @@ public class ClassitySearchActivity extends BaseActivity {
             case R.id.popup_3_clear:
                 startPrice.setText("");
                 endPrice.setText("");
-                for (int i = 0; i < isCheck.size(); i++) {
-                    isCheck.put(i, false);
-                }
+                isCheck.clear();
                 popupAdapter.notifyDataSetChanged();
+
+                brandCheck.clear();
+                brandAdapter.notifyDataSetChanged();
+
+                brand_id = "";
                 break;
 
         }

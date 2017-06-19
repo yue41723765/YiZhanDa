@@ -28,4 +28,12 @@ public class TypeListBean {
     public void setType_name(String type_name) {
         this.type_name = type_name;
     }
+
+    @Override
+    public String toString() {
+        return "TypeListBean{" +
+                "sec_type_id='" + sec_type_id + '\'' +
+                ", type_name='" + type_name + '\'' +
+                '}';
+    }
 }
