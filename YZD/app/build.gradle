@@ -5,6 +5,16 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
 
+    sourceSets{
+        lintOptions {
+            abortOnError false
+        }
+
+        dexOptions {
+            javaMaxHeapSize "2g"
+        }
+    }
+
     defaultConfig {
         applicationId "com.android.yzd"
         minSdkVersion 15

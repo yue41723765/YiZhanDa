@@ -36,7 +36,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <meta-data
+            android:name="com.android.yzd.tools.MyGlideModule"
+            android:value="GlideModule" />
 
         <!-- 设置环信应用的AppKey -->
         <meta-data
@@ -198,7 +200,7 @@
             android:name=".ui.activity.WebView"
             android:screenOrientation="portrait" />
 
-        <service android:name=".tools.update.DownLoadService"/>
+        <service android:name=".tools.update.DownLoadService" />
     </application>
 
 </manifest>

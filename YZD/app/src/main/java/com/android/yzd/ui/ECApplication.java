@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
+import com.android.yzd.tools.CrashHandler;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.easeui.controller.EaseUI;
@@ -14,10 +15,13 @@ import com.hyphenate.easeui.controller.EaseUI;
 
 public class ECApplication extends Application {
 
+    public static ECApplication application;
+
     @Override
     public void onCreate() {
         super.onCreate();
-//        CrashHandler.getInstance().init(this);
+        application = this;
+        CrashHandler.getInstance().init(this);
         EMOptions options = new EMOptions();
         // 默认添加好友时，是不需要验证的，改成需要验证
         options.setAcceptInvitationAlways(true);

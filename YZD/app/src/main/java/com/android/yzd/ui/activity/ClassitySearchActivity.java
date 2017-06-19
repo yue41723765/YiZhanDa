@@ -29,7 +29,6 @@ import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
-import com.android.yzd.tools.L;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
 import com.android.yzd.ui.view.recyclerview.EndlessRecyclerOnScrollListener;
@@ -37,7 +36,7 @@ import com.android.yzd.ui.view.recyclerview.HeaderAndFooterRecyclerViewAdapter;
 import com.android.yzd.ui.view.recyclerview.LoadingFooter;
 import com.android.yzd.ui.view.recyclerview.RecyclerViewUtils;
 import com.android.yzd.ui.view.recyclerview.utils.RecyclerViewStateUtils;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
@@ -170,7 +169,6 @@ public class ClassitySearchActivity extends BaseActivity {
         map.put("brand_id", brand_id);
         map.put("p", p + "");
 
-        L.i(map.toString());
         HttpMethods.getInstance(this).goodsList(progressSubscriber, httpParamet.bulider());
     }
 
@@ -332,13 +330,17 @@ public class ClassitySearchActivity extends BaseActivity {
             @Override
             protected void convert(ViewHolder holder, ClassListEntity s, int position) {
                 try {
-                    Picasso.with(ClassitySearchActivity.this).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_2_image));
+                    Glide.with(ClassitySearchActivity.this).load(s.getGoods_logo()).skipMemoryCache(true).into((ImageView) holder.getView(R.id.hot_2_image));
                 } catch (Exception e) {
                     holder.setImageResource(R.id.hot_2_image, R.mipmap.default_image);
                 }
-                holder.setText(R.id.hot_2_title, s.getGoods_name());
-                holder.setText(R.id.hot_2_price, "￥" + s.getGoods_price());
-                holder.setText(R.id.hot_2_number, s.getSales() + "人付款");
+                try {
+                    holder.setText(R.id.hot_2_title, s.getGoods_name());
+                    holder.setText(R.id.hot_2_price, "￥" + s.getGoods_price());
+                    holder.setText(R.id.hot_2_number, s.getSales() + "人付款");
+                } catch (Exception e) {
+
+                }
             }
         };
         adapter_1.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
@@ -366,11 +368,17 @@ public class ClassitySearchActivity extends BaseActivity {
 
             @Override
             protected void convert(ViewHolder holder, ClassListEntity goodsInfoEntity, int position) {
-                Picasso.with(ClassitySearchActivity.this).load(goodsInfoEntity.getGoods_logo()).into((ImageView) holder.getView(R.id.hot_image));
-                holder.setText(R.id.hot_title, goodsInfoEntity.getGoods_name());
-                holder.setText(R.id.hot_price, "￥" + goodsInfoEntity.getGoods_price());
-                holder.setText(R.id.hot_number, goodsInfoEntity.getSales() + "人付款");
-
+                try {
+                    Glide.with(ClassitySearchActivity.this).load(goodsInfoEntity.getGoods_logo()).skipMemoryCache(true).into((ImageView) holder.getView(R.id.hot_image));
+                } catch (Exception e) {
+                    holder.setImageResource(R.id.hot_image, R.mipmap.default_image);
+                }
+                try {
+                    holder.setText(R.id.hot_title, goodsInfoEntity.getGoods_name());
+                    holder.setText(R.id.hot_price, "￥" + goodsInfoEntity.getGoods_price());
+                    holder.setText(R.id.hot_number, goodsInfoEntity.getSales() + "人付款");
+                } catch (Exception e) {
+                }
             }
         };
         adapter_2.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
