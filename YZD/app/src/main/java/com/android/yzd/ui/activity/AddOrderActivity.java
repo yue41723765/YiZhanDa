@@ -106,6 +106,7 @@ public class AddOrderActivity extends BaseActivity {
     CouponEntity entity;
 
 
+    private String ob;
     @Override
     public int getContentViewId() {
         return R.layout.activity_add_order;
@@ -174,9 +175,8 @@ public class AddOrderActivity extends BaseActivity {
                 startActivityForResult(intent, RemarkActivity.ResultNumber);
                 break;
             case R.id.order_sure:
-//                intent = new Intent(this, PayActivity.class);
-//                startActivity(intent);
-//                addOrder
+                intent = new Intent(this, PayActivity.class);
+                //addOrder();
                 if (addressEntity == null) {
                     T.show(this, "请选择地址!", Toast.LENGTH_SHORT);
                     return;
@@ -187,7 +187,17 @@ public class AddOrderActivity extends BaseActivity {
                     params.put("cart_id", cart.getCart_id());
                     ids.add(gson.toJson(params));
                 }
-                addOrder(ids.toString(), addressEntity.getAddress_id());
+                intent.putExtra("cart_json",ids.toString());
+                if (entity != null){
+                    intent.putExtra("m_c_id",entity.getM_c_id());
+                }
+                intent.putExtra("remark", orderRemark.getText().toString());
+                intent.putExtra("m_id",userInfo.getM_id());
+                intent.putExtra("address_id",addressEntity.getAddress_id());
+                Float allPrice = total + delivery_price;
+                intent.putExtra("money",allPrice);
+                //addOrder(ids.toString(), addressEntity.getAddress_id());
+                startActivity(intent);
                 break;
             case R.id.discount_coupon:
                 intent = new Intent(this, DiscountCouponActivity.class);
@@ -206,6 +216,7 @@ public class AddOrderActivity extends BaseActivity {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
+                ob= (String) o;
                 payDescription();
                 T.show(AddOrderActivity.this, "下单成功", Toast.LENGTH_SHORT);
             }
@@ -227,7 +238,7 @@ public class AddOrderActivity extends BaseActivity {
             @Override
             public void onNext(Object o) {
                 UserRegAgr ura = gson.fromJson(gson.toJson(o), UserRegAgr.class);
-                intent = new Intent(AddOrderActivity.this, WebView.class);
+                intent = new Intent(AddOrderActivity.this, PayActivity.class);
                 intent.putExtra(K.DATA, ura);
                 startActivity(intent);
                 finish();

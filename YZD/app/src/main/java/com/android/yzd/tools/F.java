@@ -2,6 +2,7 @@ package com.android.yzd.tools;
 
 /**
  * Created by Administrator on 2016/8/19.
+ * 手机---存储的Key值
  */
 
 public class F {

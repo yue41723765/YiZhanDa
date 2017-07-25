@@ -29,16 +29,20 @@ import com.android.yzd.ui.activity.LoginActivity;
 import com.android.yzd.ui.activity.MainActivity;
 import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.activity.OrderActivity;
+import com.android.yzd.ui.adapter.NetworkImageHolderView;
 import com.android.yzd.ui.adapter.ViewPagerAdapter;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.AutoScrollViewPager;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
+import com.bigkoo.convenientbanner.ConvenientBanner;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -56,9 +60,11 @@ public class HomeFragment extends BaseFragment {
     @BindView(R.id.home_search)
     RelativeLayout homeSearch;
     @BindView(R.id.home_viewPage)
-    AutoScrollViewPager homeViewPage;
-    @BindView(R.id.home_circle)
-    CircleIndicator homeCircle;
+    ConvenientBanner<String> homeViewPage;
+/*    @BindView(R.id.home_viewPage)
+    AutoScrollViewPager homeViewPage;*/
+ /*   @BindView(R.id.home_circle)
+    CircleIndicator homeCircle;*/
     @BindView(R.id.home_hot)
     TextView homeHot;
     @BindView(R.id.home_recommend)
@@ -75,7 +81,7 @@ public class HomeFragment extends BaseFragment {
 
     CommonAdapter itemAdapter2;
 
-    List<View> views = new ArrayList<>();
+    List<String> views = new ArrayList<>();
     int width;
     @BindView(R.id.home_img_1)
     ImageView homeImg1;
@@ -104,13 +110,14 @@ public class HomeFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         getHomeData();
+        homeViewPage.startTurning(5000);
     }
 
     private void getHomeData() {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
-                L.i(gson.toJson(o));
+               // L.i(gson.toJson(o));
                 homeData = gson.fromJson(gson.toJson(o), HomeDataEntity.class);
                 showUi();
             }
@@ -197,7 +204,19 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void setViewPager() {
-        views.clear();
+        for (int i = 0; i < homeData.getAdvert_list().size(); i++) {
+            AdvertListBean adverList = homeData.getAdvert_list().get(i);
+            views.add(adverList.getAd_pic());
+        }
+        homeViewPage.setPages(new CBViewHolderCreator<NetworkImageHolderView>() {
+            @Override
+            public NetworkImageHolderView createHolder() {
+                return new NetworkImageHolderView();
+            }
+        },views);
+        homeViewPage.startTurning(4000);
+        homeViewPage.setPageIndicator(new int[]{R.mipmap.ic_page_indicator,R.mipmap.ic_page_indicator_focused}).setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL);
+      /*  views.clear();
         for (int i = 0; i < homeData.getAdvert_list().size(); i++) {
             AdvertListBean adverList = homeData.getAdvert_list().get(i);
             ImageView imageView = new ImageView(getContext());
@@ -215,7 +234,13 @@ public class HomeFragment extends BaseFragment {
         }
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(views);
         homeViewPage.setAdapter(viewPagerAdapter);
-        homeCircle.setViewPager(homeViewPage);
+        homeCircle.setViewPager(homeViewPage);*/
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        //停止翻页
+        homeViewPage.stopTurning();
     }
 
     private void details(int i) {

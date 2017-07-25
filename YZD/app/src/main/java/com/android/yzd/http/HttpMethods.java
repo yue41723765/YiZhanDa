@@ -747,4 +747,48 @@ public class HttpMethods {
         toSubscribe(observable, subscriber);
     }
 
+    /**
+     * 请求支付订单
+     *
+     * @param subscriber
+     */
+    public void addPayOrder(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.addPayOrder(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 请求阿里支付
+     *
+     * @param subscriber
+     */
+    public void getAliParam(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.getAliParam(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 请求微信支付
+     *
+     * @param subscriber
+     */
+    public void getWxParam(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.getWxParam(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 请求支付结果
+     *
+     * @param subscriber
+     */
+    public void findPayResult(Subscriber<HttpResult> subscriber, Map<String, RequestBody> param) {
+        Observable observable = httpService.findPayResult(param)
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
 }

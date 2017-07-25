@@ -13,6 +13,7 @@ import rx.Subscriber;
 
 /**
  * Created by Administrator on 2016/8/29.
+ * 加载网络封装包
  */
 
 public class ProgressSubscriber<T> extends Subscriber<T> implements ProgressCancelListener {

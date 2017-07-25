@@ -29,6 +29,27 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
+    <!--支付宝&&微信-->
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="23" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--支付宝-->
+    <activity
+        android:name="com.alipay.sdk.app.H5PayActivity"
+        android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+        android:exported="false"
+        android:screenOrientation="behind"
+        android:windowSoftInputMode="adjustResize|stateHidden" >
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+    </activity>
+
     <application
         android:name=".ui.ECApplication"
         android:allowBackup="true"
@@ -199,7 +220,12 @@
         <activity
             android:name=".ui.activity.WebView"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name=".WXPayEntryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.PayResultActivity"
+            android:screenOrientation="portrait" />
         <service android:name=".tools.update.DownLoadService" />
     </application>
 

@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 
 /**
  * Created by Administrator on 2016/11/9.
+ * 获取手机内存
  */
 
 public class DataCleanManager {

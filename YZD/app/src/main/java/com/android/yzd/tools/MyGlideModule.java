@@ -14,6 +14,7 @@ import java.io.File;
 
 /**
  * Created by Administrator on 2017/6/20 0020.
+ * 貌似是三级缓存/磁盘缓存
  */
 //com.android.yzd.tools.MyGlideModule
 public class MyGlideModule implements GlideModule {

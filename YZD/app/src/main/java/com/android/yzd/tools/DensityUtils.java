@@ -5,6 +5,7 @@ import android.util.TypedValue;
 
 /**
  * Created by Administrator on 2016/9/14.
+ * 像素点的适配
  */
 
 public class DensityUtils {

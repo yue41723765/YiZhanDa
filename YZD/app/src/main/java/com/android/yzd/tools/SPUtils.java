@@ -21,6 +21,7 @@ import java.util.Map;
 
 /**
  * Created by Administrator on 2016/9/14.
+ * SharedPreferences的存储
  */
 
 public class SPUtils {

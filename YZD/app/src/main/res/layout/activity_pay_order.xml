@@ -53,12 +53,14 @@
             android:layout_toRightOf="@+id/pay_image"
             android:ellipsize="end"
             android:maxLines="2"
-            android:text="标题"
+            android:gravity="bottom"
+            android:text="@string/pay_order_title"
             android:textColor="@color/black_30"
             android:textSize="12sp" />
     </RelativeLayout>
 
     <RadioGroup
+        android:id="@+id/pay_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -79,7 +81,7 @@
             android:onClick="onClick"
             android:paddingLeft="10dp"
             android:paddingRight="15dp"
-            android:text="余额支付"
+            android:text="货到付款"
             android:textColor="@color/black_30"
             android:textSize="12sp" />
 

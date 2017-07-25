@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by Administrator on 2016/10/30 0030.
+ * 状态栏/透明栏的设置
  */
 
 public class StatusBarUtil {

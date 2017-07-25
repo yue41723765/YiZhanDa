@@ -4,6 +4,7 @@ import android.util.Log;
 
 /**
  * Created by Administrator on 2016/8/18.
+ * debug的工具类
  */
 
 public class L {

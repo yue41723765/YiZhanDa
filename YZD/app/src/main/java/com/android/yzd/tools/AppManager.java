@@ -9,6 +9,7 @@ import java.util.Stack;
 
 /**
  * Created by Administrator on 2016/11/30 0030.
+ * 应用程序管理（栈）
  */
 
 public class AppManager {

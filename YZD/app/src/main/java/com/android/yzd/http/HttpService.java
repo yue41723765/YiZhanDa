@@ -1,6 +1,11 @@
 package com.android.yzd.http;
 
 
+import com.android.yzd.been.PayAddOrderEntity;
+import com.android.yzd.been.PayFindResultEntity;
+import com.android.yzd.been.PayGetAliParamEntity;
+import com.android.yzd.been.PayGetWxParamEntity;
+
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -236,4 +241,19 @@ public interface HttpService {
     @POST("index.php/Api/Upgrade/upgrade")
     Observable<HttpResult> upgrade(@FieldMap Map<String, String> param);
 
+    @Multipart
+    @POST("index.php/Api/Order/addOrder")
+    Observable<HttpResult> addPayOrder(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/getAlipayParameter")
+    Observable<HttpResult> getAliParam(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/getWXPayParam")
+    Observable<HttpResult> getWxParam(@PartMap Map<String, RequestBody> param);
+
+    @Multipart
+    @POST("index.php/Api/Order/findPayResult")
+    Observable<HttpResult> findPayResult(@PartMap Map<String, RequestBody> param);
 }

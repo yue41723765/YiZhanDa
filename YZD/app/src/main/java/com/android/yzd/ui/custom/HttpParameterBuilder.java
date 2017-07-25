@@ -10,6 +10,7 @@ import okhttp3.RequestBody;
 
 /**
  * Created by yzy on 2016/8/28.
+ * Http的建立
  */
 public class HttpParameterBuilder {
     private Map<String, RequestBody> params;

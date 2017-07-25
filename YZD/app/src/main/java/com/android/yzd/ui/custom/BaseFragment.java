@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by Administrator on 2016/8/16.
+ * Fragment封装
  */
 
 public abstract class BaseFragment extends Fragment implements View.OnClickListener {
