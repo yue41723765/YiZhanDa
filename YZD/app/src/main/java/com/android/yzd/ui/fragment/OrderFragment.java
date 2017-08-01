@@ -25,7 +25,9 @@ import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
 import com.android.yzd.tools.L;
 import com.android.yzd.tools.T;
+import com.android.yzd.ui.activity.AddOrderActivity;
 import com.android.yzd.ui.activity.OrderDetailsActivity;
+import com.android.yzd.ui.activity.PayActivity;
 import com.android.yzd.ui.activity.WebView;
 import com.android.yzd.ui.custom.BaseFragment;
 import com.android.yzd.ui.view.RecyclerViewItemDecoration;
@@ -52,6 +54,7 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
     @BindView(R.id.not_data)
     ImageView notData;
 
+    String orderid;
     CommonAdapter adapter;
     String status;
     int p = 1;
@@ -152,7 +155,7 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
                         holder.setVisible(R.id.order_cancel, true);
                         holder.setVisible(R.id.order_pay, true);
                         holder.setText(R.id.order_cancel, "取消订单");
-                        holder.setText(R.id.order_pay, "查看支付方式");
+                        holder.setText(R.id.order_pay, "去支付");
                         break;
                     case "1":
                         holder.setText(R.id.order_status, "待发货");
@@ -201,6 +204,7 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
                         L.i(s.getStatus());
                         switch (s.getStatus()) {
                             case "0":
+
                             case "1":
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setTitle("提示");
@@ -254,7 +258,11 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
                     public void onClick(View v) {
                         switch (s.getStatus()) {
                             case "0":
-                                payDescription();
+                                // payDescription();
+                                Intent intent=new Intent(context, PayActivity.class);
+                                intent.putExtra("order_id",s.getOrder_id());
+                                intent.putExtra("order_price",s.getOrder_price());
+                                startActivity(intent);
                                 break;
                             case "2":
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);

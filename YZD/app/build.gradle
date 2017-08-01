@@ -4,15 +4,15 @@ apply plugin: 'com.neenbedankt.android-apt'
 android {
     signingConfigs {
         release {
-            keyAlias 'yuejia'
+            keyAlias '一站达'
             keyPassword '123456'
-            storeFile file('D:/keystore/yuejia.jks')
+            storeFile file('D:/software/android/APP/keystore/一站达.jks')
             storePassword '123456'
         }
         debug {
-            keyAlias 'yuejia'
+            keyAlias '一站达'
             keyPassword '123456'
-            storeFile file('D:/keystore/yuejia.jks')
+            storeFile file('D:/software/android/APP/keystore/一站达.jks')
             storePassword '123456'
         }
     }
@@ -37,13 +37,15 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
         debug {
             signingConfig signingConfigs.debug
-            minifyEnabled true
+            debuggable true
+            zipAlignEnabled false
         }
     }
 }

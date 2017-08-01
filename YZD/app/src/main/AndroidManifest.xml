@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--这个权限有问题-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
@@ -33,6 +34,7 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="23" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!--支付宝-->
     <activity
@@ -139,7 +141,13 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PayActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <intent-filter>
+              <action android:name="android.intent.action.VIEW"/>
+              <category android:name="android.intent.category.DEFAULT"/>
+              <data android:scheme="wx5c5be12f9933f83d"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.activity.SetActivity"
             android:screenOrientation="portrait" />
@@ -221,12 +229,19 @@
             android:name=".ui.activity.WebView"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".WXPayEntryActivity"
+            android:name=".wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.PayResultActivity"
             android:screenOrientation="portrait" />
         <service android:name=".tools.update.DownLoadService" />
+        <receiver android:name=".wxapi.AppRegister">
+            <intent-filter>
+            <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

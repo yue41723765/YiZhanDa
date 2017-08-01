@@ -1,6 +1,7 @@
 package com.android.yzd.ui.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -24,6 +25,7 @@ import com.android.yzd.ui.custom.RecyclerViewDivider;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
@@ -97,6 +99,19 @@ public class CollectActivity extends BaseActivity {
                 });
             }
         };
+        adapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                intent = new Intent(CollectActivity.this, DetailsActivity.class);
+                intent.putExtra(K.GOODS_ID, goodsList.get(position).getGoods_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
         collectRecycler.setAdapter(adapter);
     }
 

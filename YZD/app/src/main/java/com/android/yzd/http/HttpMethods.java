@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -70,7 +71,7 @@ public class HttpMethods {
         return SingletonHolder.INSTANCE;
     }
 
-
+    //okhttp配置retrofit2
     private OkHttpClient.Builder getCilent(Context context) {
 
         File httpCacheDirectory = new File(mContext.getCacheDir(), "responses");
@@ -78,14 +79,16 @@ public class HttpMethods {
 
         OkHttpClient.Builder client = new OkHttpClient.Builder();
         client.addNetworkInterceptor(interceptor);
-        client.interceptors().add(new ReceivedCookiesInterceptor(context));
+        client.interceptors().add(new ReceivedCookiesInterceptor(context));//这些可以分开建立，先建立retrofit再添加builder
         client.interceptors().add(new AddCookiesInterceptor(context));
-        client.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
-        client.cache(cache);
+        client.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);//设置超时
+        //client.retryOnConnectionFailure(true);//错误重连
+        client.cache(cache);//配置缓存
         return client;
     }
 
-    //    设置max-age为60s之后，这60s之内不管你有没有网,都读缓存。（这也就说明了为什么不能实现我上面说的功能）；max-stale设置为4周，意思是，网络未连接的情况下设置缓存时间为4周。
+    // 设置max-age为60s之后，这60s之内不管你有没有网,都读缓存。（这也就说明了为什么不能实现我上面说的功能）；
+    // max-stale设置为4周，意思是，网络未连接的情况下设置缓存时间为4周。----这里没有写
     Interceptor interceptor = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -96,9 +99,17 @@ public class HttpMethods {
             if (TextUtils.isEmpty(cacheControl)) {
                 cacheControl = "public, max-age=60";
             }
+          /*  else {
+                //无网络时，设置超时为4周
+                int maxStale = 60 * 60 * 24 * 28;
+                response.newBuilder()
+                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                        .removeHeader("Pragma")
+                        .build();
+            }*/
             return response.newBuilder()
-                    .header("Cache-Control", cacheControl)
-                    .removeHeader("Pragma")
+                    .header("Cache-Control", cacheControl)//header("Cache-Control", "public, max-age=" + maxAge)
+                    .removeHeader("Pragma")// 清除头信息，因为服务器如果不支持，会返回一些干扰信息，不清除下面无法生效
                     .build();
         }
     };
@@ -791,4 +802,14 @@ public class HttpMethods {
         toSubscribe(observable, subscriber);
     }
 
+    /**
+     * 请求运费
+     *
+     * @param subscriber
+     */
+    public void getDeliveryFee(Subscriber<HttpResult> subscriber) {
+        Observable observable = httpService.getDeliveryFee(new HashMap<String, String>())
+                .map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
 }

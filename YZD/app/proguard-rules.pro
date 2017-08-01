@@ -15,28 +15,66 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-            #指定代码的压缩级别
-            -optimizationpasses 5
+-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+   public *;
+}
+-keep public class android.net.http.SslError
+-keep public class android.webkit.WebViewClient
 
-            #包明不混合大小写
-            -dontusemixedcaseclassnames
+-dontwarn android.webkit.WebView
+-dontwarn android.net.http.SslError
+-dontwarn android.webkit.WebViewClient
 
-            #不去忽略非公共的库类
-            -dontskipnonpubliclibraryclasses
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+-keepattributes SourceFile,LineNumberTable
 
-             #优化  不优化输入的类文件
-            -dontoptimize
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+-renamesourcefileattribute SourceFile
 
-             #不做预校验
-            -dontpreverify
+-keepattributes Exceptions, Signature, InnerClasses
 
-             #混淆时是否记录日志
-            -verbose
+# Keep - Library. Keep all public and protected classes, fields, and methods.
+-keep public class * {
+    public protected <fields>;
+    public protected <methods>;
+}
 
-             # 混淆时所采用的算法
-            -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
-#支付宝混淆
--libraryjars libs/alipaySDK-20170710.jar
+# Also keep - Enumerations. Keep the special static methods that are required in
+# enumeration classes.
+-keepclassmembers enum  * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Keep names - Native method names. Keep all native class/method names.
+-keepclasseswithmembers,allowshrinking class * {
+    native <methods>;
+}
+
+# 不做预校验
+-dontpreverify
+
+### 忽略警告
+#-ignorewarning
+
+#如果引用了v4或者v7包
+-dontwarn android.support.**
+
+-keepattributes EnclosingMethod
+
+ #如果有其它包有warning，在报出warning的包加入下面类似的-dontwarn 报名
+-dontwarn com.fengmap.*.**
+
+## 注解支持
+-keepclassmembers class *{
+   void *(android.view.View);
+}
+
+#保护注解
+-keepattributes *Annotation*
+-dontwarn org.apache.http.**
 
 -keep class com.alipay.android.app.IAlixPay{*;}
 -keep class com.alipay.android.app.IAlixPay$Stub{*;}
@@ -44,13 +82,5 @@
 -keep class com.alipay.android.app.IRemoteServiceCallback$Stub{*;}
 -keep class com.alipay.sdk.app.PayTask{ public *;}
 -keep class com.alipay.sdk.app.AuthTask{ public *;}
-#微信混淆
--keep class com.tencent.mm.opensdk.** {
-   *;
-}
--keep class com.tencent.wxop.** {
-   *;
-}
--keep class com.tencent.mm.sdk.** {
-   *;
-}
+-dontwarn android.net.**
+-keep class android.net.SSLCertificateSocketFactory{*;}

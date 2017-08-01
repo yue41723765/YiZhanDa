@@ -1,4 +1,4 @@
-package com.android.yzd.aliutils.wxapi;
+package com.android.yzd.wxapi;
 
 import java.security.MessageDigest;
 

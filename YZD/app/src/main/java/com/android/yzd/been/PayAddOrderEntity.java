@@ -17,6 +17,7 @@ public class PayAddOrderEntity {
     private String message;
     private DataBean data;
 
+    private String delivery_price;
     public String getFlag() {
         return flag;
     }
@@ -39,6 +40,14 @@ public class PayAddOrderEntity {
 
     public void setData(DataBean data) {
         this.data = data;
+    }
+
+    public String getDelivery_price() {
+        return delivery_price;
+    }
+
+    public void setDelivery_price(String delivery_price) {
+        this.delivery_price = delivery_price;
     }
 
     public static class DataBean {

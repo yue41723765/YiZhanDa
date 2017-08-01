@@ -6,11 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IdRes;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -18,7 +15,6 @@ import android.widget.Toast;
 
 import com.alipay.sdk.app.PayTask;
 import com.android.yzd.R;
-import com.android.yzd.aliutils.PayResult;
 import com.android.yzd.been.PayAddOrderEntity;
 import com.android.yzd.been.PayFindResultEntity;
 import com.android.yzd.been.PayGetAliParamEntity;
@@ -26,19 +22,13 @@ import com.android.yzd.been.PayGetWxParamEntity;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
-import com.android.yzd.tools.F;
 import com.android.yzd.tools.L;
-import com.android.yzd.tools.T;
 import com.android.yzd.ui.custom.BaseActivity;
 
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -83,7 +73,9 @@ public class PayActivity extends BaseActivity {
     //公用的
     private int number=0;
     //钱
-    private Float money;
+    private Float money=0.0f;
+    private String price=null;
+    private String delivery_price=null;
 
     private PayAddOrderEntity.DataBean add;
     private PayGetAliParamEntity.DataBean ali;
@@ -104,12 +96,22 @@ public class PayActivity extends BaseActivity {
         m_c_id=intent.getStringExtra("m_c_id");
         remark=intent.getStringExtra("remark");
         money=intent.getFloatExtra("money",0);
+        delivery_price=intent.getStringExtra("delivery_price");
+        orderid=intent.getStringExtra("order_id");
+        price=intent.getStringExtra("order_price");
         //微信注册在APP内
         api = WXAPIFactory.createWXAPI(PayActivity.this,null);
         api.registerApp(APP_ID);
         //三个radioButton的选项
         pay_group.setOnCheckedChangeListener(isPayGroupOnclick);
+        if (money==0.0f){
+            pay_title.setText("共计：¥"+price+"元");
+        }else {
         pay_title.setText("共计：¥"+money+"元");
+        }
+        if (orderid==null||"".equals(orderid)){
+            initHttpAddOrder();
+        }
     }
 
     private RadioGroup.OnCheckedChangeListener isPayGroupOnclick=new RadioGroup.OnCheckedChangeListener() {
@@ -133,7 +135,6 @@ public class PayActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        initHttpAddOrder();
         switch (v.getId()){
             case R.id.sure_pay:
                 if (number==BAOM_ALI_YANZHENG){
@@ -169,6 +170,7 @@ public class PayActivity extends BaseActivity {
         httpParamet.addParameter("address_id", address_id);
         httpParamet.addParameter("m_c_id", m_c_id);
         httpParamet.addParameter("remark", remark);
+        httpParamet.addParameter("delivery_price",delivery_price);
         HttpMethods.getInstance(PayActivity.this).addPayOrder(progressSubscriber,httpParamet.bulider());
     }
     /*
@@ -224,18 +226,7 @@ public class PayActivity extends BaseActivity {
                     req.timeStamp=wx.getTime_stamp();
                     req.prepayId=wx.getPrepay_id();
                     req.partnerId=wx.getMch_id();
-                    L.d("TAG","wx参数----------getPackageX:"+wx.getPackageX());
-                    api.sendReq(req);
-                    Runnable wxRun=new Runnable() {
-                        @Override
-                        public void run() {
-                            Message msg=new Message();
-                            msg.what=SDK_PAY_FLAG;
-                            mHandler.sendMessage(msg);
-                        }
-                    };
-                    Thread wxThread=new Thread(wxRun);
-                    wxThread.start();
+                    toPay();
                 }else {
                     Toast.makeText(PayActivity.this, "wx订单参数不能为空", Toast.LENGTH_SHORT).show();
                 }
@@ -261,7 +252,6 @@ public class PayActivity extends BaseActivity {
                     Intent intent=new Intent(PayActivity.this,PayResultActivity.class);
                     intent.putExtra("PayResult",findResult);
                     startActivity(intent);
-                    finish();
                 }else {
                     Toast.makeText(PayActivity.this, "find订单参数不能为空", Toast.LENGTH_SHORT).show();
                 }
@@ -287,4 +277,10 @@ public class PayActivity extends BaseActivity {
             }
         };
     };
+    private void toPay() {
+        //    api.registerApp(Constants.APP_ID);
+        api.sendReq(req);
+    }
+
+
 }

@@ -9,11 +9,13 @@ import com.android.yzd.been.PayGetWxParamEntity;
 import java.util.Map;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PartMap;
+import retrofit2.http.Streaming;
 import rx.Observable;
 
 /**
@@ -241,6 +243,13 @@ public interface HttpService {
     @POST("index.php/Api/Upgrade/upgrade")
     Observable<HttpResult> upgrade(@FieldMap Map<String, String> param);
 
+    //运费
+    @FormUrlEncoded
+    @POST("index.php/Api/Order/getDeliveryFee")
+    Observable<HttpResult> getDeliveryFee(@FieldMap Map<String, String> param);
+    //支付
+
+    //添加订单 ，这里边写了两个 上边的没用也没删除
     @Multipart
     @POST("index.php/Api/Order/addOrder")
     Observable<HttpResult> addPayOrder(@PartMap Map<String, RequestBody> param);

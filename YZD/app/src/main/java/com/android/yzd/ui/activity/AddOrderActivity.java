@@ -18,12 +18,15 @@ import com.android.yzd.R;
 import com.android.yzd.been.AddressEntity;
 import com.android.yzd.been.CartListBean;
 import com.android.yzd.been.CouponEntity;
+import com.android.yzd.been.DeliverFeeEntity;
+import com.android.yzd.been.PayAddOrderEntity;
 import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.been.UserRegAgr;
 import com.android.yzd.http.HttpMethods;
 import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
+import com.android.yzd.tools.L;
 import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.T;
 import com.android.yzd.ui.custom.BaseActivity;
@@ -100,13 +103,22 @@ public class AddOrderActivity extends BaseActivity {
     List<CartListBean> goodsBeanList;
     UserInfoEntity userInfo;
     AddressEntity addressEntity;
-    float delivery_price;//运费
+    Float delivery_price;//运费
+    String deliveryPrice;//运费
     float total = 0;
 
     CouponEntity entity;
 
-
+    //test
     private String ob;
+    //小件运费
+    private String small_delivery_fee;
+    //大件运费
+    private String big_delivery_fee;
+
+    String addressId;
+
+    private DeliverFeeEntity.DataBean delivery_data;
     @Override
     public int getContentViewId() {
         return R.layout.activity_add_order;
@@ -115,17 +127,37 @@ public class AddOrderActivity extends BaseActivity {
     @Override
     protected void initAllMembersView(Bundle savedInstanceState) {
         AppManager.getAppManager().addActivity(this);
+
         goodsBeanList = getIntent().getParcelableArrayListExtra(K.DATA);
         userInfo = (UserInfoEntity) SPUtils.get(this, K.USERINFO, UserInfoEntity.class);
-        delivery_price = getIntent().getFloatExtra("delivery_price", 0);
-        orderFreight.setText("+￥" + delivery_price);
+
+
         int GoodsNum = 0;
 
         for (CartListBean cart : goodsBeanList) {
             GoodsNum += cart.getNumber();
             total += cart.getGoods_price() * cart.getNumber();
         }
+        //判断运费的大小件-屏蔽原因是因为retrofit不可用
+       //getDeliveryFee();
+        for (CartListBean models:goodsBeanList){
+            if ("1".equals(models.getModels_type())){
+               // deliveryPrice=big_delivery_fee;
+                deliveryPrice="38";
+                break;
+            }else {
+                //deliveryPrice=small_delivery_fee;
+                deliveryPrice="19";
+            }
+        }
+
         //保留两位小数
+        if (deliveryPrice==null){
+            delivery_price=0.0f;
+        }else {
+            delivery_price=Float.parseFloat(deliveryPrice);
+        }
+        orderFreight.setText("+￥" + deliveryPrice);
         DecimalFormat df = new DecimalFormat("#.##");
         String allPrice = "￥" + df.format(total + delivery_price);
         orderAllPrice.setText(allPrice);
@@ -196,8 +228,9 @@ public class AddOrderActivity extends BaseActivity {
                 intent.putExtra("address_id",addressEntity.getAddress_id());
                 Float allPrice = total + delivery_price;
                 intent.putExtra("money",allPrice);
-                //addOrder(ids.toString(), addressEntity.getAddress_id());
+                intent.putExtra("delivery_price",deliveryPrice);
                 startActivity(intent);
+                //addOrder(ids.toString(), addressEntity.getAddress_id());
                 break;
             case R.id.discount_coupon:
                 intent = new Intent(this, DiscountCouponActivity.class);
@@ -212,24 +245,32 @@ public class AddOrderActivity extends BaseActivity {
         }
     }
 
+    private String order_id;
+    private PayAddOrderEntity.DataBean orderEntity;
     private void addOrder(String cart_json, String address_id) {
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
                 ob= (String) o;
+                orderEntity= gson.fromJson(gson.toJson(o), PayAddOrderEntity.DataBean.class);
+                if (orderEntity.getOrder_id()!=null) {
+                    order_id=orderEntity.getOrder_id();
+                }
                 payDescription();
+                //intent = new Intent(AddOrderActivity.this, PayActivity.class);
+               // startActivity(intent);
                 T.show(AddOrderActivity.this, "下单成功", Toast.LENGTH_SHORT);
             }
         };
-        setProgressSubscriber(onNextListener);
+        setProgressSubscriber(onNextListener,true);
         httpParamet.clear();
         httpParamet.addParameter("m_id", userInfo.getM_id());
         httpParamet.addParameter("cart_json", cart_json);
         httpParamet.addParameter("address_id", address_id);
-        if (entity != null)
-            httpParamet.addParameter("m_c_id", entity.getM_c_id());
+        httpParamet.addParameter("m_c_id", entity.getM_c_id());
         httpParamet.addParameter("remark", orderRemark.getText().toString());
-        HttpMethods.getInstance(this).addOrder(progressSubscriber, httpParamet.bulider());
+        httpParamet.addParameter("delivery_price",deliveryPrice);
+        HttpMethods.getInstance(AddOrderActivity.this).addPayOrder(progressSubscriber, httpParamet.bulider());
     }
 
 
@@ -240,12 +281,14 @@ public class AddOrderActivity extends BaseActivity {
                 UserRegAgr ura = gson.fromJson(gson.toJson(o), UserRegAgr.class);
                 intent = new Intent(AddOrderActivity.this, PayActivity.class);
                 intent.putExtra(K.DATA, ura);
+                intent.putExtra("money", total);
+                intent.putExtra("order_id", order_id);
                 startActivity(intent);
                 finish();
             }
         };
         setProgressSubscriber(onNextListener, false);
-        HttpMethods.getInstance(this).payDescription(progressSubscriber);
+        HttpMethods.getInstance(AddOrderActivity.this).payDescription(progressSubscriber);
     }
 
     @Override
@@ -303,11 +346,32 @@ public class AddOrderActivity extends BaseActivity {
                     orderAddressName.setText("收货人：" + addressEntity.getConsignee());
                     orderAddressTel.setText(addressEntity.getMobile());
                     itemAddress.setText(addressEntity.getAddress());
+                    addressId=addressEntity.getAddress_id();
                 }
             }
         };
         setProgressSubscriber(onNextListener);
         httpParamet.addParameter("m_id", userInfo.getM_id());
         HttpMethods.getInstance(this).getOneAddress(progressSubscriber, httpParamet.bulider());
+    }
+    /*
+   * 直接get运费 运费为string类型可能会改变值
+   * @param null
+   */
+    private void getDeliveryFee(){
+        SubscriberOnNextListener onNextListener=new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                ob= (String) o;
+                L.i("TAG","-----------"+o);
+                delivery_data=gson.fromJson(gson.toJson(o), DeliverFeeEntity.DataBean.class);
+                if (delivery_data!=null){
+                    small_delivery_fee=delivery_data.getSmall_delivery_fee();
+                    big_delivery_fee=delivery_data.getBig_delivery_fee();
+                }
+            }
+        };
+        setProgressSubscriber(onNextListener);
+        HttpMethods.getInstance(AddOrderActivity.this).getDeliveryFee(progressSubscriber);
     }
 }

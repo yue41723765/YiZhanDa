@@ -1,5 +1,6 @@
 package com.android.yzd.ui.fragment;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +11,14 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,6 +27,8 @@ import android.widget.Toast;
 
 import com.android.yzd.R;
 import com.android.yzd.been.CartListBean;
+import com.android.yzd.been.DeliverFeeEntity;
+import com.android.yzd.been.DetailsEntity;
 import com.android.yzd.been.ScEntity;
 import com.android.yzd.been.UserInfoEntity;
 import com.android.yzd.http.HttpMethods;
@@ -162,6 +169,7 @@ public class ShoppingCartFragment extends BaseFragment {
                         modifyCart(list.toString());
                     }
                 });
+                //减少商品
                 holder.setOnClickListener(R.id.order_minus, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -177,7 +185,6 @@ public class ShoppingCartFragment extends BaseFragment {
                             cartList.remove(position);
                         } else {
                             cartList.get(position).setNumber(number);
-
                             List<String> list = new ArrayList<String>();
                             Map<String, String> params = new HashMap<String, String>();
                             params.put("goods_id", s.getGoods_id());
@@ -190,7 +197,20 @@ public class ShoppingCartFragment extends BaseFragment {
                     }
                 });
 
-
+                //中间文字 添加监听输入数字
+                holder.setOnClickListener(R.id.order_buy_number, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int number=Integer.valueOf(cartList.get(position).getNumber());
+                        showDialog(position,number,s.getGoods_id());
+                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                notifyDataSetChanged();
+                            }
+                        });
+                    }
+                });
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -219,6 +239,69 @@ public class ShoppingCartFragment extends BaseFragment {
         scRecycler.setAdapter(adapter);
     }
 
+    //购物车改变数量的dialog
+    //这个写的为初步
+    private Dialog dialog;
+    private void showDialog(final int position, int number, final String s){
+        dialog=new Dialog(context);
+        dialog.setContentView(R.layout.fragment_shopping_cart_dialog);
+        Window dialogWindow = dialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        dialogWindow.setGravity(Gravity.CENTER);
+        dialogWindow.setAttributes(lp);
+        dialog.show();
+        final EditText initput= (EditText) dialog.findViewById(R.id.initPutDialog);
+        //这个地方出现过两次错误标注一下 不能为int类型
+        initput.setText(number+"");
+        initput.setSelection(initput.getText().length());
+        dialog.findViewById(R.id.addDialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int ede=Integer.parseInt(String.valueOf(initput.getText()));
+                ede+=1;
+                initput.setText(ede+"");
+                initput.setSelection(initput.getText().length());
+            }
+        });
+        dialog.findViewById(R.id.lessenDialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int ede=Integer.parseInt(String.valueOf(initput.getText()));
+
+                if (ede>0){
+                    ede-=1;
+                    initput.setText(ede+"");
+                    initput.setSelection(initput.getText().length());
+                }
+            }
+        });
+        dialog.findViewById(R.id.cancelDialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.findViewById(R.id.determineDialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String numS=String.valueOf(initput.getText());
+                if (numS==null||"".equals(numS)){
+                    Toast.makeText(context, "此处不能为空", Toast.LENGTH_SHORT).show();
+                }else {
+                    int number=Integer.valueOf(numS);
+                    cartList.get(position).setNumber(number);
+                    List<String> list = new ArrayList<String>();
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("goods_id", s);
+                    params.put("number", number + "");
+                    list.add(gson.toJson(params));
+                    //修改
+                    modifyCart(list.toString());
+                    dialog.dismiss();
+                }
+            }
+        });
+    }
     private void modifyCart(String goods_id) {
         SubscriberOnNextListener modifyCart = new SubscriberOnNextListener() {
             @Override
@@ -343,7 +426,7 @@ public class ShoppingCartFragment extends BaseFragment {
                     return;
                 }
                 intent = new Intent(context, AddOrderActivity.class);
-                intent.putExtra("delivery_price", delivery_price);
+                //intent.putExtra("delivery_price", delivery_price);
                 intent.putParcelableArrayListExtra(K.DATA, (ArrayList<? extends Parcelable>) goodsBeanList);
                 startActivity(intent);
                 break;

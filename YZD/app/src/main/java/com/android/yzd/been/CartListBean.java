@@ -21,6 +21,7 @@ public class CartListBean implements Parcelable {
     private int number;
     private String goods_id;
     private String cart_id;
+    private String models_type;
 
     public String getGoods_name() {
         return goods_name;
@@ -70,6 +71,13 @@ public class CartListBean implements Parcelable {
         this.cart_id = cart_id;
     }
 
+    public String getModels_type() {
+        return models_type;
+    }
+
+    public void setModels_type(String models_type) {
+        this.models_type = models_type;
+    }
 
     @Override
     public int describeContents() {
@@ -84,6 +92,7 @@ public class CartListBean implements Parcelable {
         dest.writeInt(this.number);
         dest.writeString(this.goods_id);
         dest.writeString(this.cart_id);
+        dest.writeString(this.models_type);
     }
 
     public CartListBean() {
@@ -96,6 +105,7 @@ public class CartListBean implements Parcelable {
         this.number = in.readInt();
         this.goods_id = in.readString();
         this.cart_id = in.readString();
+        this.models_type=in.readString();
     }
 
     public static final Parcelable.Creator<CartListBean> CREATOR = new Parcelable.Creator<CartListBean>() {
