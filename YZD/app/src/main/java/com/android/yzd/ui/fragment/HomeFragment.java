@@ -1,6 +1,10 @@
 package com.android.yzd.ui.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +25,8 @@ import com.android.yzd.tools.DensityUtils;
 import com.android.yzd.tools.K;
 import com.android.yzd.tools.L;
 import com.android.yzd.tools.ScreenUtils;
+import com.android.yzd.tools.update.DownLoadService;
+import com.android.yzd.tools.update.Version;
 import com.android.yzd.ui.activity.DetailsActivity;
 import com.android.yzd.ui.activity.HomeSearchActivity;
 import com.android.yzd.ui.activity.HotActivity;
@@ -29,6 +35,7 @@ import com.android.yzd.ui.activity.LoginActivity;
 import com.android.yzd.ui.activity.MainActivity;
 import com.android.yzd.ui.activity.MessageManagerActivity;
 import com.android.yzd.ui.activity.OrderActivity;
+import com.android.yzd.ui.activity.SetActivity;
 import com.android.yzd.ui.adapter.NetworkImageHolderView;
 import com.android.yzd.ui.adapter.ViewPagerAdapter;
 import com.android.yzd.ui.custom.BaseFragment;
@@ -328,4 +335,5 @@ public class HomeFragment extends BaseFragment {
                 break;
         }
     }
+
 }

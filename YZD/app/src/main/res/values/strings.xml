@@ -48,4 +48,8 @@
     <string name="list_footer_end">这是我的底线！</string>
 
     <string name="pay_order_title">请选择支付方式</string>
+
+    <string name="my_grade_text">等级</string>
+    <string name="my_grade_integral">积分</string>
+    <string name="my_grade_convert">已兑换</string>
 </resources>

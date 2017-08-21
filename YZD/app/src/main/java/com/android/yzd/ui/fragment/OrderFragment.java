@@ -38,6 +38,7 @@ import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -425,7 +426,7 @@ public class OrderFragment extends BaseFragment implements SwipeRefreshLayout.On
         SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
             @Override
             public void onNext(Object o) {
-                T.show(context, "取消订单成功", Toast.LENGTH_SHORT);
+                T.show(context, "删除订单成功", Toast.LENGTH_SHORT);
                 onRefresh();
             }
         };

@@ -13,7 +13,7 @@ import android.widget.EditText;
 import com.android.yzd.R;
 
 //com.android.yzd.ui.view.ClearEditText
-public class ClearEditText extends EditText implements View.OnFocusChangeListener,
+public class ClearEditText extends android.support.v7.widget.AppCompatEditText implements View.OnFocusChangeListener,
         TextWatcher {
 
     Paint paint = new Paint();

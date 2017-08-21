@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@color/colorPrimary"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -12,6 +12,11 @@
         android:layout_height="48dp"
         android:background="@color/colorPrimary">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/my_title"
+            />
         <ImageView
             android:id="@+id/my_message"
             android:layout_width="wrap_content"
@@ -37,54 +42,135 @@
             <RelativeLayout
                 android:id="@+id/my_info"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary">
+                android:layout_height="556px"
+                android:background="@mipmap/my_icon_background">
 
                 <com.android.yzd.ui.view.CircleImageView
                     android:id="@+id/my_head"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
-                    android:layout_marginTop="20dp"
-                    app:border_color="@color/edit_background"
-                    app:border_width="3dp" />
+                    android:layout_centerInParent="true"
+                    app:border_color="@color/orange_border"
+                    app:border_width="@dimen/_4px"
+                    />
 
 
                 <TextView
                     android:id="@+id/my_nick"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/my_head"
-                    android:layout_marginTop="5dp"
-                    android:layout_toRightOf="@+id/my_head"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/my_head"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/_60spx"
+                    android:layout_marginTop="@dimen/_12px"
+                   android:text="12345648"/>
 
 
                 <TextView
                     android:id="@+id/my_tel"
+                    android:layout_centerHorizontal="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/my_head"
-                    android:layout_marginBottom="5dp"
-                    android:layout_toRightOf="@+id/my_head"
+                    android:layout_below="@+id/my_nick"
                     android:drawableLeft="@mipmap/phone"
-                    android:drawablePadding="10dp"
+                    android:drawablePadding="3dp"
                     android:textColor="@android:color/white"
-                    android:textSize="14sp" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="10dp"
-                    android:src="@mipmap/more_white" />
+                    android:textSize="@dimen/_35spx"
+                    android:text="12345648"/>
 
             </RelativeLayout>
 
+            <LinearLayout
+                android:layout_marginTop="@dimen/_34px"
+                android:layout_marginBottom="@dimen/_21px"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="134px">
+                 <!--等级-->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="134px">
+
+                    <TextView
+                        android:id="@+id/tv_my_grade"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/my_grade_number"
+                        android:text="0"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/my_grade_text"
+                        android:text="@string/my_grade_text"/>
+
+                </LinearLayout>
+
+                <View
+                    android:background="@color/blue_17"
+                    android:layout_width="@dimen/_4px"
+                    android:layout_height="75px"
+                    android:layout_gravity="center"/>
+                <!--积分-->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="134px">
+
+                    <TextView
+                        android:id="@+id/tv_my_integral"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/my_grade_number"
+                        android:text="0"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/my_grade_text"
+                        android:text="@string/my_grade_integral"/>
+
+                </LinearLayout>
+
+                <View
+                    android:background="@color/blue_17"
+                    android:layout_width="@dimen/_4px"
+                    android:layout_height="75px"
+                    android:layout_gravity="center"/>
+
+                <!--已兑换-->
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="134px">
+
+                    <TextView
+                        android:id="@+id/tv_my_convert"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/my_grade_number"
+                        android:text="0"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/my_grade_text"
+                        android:text="@string/my_grade_convert"/>
+
+                </LinearLayout>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1px"
+                android:background="@color/background" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -137,29 +223,98 @@
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1px"
+                android:background="@color/background" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_32px"
+                android:layout_marginLeft="@dimen/_22px"
+                android:layout_marginRight="@dimen/_22px"
+                android:background="@drawable/my_all_order">
+
+                <TextView
+                    android:id="@+id/my_wait_pay"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:drawableTop="@mipmap/my_wait_pay"
+                    android:drawablePadding="@dimen/_18px"
+                    android:gravity="center"
+                    android:text="@string/my_wait_pay"
+                    android:textColor="@color/black_60"
+                    android:textSize="@dimen/_44spx"
+                    android:padding="@dimen/_32px"/>
+
+                <TextView
+                    android:id="@+id/my_wait_delivery"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:drawableTop="@mipmap/my_wait_delivery"
+                    android:drawablePadding="@dimen/_18px"
+                    android:gravity="center"
+                    android:text="@string/my_wait_delivery"
+                    android:textColor="@color/black_60"
+                    android:textSize="@dimen/_44spx"
+                    android:padding="@dimen/_32px"/>
+
+                <TextView
+                    android:id="@+id/my_wait_getGoods"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:drawableTop="@mipmap/my_wait_getgoods"
+                    android:drawablePadding="@dimen/_18px"
+                    android:gravity="center"
+                    android:text="@string/my_wait_getGoods"
+                    android:textColor="@color/black_60"
+                    android:textSize="@dimen/_44spx"
+                    android:padding="@dimen/_32px"/>
+
+                <TextView
+                    android:id="@+id/my_accomplish"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:drawableTop="@mipmap/my_accomplish"
+                    android:drawablePadding="@dimen/_18px"
+                    android:gravity="center"
+                    android:text="@string/my_accomplish"
+                    android:textColor="@color/black_60"
+                    android:textSize="@dimen/_44spx"
+                    android:padding="@dimen/_32px"/>
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:background="@android:color/white">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:drawableLeft="@mipmap/my_order"
-                    android:drawablePadding="10dp"
-                    android:gravity="center"
-                    android:text="@string/my_order"
-                    android:textColor="@color/black_30"
-                    android:textSize="14sp" />
-
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16px"
+                android:layout_marginLeft="@dimen/_22px"
+                android:layout_marginRight="@dimen/_22px"
+                android:padding="@dimen/_40px"
+                android:background="@drawable/my_all_order">
 
                 <TextView
                     android:id="@+id/my_allOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:drawableLeft="@mipmap/my_order"
+                    android:drawablePadding="@dimen/_50px"
+                    android:text="@string/my_order"
+                    android:textColor="@color/black_30"
+                    android:textSize="@dimen/_52spx"
+                    android:gravity="center_vertical"/>
+
+      <!--          <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -170,154 +325,94 @@
                     android:padding="10dp"
                     android:text="@string/my_all_order"
                     android:textColor="@color/black_90"
-                    android:textSize="12sp" />
+                    android:textSize="12sp" />-->
 
             </RelativeLayout>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:background="@android:color/white"
-                android:padding="5dp">
-
-                <TextView
-                    android:id="@+id/my_wait_pay"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableTop="@mipmap/my_wait_pay"
-                    android:gravity="center"
-                    android:text="@string/my_wait_pay"
-                    android:textColor="@color/black_60"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/my_wait_delivery"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableTop="@mipmap/my_wait_delivery"
-                    android:gravity="center"
-                    android:text="@string/my_wait_delivery"
-                    android:textColor="@color/black_60"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/my_wait_getGoods"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableTop="@mipmap/my_wait_getgoods"
-                    android:gravity="center"
-                    android:text="@string/my_wait_getGoods"
-                    android:textColor="@color/black_60"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/my_accomplish"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:drawableTop="@mipmap/my_accomplish"
-                    android:gravity="center"
-                    android:text="@string/my_accomplish"
-                    android:textColor="@color/black_60"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@android:color/white"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/_16px"
+                android:layout_marginLeft="@dimen/_22px"
+                android:layout_marginRight="@dimen/_22px"
+                android:background="@drawable/my_all_order"
+                android:orientation="vertical"
+                android:padding="@dimen/_40px">
 
                 <TextView
                     android:id="@+id/my_wallet"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:drawableLeft="@mipmap/my_wallet"
-                    android:drawablePadding="10dp"
+                    android:drawablePadding="@dimen/_50px"
                     android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
                     android:visibility="gone"
                     android:text="@string/my_wallet"
                     android:textColor="@color/black_30"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/_52spx"
+                    />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginLeft="15dp"
-                    android:background="@color/background" />
 
                 <TextView
                     android:id="@+id/my_shopping_mall_store"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:drawableLeft="@mipmap/mall_store"
-                    android:drawablePadding="10dp"
+                    android:drawablePadding="@dimen/_50px"
                     android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
                     android:text="@string/my_shopping_mall_store"
                     android:textColor="@color/black_30"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/_52spx" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginLeft="15dp"
-                    android:background="@color/background" />
 
                 <TextView
                     android:id="@+id/bank_card"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:drawableLeft="@mipmap/bank_card"
-                    android:drawablePadding="10dp"
+                    android:drawablePadding="@dimen/_50px"
                     android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
                     android:text="@string/bank_card"
                     android:visibility="gone"
                     android:textColor="@color/black_30"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/_52spx"
+                    />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/address_manage"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:background="@android:color/white"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16px"
+                android:layout_marginLeft="@dimen/_22px"
+                android:layout_marginRight="@dimen/_22px"
+                android:background="@drawable/my_all_order"
                 android:drawableLeft="@mipmap/address_manage"
-                android:drawablePadding="10dp"
+                android:drawablePadding="@dimen/_50px"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dp"
+                android:padding="@dimen/_40px"
                 android:text="@string/address_manage"
                 android:textColor="@color/black_30"
-                android:textSize="14sp" />
+                android:textSize="@dimen/_52spx"
+                />
 
             <TextView
                 android:id="@+id/my_setting"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16px"
+                android:layout_marginLeft="@dimen/_22px"
+                android:layout_marginRight="@dimen/_22px"
                 android:layout_marginBottom="20dp"
-                android:layout_marginTop="10dp"
-                android:background="@android:color/white"
+                android:background="@drawable/my_all_order"
                 android:drawableLeft="@mipmap/set"
-                android:drawablePadding="10dp"
+                android:drawablePadding="@dimen/_50px"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dp"
+                android:padding="@dimen/_40px"
                 android:text="@string/setting"
                 android:textColor="@color/black_30"
-                android:textSize="14sp" />
+                android:textSize="@dimen/_52spx"
+               />
 
         </LinearLayout>
     </ScrollView>

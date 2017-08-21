@@ -31,7 +31,7 @@ android {
         applicationId "com.android.yzd"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 20170619
+        versionCode 20170811
         versionName "V1.0"
         multiDexEnabled true
     }

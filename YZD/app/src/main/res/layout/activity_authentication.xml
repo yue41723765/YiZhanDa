@@ -5,7 +5,10 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical">
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@android:color/white"/>
     <com.android.yzd.ui.view.TitleBarView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

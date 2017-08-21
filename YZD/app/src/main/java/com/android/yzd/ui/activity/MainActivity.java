@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,10 +20,14 @@ import android.widget.Toast;
 
 import com.android.yzd.R;
 import com.android.yzd.been.UserInfoEntity;
+import com.android.yzd.http.HttpMethods;
+import com.android.yzd.http.SubscriberOnNextListener;
 import com.android.yzd.tools.AppManager;
 import com.android.yzd.tools.K;
 import com.android.yzd.tools.SPUtils;
 import com.android.yzd.tools.T;
+import com.android.yzd.tools.update.DownLoadService;
+import com.android.yzd.tools.update.Version;
 import com.android.yzd.ui.custom.BaseActivity;
 import com.android.yzd.ui.fragment.ClassifyFragment;
 import com.android.yzd.ui.fragment.FindFragment;
@@ -123,7 +129,7 @@ public class MainActivity extends BaseActivity {
     protected void initAllMembersView(Bundle savedInstanceState) {
         AppManager.getAppManager().addActivity(this);
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
-
+        versionInfo();
         register();
         homeFragment = new HomeFragment();
         classifyFragment = new ClassifyFragment();
@@ -284,5 +290,63 @@ public class MainActivity extends BaseActivity {
                 }
             });
         }
+    }
+
+    Version versionInfo;
+    private void versionInfo() {
+        SubscriberOnNextListener onNextListener = new SubscriberOnNextListener() {
+            @Override
+            public void onNext(Object o) {
+                versionInfo = gson.fromJson(gson.toJson(o), Version.class);
+                try {
+                    //if (!getVersionName().equals(versionInfo.getName())) {
+                    if (getVersionCode()!=Integer.parseInt(versionInfo.getCode())){
+                        showDialog();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        setProgressSubscriber(onNextListener, false);
+        HttpMethods.getInstance(this).upgrade(progressSubscriber);
+    }
+
+    /*
+ * 获取当前程序的版本号
+ */
+    private int getVersionCode() throws PackageManager.NameNotFoundException {
+        //获取packagemanager的实例
+        PackageManager packageManager = this.getPackageManager();
+        //getPackageName()是你当前类的包名，0代表是获取版本信息
+        PackageInfo packageInfo = packageManager.getPackageInfo(this.getPackageName(), 0);
+        //不知道上边写的是啥 反正获取版本号里边必须得有版本名称
+        PackageInfo packInfo=packageManager.getPackageInfo(packageInfo.packageName,0);
+        return packInfo.versionCode;
+    }
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("升级提示");
+        builder.setMessage("版本：" + versionInfo.getName() + "\n" + "更新消息:" + versionInfo.getMessage());
+        builder.setNegativeButton("稍后再说", new AlertDialog.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setPositiveButton("马上更新", new AlertDialog.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent intent = new Intent(MainActivity.this, DownLoadService.class);
+                intent.putExtra("url", versionInfo.getUri());
+                startService(intent);
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
     }
 }

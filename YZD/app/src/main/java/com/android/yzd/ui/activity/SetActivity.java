@@ -132,7 +132,8 @@ public class SetActivity extends BaseActivity {
                 break;
             case R.id.set_versions:
                 try {
-                    if (!getVersionName().equals(versionInfo.getName())) {
+                    //if (!getVersionName().equals(versionInfo.getName())) {
+                    if (getVersionCode()!=Integer.parseInt(versionInfo.getCode())){
                         showDialog();
                     } else {
                         T.show(this, "当前版本为最新版本！", Toast.LENGTH_SHORT);
@@ -185,7 +186,8 @@ public class SetActivity extends BaseActivity {
             public void onNext(Object o) {
                 versionInfo = gson.fromJson(gson.toJson(o), Version.class);
                 try {
-                    if (!getVersionName().equals(versionInfo.getName())) {
+                    //if (!getVersionName().equals(versionInfo.getName())) {
+                    if (getVersionCode()!=Integer.parseInt(versionInfo.getCode())){
                         findNewVer.setVisibility(View.VISIBLE);
                     }
                 } catch (Exception e) {
@@ -200,12 +202,14 @@ public class SetActivity extends BaseActivity {
     /*
  * 获取当前程序的版本号
  */
-    private String getVersionName() throws Exception {
+    private int getVersionCode() throws PackageManager.NameNotFoundException {
         //获取packagemanager的实例
         PackageManager packageManager = getPackageManager();
         //getPackageName()是你当前类的包名，0代表是获取版本信息
-        PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-        return packInfo.versionName;
+        PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
+        //不知道上边写的是啥 反正获取版本号里边必须得有版本名称
+        PackageInfo packInfo=packageManager.getPackageInfo(packageInfo.packageName,0);
+        return packInfo.versionCode;
     }
 
 

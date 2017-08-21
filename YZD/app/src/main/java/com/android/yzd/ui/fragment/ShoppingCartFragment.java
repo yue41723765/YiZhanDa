@@ -125,7 +125,6 @@ public class ShoppingCartFragment extends BaseFragment {
                     csChooseAll.setChecked(false);
                     scTotalPrice.setText("￥" + 0);
                 }
-
             }
         };
         setProgressSubscriber(onNextListener);

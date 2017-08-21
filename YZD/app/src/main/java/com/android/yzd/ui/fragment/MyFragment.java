@@ -1,6 +1,7 @@
 package com.android.yzd.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -47,6 +48,13 @@ public class MyFragment extends BaseFragment {
     @BindView(R.id.my_tel)
     TextView myTel;
 
+    @BindView(R.id.tv_my_grade)
+    TextView grade;
+    @BindView(R.id.tv_my_convert)
+    TextView convert;
+    @BindView(R.id.tv_my_integral)
+    TextView integral;
+
     UserInfoEntity userInfo;
 
     @Override
@@ -56,7 +64,10 @@ public class MyFragment extends BaseFragment {
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
-
+        Typeface textType=Typeface.createFromAsset(context.getAssets(),"fonts/timesnewromanpsmt.ttf");
+        grade.setTypeface(textType);
+        convert.setTypeface(textType);
+        integral.setTypeface(textType);
     }
 
     @OnClick({R.id.my_message, R.id.my_info, R.id.discount_coupon, R.id.my_collect, R.id.my_allOrder,
@@ -134,6 +145,7 @@ public class MyFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         getUserInfoEntity();
+        getUserGradeInfo();
     }
 
     //刷新个人信息
@@ -163,4 +175,7 @@ public class MyFragment extends BaseFragment {
         HttpMethods.getInstance(context).memberCenter(progressSubscriber, params);
     }
 
+    //数字：积分，等级，已兑换。
+    public void getUserGradeInfo() {
+    }
 }

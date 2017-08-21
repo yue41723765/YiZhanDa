@@ -75,7 +75,7 @@ public class PayActivity extends BaseActivity {
     //钱
     private Float money=0.0f;
     private String price=null;
-    private String delivery_price=null;
+    private String delivery_price;
 
     private PayAddOrderEntity.DataBean add;
     private PayGetAliParamEntity.DataBean ali;
@@ -124,9 +124,9 @@ public class PayActivity extends BaseActivity {
                 case R.id.pay_wechate:
                     number=BAOM_WEIXIN_YANZHENG;
                     break;
-                case R.id.pay_balance:
+     /*           case R.id.pay_balance:
                     number=BAOM_ARRIVE_YANZHENG;
-                    break;
+                    break;*/
                 default:break;
             }
         }
@@ -145,7 +145,7 @@ public class PayActivity extends BaseActivity {
                     intent=new Intent(PayActivity.this,PayResultActivity.class);
                     intent.putExtra("PayResult","arr");
                     startActivity(intent);
-                }else {}
+                }break;
         }
     }
         /*

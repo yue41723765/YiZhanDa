@@ -150,9 +150,11 @@ public class AddOrderActivity extends BaseActivity {
                 deliveryPrice="19";
             }
         }
-
+        if (total>=1000){
+            deliveryPrice="0";
+        }
         //保留两位小数
-        if (deliveryPrice==null){
+        if (deliveryPrice==null||"".equals(deliveryPrice)){
             delivery_price=0.0f;
         }else {
             delivery_price=Float.parseFloat(deliveryPrice);
