@@ -313,8 +313,8 @@ public class MainActivity extends BaseActivity {
     }
 
     /*
- * 获取当前程序的版本号
- */
+    * 更新：获取当前程序的版本号
+    */
     private int getVersionCode() throws PackageManager.NameNotFoundException {
         //获取packagemanager的实例
         PackageManager packageManager = this.getPackageManager();

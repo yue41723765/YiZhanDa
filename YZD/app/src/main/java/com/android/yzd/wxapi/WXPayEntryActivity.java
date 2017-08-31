@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.android.yzd.R;
 import com.android.yzd.tools.L;
+import com.android.yzd.tools.T;
+import com.android.yzd.ui.activity.LoginActivity;
 import com.android.yzd.ui.activity.MainActivity;
 import com.android.yzd.ui.activity.PayResultActivity;
 import com.android.yzd.ui.custom.BaseActivity;
@@ -52,7 +54,21 @@ public class WXPayEntryActivity extends BaseActivity implements IWXAPIEventHandl
 
 	@Override
 	public void onReq(BaseReq baseReq) {
-
+/*
+		if (baseReq.getType()==0){
+			T.showShort(this,"成功");
+			Intent intent=new Intent(WXPayEntryActivity.this,LoginActivity.class);
+			startActivity(intent);
+			finish();
+		}else if (baseReq.getType()==-4){
+			Intent intent=new Intent(WXPayEntryActivity.this,LoginActivity.class);
+			startActivity(intent);
+			finish();
+		}else if (baseReq.getType()==-2){
+			Intent intent=new Intent(WXPayEntryActivity.this,LoginActivity.class);
+			startActivity(intent);
+			finish();
+		}*/
 	}
 
 	@Override
@@ -61,6 +77,19 @@ public class WXPayEntryActivity extends BaseActivity implements IWXAPIEventHandl
 		if (resp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
 			Intent intent=new Intent(WXPayEntryActivity.this,PayResultActivity.class);
 			intent.putExtra("WXResult",""+resp.errCode);
+			startActivity(intent);
+			finish();
+		}else if (resp.errCode==0){
+			T.showShort(this,"成功");
+			Intent intent=new Intent(WXPayEntryActivity.this,LoginActivity.class);
+			startActivity(intent);
+			finish();
+		}else if (resp.errCode==-4){
+			Intent intent=new Intent(WXPayEntryActivity.this,LoginActivity.class);
+			startActivity(intent);
+			finish();
+		}else if (resp.errCode==-2){
+			Intent intent=new Intent(WXPayEntryActivity.this,LoginActivity.class);
 			startActivity(intent);
 			finish();
 		}

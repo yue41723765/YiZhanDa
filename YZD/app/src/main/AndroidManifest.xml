@@ -35,8 +35,6 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="23" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
     <application
         android:name=".ui.ECApplication"
         android:allowBackup="true"
@@ -99,6 +97,23 @@
             android:screenOrientation="behind"
             android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
+        <!--QQ-->
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="1105697773" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <activity
             android:name=".ui.activity.MainActivity"
@@ -237,7 +252,12 @@
         <activity
             android:name=".ui.activity.PayResultActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.MyGradeActivity"
+            android:screenOrientation="portrait"/>
+
         <service android:name=".tools.update.DownLoadService" />
+
         <receiver android:name=".wxapi.AppRegister">
             <intent-filter>
             <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP"/>

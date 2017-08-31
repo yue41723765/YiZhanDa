@@ -35,12 +35,6 @@ import butterknife.ButterKnife;
  * Created by Administrator on 2016/10/2 0002.
  */
 public class RegisterActivity extends BaseActivity {
-    @BindView(R.id.titleBar_title)
-    TextView title;
-    @BindView(R.id.binding_tel)
-    TextView bindingTel;
-    @BindView(R.id.setPassword)
-    TextView setPassword;
     @BindView(R.id.register_tel)
     EditText registerTel;
     @BindView(R.id.register_code)
@@ -49,6 +43,10 @@ public class RegisterActivity extends BaseActivity {
     CheckBox registerCheck;
     @BindView(R.id.protocol_deal)
     TextView protocolDeal;
+    @BindView(R.id.register_toast)
+    TextView reminder;
+    @BindView(R.id.register_invite)
+    EditText invite;
 
     int status_title;
     @BindView(R.id.get_code)
@@ -61,10 +59,12 @@ public class RegisterActivity extends BaseActivity {
     SubscriberOnNextListener getCodeListener;
     SubscriberOnNextListener verifytCodeListener;
     SubscriberOnNextListener userRegAgrListener;
+    SubscriberOnNextListener sendInviteCode;
 
     TimeCount count;
     String codeTel;
 
+    String inviteCode;
     @Override
     public int getContentViewId() {
         return R.layout.activity_register;
@@ -75,8 +75,7 @@ public class RegisterActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(Color.WHITE);
-            StatusBarUtil.StatusBarLightMode(this);
+            StatusBarUtil.transparencyBar(this);
         }
         ButterKnife.bind(this);
     }
@@ -86,9 +85,10 @@ public class RegisterActivity extends BaseActivity {
         AppManager.getAppManager().addActivity(this);
         status_title = getIntent().getExtras().getInt(K.TITLE);
         if (status_title == 2) {
-            title.setText("忘记密码");
-            bindingTel.setText("安全验证");
-            next.setText("验证");
+            //title.setText("忘记密码");
+            //bindingTel.setText("安全验证");
+            //next.setText("验证");
+            invite.setVisibility(View.INVISIBLE);
             bottom.setVisibility(View.GONE);
         }
         getCodeListener = new SubscriberOnNextListener() {
@@ -97,7 +97,9 @@ public class RegisterActivity extends BaseActivity {
                 count = new TimeCount(60 * 1000, 1000);
                 count.setTimeCount(getCode, "s后重新发送");
                 count.start();
-                T.show(RegisterActivity.this, "信息已送达,10分钟内有效", Toast.LENGTH_SHORT);
+                //T.show(RegisterActivity.this, "信息已送达,10分钟内有效", Toast.LENGTH_SHORT);
+                reminder.setText("信息已送达,10分钟内有效");
+                reminder.setVisibility(View.VISIBLE);
             }
         };
         verifytCodeListener = new SubscriberOnNextListener() {
@@ -106,6 +108,7 @@ public class RegisterActivity extends BaseActivity {
                 intent = new Intent(RegisterActivity.this, Register2Activity.class);
                 intent.putExtra(K.TITLE, status_title);
                 intent.putExtra(K.DATA, codeTel);
+                intent.putExtra(K.INVITE_CODE,inviteCode);
                 startActivity(intent);
                 finish();
             }
@@ -129,21 +132,30 @@ public class RegisterActivity extends BaseActivity {
                 String tel = registerTel.getText().toString();
                 String code = registerCode.getText().toString();
                 if (!U.isTel(tel)) {
-                    T.show(this, "手机号码出错", Toast.LENGTH_SHORT);
+                    //T.show(this, "手机号码出错", Toast.LENGTH_SHORT);
+                    reminder.setText("手机号码出错");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
                 if (!tel.equals(codeTel)) {
-                    T.show(this, "两次手机号码不一致!", Toast.LENGTH_SHORT);
+                    //T.show(this, "两次手机号码不一致!", Toast.LENGTH_SHORT);
+                    reminder.setText("两次手机号码不一致");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
                 if (!registerCheck.isChecked()) {
-                    T.show(this, "请阅读并同意《土坷垃注册协议》!", Toast.LENGTH_SHORT);
+                   // T.show(this, "请阅读并同意《一站达注册协议》!", Toast.LENGTH_SHORT);
+                    reminder.setText("请阅读并同意《一站达注册协议》");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
                 if (code.equals("")) {
-                    T.show(this, "请出入验证码!", Toast.LENGTH_SHORT);
+                    //T.show(this, "请出入验证码!", Toast.LENGTH_SHORT);
+                    reminder.setText("请输入验证码");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
+                inviteCode=invite.getText().toString();
                 setProgressSubscriber(verifytCodeListener);
                 params.put("verify", code);
                 HttpMethods.getInstance(this).checkVerify(progressSubscriber, params);
@@ -151,11 +163,15 @@ public class RegisterActivity extends BaseActivity {
             case R.id.get_code:
                 codeTel = registerTel.getText().toString();
                 if (codeTel.equals("")) {
-                    T.show(this, "请出入手机号码", Toast.LENGTH_SHORT);
+                    //T.show(this, "请出入手机号码", Toast.LENGTH_SHORT);
+                    reminder.setText("请出入手机号码");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
                 if (!U.isTel(codeTel)) {
-                    T.show(this, "手机号码出错", Toast.LENGTH_SHORT);
+                    //T.show(this, "手机号码出错", Toast.LENGTH_SHORT);
+                    reminder.setText("请出入手机号码");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
                 setProgressSubscriber(getCodeListener);

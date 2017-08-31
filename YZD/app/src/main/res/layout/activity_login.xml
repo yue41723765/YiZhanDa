@@ -3,40 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@mipmap/login_background"
     android:orientation="vertical">
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:background="@android:color/white"/>
-    <com.android.yzd.ui.view.TitleBarView
-        android:layout_width="match_parent"
+    <ImageView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:setBackground="@android:color/white"
-        app:setLeftImageVisibility="gone"
-        app:setRightText="立即注册"
-        app:setRightTextColor="@color/black_30"
-        app:setRightTextVisibility="visible"
-        app:setTitle="登录"
-        app:setTitleColor="@color/black_30" />
+        android:layout_gravity="center_horizontal"
+        android:src="@mipmap/logo_login"
+        android:layout_marginTop="342px"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/white"
+        android:layout_marginTop="173px"
         android:orientation="vertical"
-        android:paddingBottom="30dp"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
-        android:paddingTop="30dp">
+        android:paddingLeft="121px"
+        android:paddingRight="121px">
 
         <EditText
             android:id="@+id/login_tel"
             android:layout_width="match_parent"
             android:layout_height="46dp"
-            android:background="@drawable/round_background"
+            android:background="@mipmap/login_account"
             android:drawableLeft="@mipmap/user"
             android:drawablePadding="10dp"
             android:hint="请输入您的手机号"
@@ -44,18 +32,19 @@
             android:paddingLeft="10dp"
             android:textColor="@color/black_30"
             android:textColorHint="@color/black_60"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:textCursorDrawable="@color/blue_cursor"/>
 
         <EditText
             android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="46dp"
-            android:layout_marginTop="15dp"
-            android:background="@drawable/round_background"
+            android:background="@mipmap/login_password"
             android:drawableLeft="@mipmap/password"
             android:drawablePadding="10dp"
             android:hint="请输入密码"
             android:inputType="textPassword"
+            android:textCursorDrawable="@color/blue_cursor"
             android:paddingLeft="10dp"
             android:textColor="@color/black_30"
             android:textColorHint="@color/black_60"
@@ -63,24 +52,98 @@
 
     </LinearLayout>
 
+    <!--记住密码这一行-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="121px"
+        android:paddingRight="121px"
+        android:paddingTop="@dimen/_36px">
+
+        <CheckBox
+            android:id="@+id/remember_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:button="@drawable/check_login"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_36px"
+            android:text="记住密码"/>
+
+        <TextView
+            android:id="@+id/forget_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:onClick="onClick"
+            android:textSize="@dimen/_36px"
+            android:text="忘记密码?"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:gravity="right"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/login_toast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/login_toast"
+        android:text="账号/密码不正确"
+        android:layout_marginLeft="120px"
+        android:layout_marginTop="@dimen/_36px"
+        android:textColor="@color/red_32"
+        android:textSize="@dimen/_31px"
+        android:gravity="center"
+        android:visibility="invisible"/>
 
     <Button
         android:id="@+id/login_login"
-        style="@style/button"
-        android:text="登录" />
+        style="@style/login_button"
+        android:background="@drawable/login_button"/>
 
-
-    <TextView
-        android:id="@+id/forget_password"
+    <Button
+        android:id="@+id/login_register"
+        style="@style/login_button"
+        android:background="@drawable/register_button"/>
+    <ImageView
+        android:layout_marginTop="@dimen/_25px"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="30dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:onClick="onClick"
-        android:padding="10dp"
-        android:text="忘记密码"
-        android:textColor="@color/red_30" />
+        android:src="@mipmap/login_photo"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/_60px">
+
+        <Button
+            android:layout_marginRight="@dimen/_53px"
+            android:layout_width="106px"
+            android:layout_height="106px"
+            android:background="@drawable/login_qq_img"
+            android:onClick="onClick"
+            android:id="@+id/login_qq"/>
+
+        <Button
+            android:layout_marginLeft="@dimen/_53px"
+            android:layout_width="106px"
+            android:layout_height="106px"
+            android:background="@drawable/login_wx_img"
+            android:onClick="onClick"
+            android:id="@+id/login_wx"/>
+    </LinearLayout>
+
 
 </LinearLayout>

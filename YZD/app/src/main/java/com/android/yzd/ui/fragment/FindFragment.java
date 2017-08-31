@@ -47,15 +47,15 @@ public class FindFragment extends BaseFragment {
     ImageView findMessage;
     @BindView(R.id.top_tools)
     RelativeLayout topTools;
-    @BindView(R.id.boutique_recycler)
+   /* @BindView(R.id.boutique_recycler)
     RecyclerView boutiqueRecycler;
     @BindView(R.id.find_more)
-    TextView findMore;
+    TextView findMore;*/
     @BindView(R.id.integration_recycler)
     RecyclerView integrationRecycler;
 
 
-    CommonAdapter adapter_1;
+   // CommonAdapter adapter_1;
     CommonAdapter adapter_2;
 
     @Override
@@ -73,10 +73,10 @@ public class FindFragment extends BaseFragment {
             }
         };
 
-        linearLayoutManager.setOrientation(OrientationHelper.HORIZONTAL);
-        boutiqueRecycler.setLayoutManager(linearLayoutManager);
+        //linearLayoutManager.setOrientation(OrientationHelper.HORIZONTAL);
+        //boutiqueRecycler.setLayoutManager(linearLayoutManager);
         Drawable drawable = getResources().getDrawable(android.R.color.white);
-        boutiqueRecycler.addItemDecoration(new MyItemDecoration(OrientationHelper.HORIZONTAL, drawable, DensityUtils.dp2px(context, 10)));
+        //boutiqueRecycler.addItemDecoration(new MyItemDecoration(OrientationHelper.HORIZONTAL, drawable, DensityUtils.dp2px(context, 10)));
 
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(context) {
             @Override
@@ -97,7 +97,7 @@ public class FindFragment extends BaseFragment {
             @Override
             public void onNext(Object o) {
                 FindEntity findEntity = gson.fromJson(gson.toJson(o), FindEntity.class);
-                setBoutiqueRecommend(findEntity.getGoods_list());
+                //setBoutiqueRecommend(findEntity.getGoods_list());
                 setIntegralAdapter(findEntity.getIntegral_list());
 
                 if (findEntity.getNot_read().equals("1")) {
@@ -120,9 +120,9 @@ public class FindFragment extends BaseFragment {
             @Override
             protected void convert(ViewHolder holder, IntegralListBean s, final int position) {
                 Picasso.with(context).load(s.getGoods_logo()).into((ImageView) holder.getView(R.id.find_image));
-                holder.setText(R.id.find_title, s.getGoods_name());
+                holder.setText(R.id.find_title,"有限期至："+ s.getGoods_name());
                 holder.setText(R.id.find_content, s.getGoods_brief());
-                holder.setText(R.id.find_integral, s.getNeed_integral());
+                holder.setText(R.id.find_integral, s.getNeed_integral()+"积分兑换");
 
                 holder.setOnClickListener(R.id.conversion, new View.OnClickListener() {
                     @Override
@@ -143,7 +143,7 @@ public class FindFragment extends BaseFragment {
     }
 
     //精品推荐
-    private void setBoutiqueRecommend(final List<GoodsListBean> goods_list) {
+   /* private void setBoutiqueRecommend(final List<GoodsListBean> goods_list) {
         adapter_1 = new CommonAdapter<GoodsListBean>(context, R.layout.item_find_1, goods_list) {
 
             @Override
@@ -177,14 +177,15 @@ public class FindFragment extends BaseFragment {
             }
         });
         boutiqueRecycler.setAdapter(adapter_1);
-    }
+    }*/
 
 
-    @OnClick({R.id.find_more, R.id.find_message})
+   //因为改版所以屏蔽了更多R.id.find_more
+    @OnClick(R.id.find_message)
     public void onClick(View v) {
         super.onClick(v);
         switch (v.getId()) {
-            case R.id.find_more:
+           /* case R.id.find_more:
                 if (getUserInfo() == null) {
                     intent = new Intent(context, LoginActivity.class);
                     startActivity(intent);
@@ -193,7 +194,7 @@ public class FindFragment extends BaseFragment {
                     startActivity(intent);
                 }
 
-                break;
+                break;*/
             case R.id.find_message:
                 if (getUserInfo() == null) {
                     intent = new Intent(context, LoginActivity.class);

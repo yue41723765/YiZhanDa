@@ -34,18 +34,14 @@ import butterknife.ButterKnife;
  */
 public class Register2Activity extends BaseActivity {
 
-    @BindView(R.id.titleBar_title)
-    TextView title;
-    @BindView(R.id.binding_tel)
-    TextView bindingTel;
-    @BindView(R.id.setPassword)
-    TextView setPassword;
     @BindView(R.id.register_password)
     EditText registerPassword;
     @BindView(R.id.register_again_password)
     EditText registerAgainPassword;
     @BindView(R.id.register_register)
     Button registerRegister;
+    @BindView(R.id.register_toast)
+    TextView reminder;
     int status_title;//1--------注册 2--------修改密码
     String account;//手机号码
 
@@ -54,6 +50,8 @@ public class Register2Activity extends BaseActivity {
     Map<String, String> param = new HashMap<>();
 
 
+    //邀请码
+    String inviteCode;
     @Override
     public int getContentViewId() {
         return R.layout.activity_register_2;
@@ -65,10 +63,11 @@ public class Register2Activity extends BaseActivity {
 
         status_title = getIntent().getExtras().getInt(K.TITLE);
         account = getIntent().getExtras().getString(K.DATA);
+        inviteCode=getIntent().getExtras().getString(K.INVITE_CODE);
         if (status_title == 2) {
-            title.setText("忘记密码");
-            bindingTel.setText("安全验证");
-            registerRegister.setText("确定");
+            //title.setText("忘记密码");
+            //bindingTel.setText("安全验证");
+            registerRegister.setBackgroundResource(R.drawable.register_complete);
         }
         //注册开启定位
         regisiterLinstener = new SubscriberOnNextListener() {
@@ -78,9 +77,13 @@ public class Register2Activity extends BaseActivity {
                     Gson gson = new Gson();
                     UserInfoEntity infoEntity = gson.fromJson(gson.toJson(o), UserInfoEntity.class);
                     SPUtils.put(Register2Activity.this, K.USERINFO, infoEntity);
-                    T.show(Register2Activity.this, "注册成功!", Toast.LENGTH_SHORT);
+                    //T.show(Register2Activity.this, "注册成功!", Toast.LENGTH_SHORT);
+                    reminder.setText("注册成功");
+                    reminder.setVisibility(View.VISIBLE);
                 } else {
-                    T.show(Register2Activity.this, "重置密码成功", Toast.LENGTH_SHORT);
+                    //T.show(Register2Activity.this, "重置密码成功", Toast.LENGTH_SHORT);
+                    reminder.setText("重置密码成功");
+                    reminder.setVisibility(View.VISIBLE);
                 }
                 finish();
             }
@@ -95,8 +98,7 @@ public class Register2Activity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(Color.WHITE);
-            StatusBarUtil.StatusBarLightMode(this);
+            StatusBarUtil.transparencyBar(this);
         }
         // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
@@ -110,11 +112,15 @@ public class Register2Activity extends BaseActivity {
                 String pas1 = registerPassword.getText().toString();
                 String pas2 = registerAgainPassword.getText().toString();
                 if (pas1.equals("") | pas2.equals("")) {
-                    T.show(this, "密码不能为空！", Toast.LENGTH_SHORT);
+                   // T.show(this, "密码不能为空！", Toast.LENGTH_SHORT);
+                    reminder.setText("密码不能为空");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
                 if (!pas1.equals(pas2)) {
-                    T.show(this, "密码不一致，请确认密码！", Toast.LENGTH_SHORT);
+                    //T.show(this, "密码不一致，请确认密码！", Toast.LENGTH_SHORT);
+                    reminder.setText("密码不一致，请确认密码");
+                    reminder.setVisibility(View.VISIBLE);
                     return;
                 }
 
@@ -124,9 +130,15 @@ public class Register2Activity extends BaseActivity {
                 param.put("account", account);
                 param.put("password", pas2);
 
+
                 if (status_title == 2) {
                     HttpMethods.getInstance(this).forgetPassword(progressSubscriber, param);
                 } else {
+                    //判断邀请码是否为空
+                    if ("".equals(inviteCode)||inviteCode==null){
+                    }else {
+                        param.put("p_invite_code",inviteCode);
+                    }
                     HttpMethods.getInstance(this).register(progressSubscriber, param);
                 }
                 break;
