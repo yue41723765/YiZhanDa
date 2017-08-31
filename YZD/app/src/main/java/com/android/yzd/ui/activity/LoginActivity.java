@@ -232,6 +232,7 @@ public class LoginActivity extends BaseActivity {
         }
         ButterKnife.bind(this);
     }
+    
 
     public void buttonLogin(View v){
         /**通过这句代码，SDK实现了QQ的登录，这个方法有三个参数，第一个参数是context上下文，第二个参数SCOPO 是一个String类型的字符串，表示一些权限
